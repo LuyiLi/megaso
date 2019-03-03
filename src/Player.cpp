@@ -17,6 +17,7 @@ Player::Player()
 	mCollider.w = Player_WIDTH;
 	mCollider.h = Player_HEIGHT;
 
+
 	//Initialize the velocity
 	mVelX = 0;
 	mVelY = 0;
@@ -62,13 +63,13 @@ void Player::move(SDL_Rect& wall)
 {
 	//Move the Player left or right
 	pos_x += mVelX;
-	mCollider.x = pos_x;
+	mCollider.x = pos_x+19;
 	if (!checkCollision(mCollider, wall))
 	{
 		mVelY += g;
 	}
 
-	if ((pos_x < 0) || (pos_x + Player_WIDTH > SCREEN_WIDTH) || checkCollision(mCollider, wall))
+	if (checkCollision(mCollider, wall))
 	{
 		//Move back
 		pos_x -= mVelX;

@@ -126,23 +126,23 @@ bool loadMedia()
 		//Set sprite clips
 		slime_walk_clips[0].x = 0;
 		slime_walk_clips[0].y = 0;
-		slime_walk_clips[0].w = 394;
-		slime_walk_clips[0].h = 394;
+		slime_walk_clips[0].w = 416;
+		slime_walk_clips[0].h = 304;
 
-		slime_walk_clips[1].x = 394;
+		slime_walk_clips[1].x = 416;
 		slime_walk_clips[1].y = 0;
-		slime_walk_clips[1].w = 394;
-		slime_walk_clips[1].h = 394;
+		slime_walk_clips[1].w = 416;
+		slime_walk_clips[1].h = 304;
 
-		slime_walk_clips[2].x = 788;
+		slime_walk_clips[2].x = 832;
 		slime_walk_clips[2].y = 0;
-		slime_walk_clips[2].w = 394;
-		slime_walk_clips[2].h = 394;
+		slime_walk_clips[2].w = 416;
+		slime_walk_clips[2].h = 304;
 
-		slime_walk_clips[3].x = 1182;
+		slime_walk_clips[3].x = 1248;
 		slime_walk_clips[3].y = 0;
-		slime_walk_clips[3].w = 394;
-		slime_walk_clips[3].h = 394;
+		slime_walk_clips[3].w = 416;
+		slime_walk_clips[3].h = 304;
 	}
 	//Load sprite sheet texture
 	if (!slime_standing_texture.loadFromFile("images/slime_stand.png"))
@@ -155,33 +155,33 @@ bool loadMedia()
 		//Set sprite clips
 		slime_stand_clips[0].x = 0;
 		slime_stand_clips[0].y = 0;
-		slime_stand_clips[0].w = 394;
-		slime_stand_clips[0].h = 394;
+		slime_stand_clips[0].w = 416;
+		slime_stand_clips[0].h = 304;
 
-		slime_stand_clips[1].x = 394;
+		slime_stand_clips[1].x = 416;
 		slime_stand_clips[1].y = 0;
-		slime_stand_clips[1].w = 394;
-		slime_stand_clips[1].h = 394;
+		slime_stand_clips[1].w = 416;
+		slime_stand_clips[1].h = 304;
 
-		slime_stand_clips[2].x = 788;
+		slime_stand_clips[2].x = 832;
 		slime_stand_clips[2].y = 0;
-		slime_stand_clips[2].w = 394;
-		slime_stand_clips[2].h = 394;
+		slime_stand_clips[2].w = 416;
+		slime_stand_clips[2].h = 304;
 
-		slime_stand_clips[3].x = 1182;
+		slime_stand_clips[3].x = 1248;
 		slime_stand_clips[3].y = 0;
-		slime_stand_clips[3].w = 394;
-		slime_stand_clips[3].h = 394;
+		slime_stand_clips[3].w = 416;
+		slime_stand_clips[3].h = 304;
 
-		slime_stand_clips[4].x = 1576;
+		slime_stand_clips[4].x = 1664;
 		slime_stand_clips[4].y = 0;
-		slime_stand_clips[4].w = 394;
-		slime_stand_clips[4].h = 394;
+		slime_stand_clips[4].w = 416;
+		slime_stand_clips[4].h = 304;
 
-		slime_stand_clips[5].x = 1970;
+		slime_stand_clips[5].x = 2080;
 		slime_stand_clips[5].y = 0;
-		slime_stand_clips[5].w = 394;
-		slime_stand_clips[5].h = 394;
+		slime_stand_clips[5].w = 416;
+		slime_stand_clips[5].h = 304;
 	}
 	return success;
 }
@@ -276,9 +276,9 @@ int main(int argc, char* args[])
 			bool quit = false;
 			int velocity = 3;
 			SDL_Event e;
-			wall.x = 0;
-			wall.y = 350;
-			wall.w = 1000;
+			wall.x = -1000;
+			wall.y = 400;
+			wall.w = 10000;
 			wall.h = 400;
 			//≥ı ºªØ‰÷»æ ±÷”
 			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");

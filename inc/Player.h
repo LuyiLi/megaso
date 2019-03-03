@@ -9,8 +9,8 @@ class Player
 {
 public:
 	//The dimensions of the Player
-	static const int Player_WIDTH = 190;
-	static const int Player_HEIGHT = 190;
+	static const int Player_WIDTH = 170;
+	static const int Player_HEIGHT = 152;
 
 	//Maximum axis velocity of the Player
 	static const int Player_VEL = 5;
