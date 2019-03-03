@@ -171,7 +171,7 @@
     <ClInclude Include="inc\pch.h" />
     <ClInclude Include="inc\item.h" />
     <ClInclude Include="inc\global.h" />
-    <ClInclude Include="inc\LTtexture.h" />
+    <ClInclude Include="inc\LTexture.h" />
     <ClInclude Include="inc\settings.h" />
   </ItemGroup>
   <ItemGroup>
