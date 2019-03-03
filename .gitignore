@@ -36,6 +36,7 @@
 *.sln
 Release
 Debug
+x64
 
 #Github Files
 .github
