@@ -8,6 +8,11 @@
 #include "LTtexture.h"
 #include "settings.h"
 
+Dot dot;
+//碰撞墙面设置
+SDL_Rect wall;
+bool quit = false;
+
 //SDL初始化函数声明
 bool init();
 bool loadMedia();
@@ -295,18 +300,96 @@ void update()
 
 Uint32 callback(Uint32 interval, void* param)
 {
-	printf("1sdfghb");
-	SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
+	static int frame_walk = 0;
+	static int frame_stand = 0;
+	dot.move(wall);
+	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(gRenderer);
+
+	/*以下是一次渲染包含的材质*/
+
+	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
+	background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+
+	if (dot.mVelX > 0)
+	{
+		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
+		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
+		++frame_walk;
+		if (frame_walk / 4 >= walking_frames)
+		{
+			frame_walk = 0;
+		}
+
+	}
+	else if (dot.mVelX < 0)
+	{
+		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
+		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
+		++frame_walk;
+		if (frame_walk / 4 >= walking_frames)
+		{
+			frame_walk = 0;
+		}
+	}
+	else
+	{
+		SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
+		slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
+		++frame_stand;
+		if (frame_stand / 6 >= standing_frames)
+		{
+			frame_stand = 0;
+		}
+	}
+	//更新渲染器，渲染当前材质
+	SDL_RenderPresent(gRenderer);
+	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(gRenderer);
+	SDL_TimerID timerID1 = SDL_AddTimer(20, callback, (void*)"ad");
 	return 0;
 }
 
 int main(int argc, char* args[])
 {
-	SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
-	bool quit = false;
-	update();
-	SDL_RemoveTimer(timerID1);
-	return 0;
+	if (!init())
+	{
+		printf("Failed to initialize!\n");
+	}
+	else
+	{
+		//载入媒体
+		if (!loadMedia())
+		{
+			printf("Failed to load media!\n");
+		}
+		else
+		{
+
+
+			bool quit = false;
+			int velocity = 3;
+			SDL_Event e;
+			wall.x = 0;
+			wall.y = 290;
+			wall.w = 1000;
+			wall.h = 400;
+			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
+			while (!quit)
+			{
+				while (SDL_PollEvent(&e) != 0)
+				{
+					//User requests quit
+					if (e.type == SDL_QUIT)
+					{
+						quit = true;
+					}
+					dot.handleEvent(e);
+				}
+			}
+			return 0;
+		}
+	}
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
