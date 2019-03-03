@@ -8,6 +8,11 @@
 #include "LTtexture.h"
 #include "settings.h"
 
+//碰撞点设置
+Dot dot;
+//碰撞墙面设置
+SDL_Rect wall;
+bool quit = false;
 //SDL初始化函数声明
 bool init();
 bool loadMedia();
@@ -39,7 +44,7 @@ bool init()
 	bool success = true;
 
 	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
 	{
 		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
 		success = false;
@@ -198,7 +203,7 @@ void close()
 	SDL_Quit();
 }
 
-void slime_move()
+void update()
 {
 	if (!init())
 	{
@@ -222,7 +227,12 @@ void slime_move()
 			wall.h = 400;
 			bool quit = false;
 			SDL_Event e;
-			int frame = 0;
+			int frame_walk = 0;
+			int frame_stand = 0;
+			int delta_x = 0, delta_y = 0;
+			int velocity = 3;
+			delta_x = 40 / velocity;
+			delta_y = velocity;
 			//主循环入口
 			while (!quit)
 			{
@@ -235,149 +245,148 @@ void slime_move()
 					}
 					dot.handleEvent(e);
 				}
-				
 				dot.move(wall);
-				int delta_x = 0, delta_y = 0;
-				int velocity = 3;
-				delta_x = 40 / velocity;
-				delta_y = velocity;
-				const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
-				if (currentKeyStates[SDL_SCANCODE_RIGHT])
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+				SDL_RenderClear(gRenderer);
+
+				/*以下是一次渲染包含的材质*/
+
+				very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
+				background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+
+				if (dot.mVelX > 0)
 				{
-					SDL_Rect* currentClip = &slime_walk_clips[frame / 4];
-					SDL_RenderClear(gRenderer);
-					very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-					background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+					SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
 					slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-					//Update screen
-					SDL_RenderPresent(gRenderer);
-					//Go to next frame
-					SDL_Delay(delta_x);
-					++frame;
-					//Cycle animation
-					if (frame / 4 >= walking_frames)
+					++frame_walk;
+					if (frame_walk / 4 >= walking_frames)
 					{
-						frame = 0;
+						frame_walk = 0;
 					}
 
 				}
-				else if (currentKeyStates[SDL_SCANCODE_LEFT])
+				else if (dot.mVelX < 0)
 				{
-					SDL_RenderClear(gRenderer);
-					SDL_Rect* currentClip = &slime_walk_clips[frame / 4];
-					very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-					background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+					SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
 					slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
-					//Update screen
-					SDL_RenderPresent(gRenderer);
-					//Go to next frame
-					SDL_Delay(delta_x);
-					++frame;
-					//Cycle animation
-					if (frame / 4 >= walking_frames)
+					++frame_walk;
+					if (frame_walk / 4 >= walking_frames)
 					{
-						frame = 0;
+						frame_walk = 0;
 					}
-				}
-				else if (currentKeyStates[SDL_SCANCODE_UP])
-				{
-					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-					SDL_RenderClear(gRenderer);
-					//Render current frame
-					SDL_Rect* currentClip = &slime_stand_clips[frame / 6];
-					very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-					background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
-					slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-					//Update screen
-					SDL_RenderPresent(gRenderer);
-					//Go to next frame
-					SDL_Delay(12);
-					++frame;
-					//Cycle animation
-					if (frame / 6 >= standing_frames)
-					{
-						frame = 0;
-					}
-					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-					SDL_RenderClear(gRenderer);
-				}
-				else if (currentKeyStates[SDL_SCANCODE_DOWN])
-				{
-					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-					SDL_RenderClear(gRenderer);
-					//Render current frame
-					SDL_Rect* currentClip = &slime_stand_clips[frame / 6];
-					very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-					background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
-					slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-					//Update screen
-					SDL_RenderPresent(gRenderer);
-					//Go to next frame
-					SDL_Delay(12);
-					++frame;
-					//Cycle animation
-					if (frame / 6 >= standing_frames)
-					{
-						frame = 0;
-					}
-					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-					SDL_RenderClear(gRenderer);
 				}
 				else
 				{
-					//Clear screen
-					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-					SDL_RenderClear(gRenderer);
-					SDL_Rect* currentClip = &slime_stand_clips[frame / 6];
-					very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-					background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+					SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
 					slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-					//Update screen
-					SDL_RenderPresent(gRenderer);
-					//Go to next frame
-					SDL_Delay(12);
-					++frame;
-					//Cycle animation
-					if (frame / 6 >= standing_frames)
+					++frame_stand;
+					if (frame_stand / 6 >= standing_frames)
 					{
-						frame = 0;
+						frame_stand = 0;
 					}
-					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-					SDL_RenderClear(gRenderer);
 				}
+				//更新渲染器，渲染当前材质
+				SDL_RenderPresent(gRenderer);
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+				SDL_RenderClear(gRenderer);
+				SDL_Delay(12);
 			}
 		}
 	}
-
-	//Free resources and close SDL
+	//释放资源并结束SDL
 	close();
+}
+
+Uint32 callback(Uint32 interval, void* param)
+{
+	static int frame_walk = 0;
+	static int frame_stand = 0;
+	dot.move(wall);
+	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(gRenderer);
+
+	/*以下是一次渲染包含的材质*/
+
+	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
+	background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+
+	if (dot.mVelX > 0)
+	{
+		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
+		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
+		++frame_walk;
+		if (frame_walk / 4 >= walking_frames)
+		{
+			frame_walk = 0;
+		}
+
+	}
+	else if (dot.mVelX < 0)
+	{
+		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
+		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
+		++frame_walk;
+		if (frame_walk / 4 >= walking_frames)
+		{
+			frame_walk = 0;
+		}
+	}
+	else
+	{
+		SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
+		slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
+		++frame_stand;
+		if (frame_stand / 6 >= standing_frames)
+		{
+			frame_stand = 0;
+		}
+	}
+	//更新渲染器，渲染当前材质
+	SDL_RenderPresent(gRenderer);
+	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(gRenderer);
+	SDL_TimerID timerID1 = SDL_AddTimer(20, callback, (void*)"ad");
+	return 0;
 }
 
 int main(int argc, char* args[])
 {
-	//Main loop flag
-	bool quit = false;
-
-	//Event handler
-	//SDL_Event e;
-
-	//The dot that will be moving around on the screen
-	
-	slime_move();
-
-	return 0;
+	if (!init())
+	{
+		printf("Failed to initialize!\n");
+	}
+	else
+	{
+		//载入媒体
+		if (!loadMedia())
+		{
+			printf("Failed to load media!\n");
+		}
+		else
+		{
+			bool quit = false;
+			int velocity = 3;
+			SDL_Event e;
+			wall.x = 0;
+			wall.y = 290;
+			wall.w = 1000;
+			wall.h = 400;
+			//初始化渲染时钟
+			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
+			while (!quit)
+			{
+				while (SDL_PollEvent(&e) != 0)
+				{
+					//User requests quit
+					if (e.type == SDL_QUIT)
+					{
+						quit = true;
+					}
+					dot.handleEvent(e);
+				}
+			}
+			return 0;
+		}
+	}
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
-
-
-
+/*********************************************************/
