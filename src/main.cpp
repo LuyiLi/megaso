@@ -4,12 +4,12 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include <string>
-#include "dot.h"
+#include "Player.h"
 #include "LTtexture.h"
 #include "settings.h"
 
 //碰撞点设置
-Dot dot;
+Player player;
 //碰撞墙面设置
 SDL_Rect wall;
 bool quit = false;
@@ -36,7 +36,7 @@ LTexture background_texture;
 SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
 /*碰撞点材质*/
-LTexture gDotTexture;
+LTexture gPlayerTexture;
 
 bool init()
 {
@@ -203,105 +203,11 @@ void close()
 	SDL_Quit();
 }
 
-void update()
-{
-	if (!init())
-	{
-		printf("Failed to initialize!\n");
-	}
-	else
-	{
-		//载入媒体
-		if (!loadMedia())
-		{
-			printf("Failed to load media!\n");
-		}
-		else
-		{
-			Dot dot;
-			//碰撞墙面设置
-			SDL_Rect wall;
-			wall.x = 0;
-			wall.y = 290;
-			wall.w = 1000;
-			wall.h = 400;
-			bool quit = false;
-			SDL_Event e;
-			int frame_walk = 0;
-			int frame_stand = 0;
-			int delta_x = 0, delta_y = 0;
-			int velocity = 3;
-			delta_x = 40 / velocity;
-			delta_y = velocity;
-			//主循环入口
-			while (!quit)
-			{
-				while (SDL_PollEvent(&e) != 0)
-				{
-					//User requests quit
-					if (e.type == SDL_QUIT)
-					{
-						quit = true;
-					}
-					dot.handleEvent(e);
-				}
-				dot.move(wall);
-				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-				SDL_RenderClear(gRenderer);
-
-				/*以下是一次渲染包含的材质*/
-
-				very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-				background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
-
-				if (dot.mVelX > 0)
-				{
-					SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-					slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-					++frame_walk;
-					if (frame_walk / 4 >= walking_frames)
-					{
-						frame_walk = 0;
-					}
-
-				}
-				else if (dot.mVelX < 0)
-				{
-					SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-					slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
-					++frame_walk;
-					if (frame_walk / 4 >= walking_frames)
-					{
-						frame_walk = 0;
-					}
-				}
-				else
-				{
-					SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-					slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-					++frame_stand;
-					if (frame_stand / 6 >= standing_frames)
-					{
-						frame_stand = 0;
-					}
-				}
-				//更新渲染器，渲染当前材质
-				SDL_RenderPresent(gRenderer);
-				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-				SDL_RenderClear(gRenderer);
-				SDL_Delay(12);
-			}
-		}
-	}
-	//释放资源并结束SDL
-	close();
-}
-
 Uint32 callback(Uint32 interval, void* param)
 {
 	static int frame_walk = 0;
 	static int frame_stand = 0;
-	dot.move(wall);
+	player.move(wall);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
 
@@ -310,7 +216,7 @@ Uint32 callback(Uint32 interval, void* param)
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
 	background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
 
-	if (dot.mVelX > 0)
+	if (player.mVelX > 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
 		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
@@ -321,7 +227,7 @@ Uint32 callback(Uint32 interval, void* param)
 		}
 
 	}
-	else if (dot.mVelX < 0)
+	else if (player.mVelX < 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
 		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
@@ -342,6 +248,9 @@ Uint32 callback(Uint32 interval, void* param)
 		}
 	}
 	//更新渲染器，渲染当前材质
+	SDL_RenderFillRect(gRenderer, &wall);
+	SDL_Rect playerRec;
+	SDL_RenderDrawRect(gRenderer, &player.mCollider);
 	SDL_RenderPresent(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
@@ -368,7 +277,7 @@ int main(int argc, char* args[])
 			int velocity = 3;
 			SDL_Event e;
 			wall.x = 0;
-			wall.y = 290;
+			wall.y = 350;
 			wall.w = 1000;
 			wall.h = 400;
 			//初始化渲染时钟
@@ -382,8 +291,9 @@ int main(int argc, char* args[])
 					{
 						quit = true;
 					}
-					dot.handleEvent(e);
+					player.handleEvent(e);
 				}
+				//SDL_Delay(10);
 			}
 			return 0;
 		}

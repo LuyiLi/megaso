@@ -167,7 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="inc\dot.h" />
+    <ClInclude Include="inc\Player.h" />
     <ClInclude Include="inc\pch.h" />
     <ClInclude Include="inc\item.h" />
     <ClInclude Include="inc\global.h" />
@@ -175,7 +175,7 @@
     <ClInclude Include="inc\settings.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\dot.cpp" />
+    <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\item.cpp" />
     <ClCompile Include="src\LTexture.cpp" />
     <ClCompile Include="src\main.cpp" />
