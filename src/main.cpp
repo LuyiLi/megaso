@@ -33,13 +33,14 @@ LTexture very_behind_background_texture;
 /*碰撞点材质*/
 LTexture gDotTexture;
 
+
 bool init()
 {
 	//Initialization flag
 	bool success = true;
 
 	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
 	{
 		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
 		success = false;
@@ -198,7 +199,7 @@ void close()
 	SDL_Quit();
 }
 
-void slime_move()
+void update()
 {
 	if (!init())
 	{
@@ -222,7 +223,12 @@ void slime_move()
 			wall.h = 400;
 			bool quit = false;
 			SDL_Event e;
-			int frame = 0;
+			int frame_walk = 0;
+			int frame_stand = 0;
+			int delta_x = 0, delta_y = 0;
+			int velocity = 3;
+			delta_x = 40 / velocity;
+			delta_y = velocity;
 			//主循环入口
 			while (!quit)
 			{
@@ -235,136 +241,71 @@ void slime_move()
 					}
 					dot.handleEvent(e);
 				}
-				
 				dot.move(wall);
-				int delta_x = 0, delta_y = 0;
-				int velocity = 3;
-				delta_x = 40 / velocity;
-				delta_y = velocity;
-				const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
-				if (currentKeyStates[SDL_SCANCODE_RIGHT])
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+				SDL_RenderClear(gRenderer);
+
+				/*以下是一次渲染包含的材质*/
+
+				very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
+				background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+
+				if (dot.mVelX > 0)
 				{
-					SDL_Rect* currentClip = &slime_walk_clips[frame / 4];
-					SDL_RenderClear(gRenderer);
-					very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-					background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+					SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
 					slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-					//Update screen
-					SDL_RenderPresent(gRenderer);
-					//Go to next frame
-					SDL_Delay(delta_x);
-					++frame;
-					//Cycle animation
-					if (frame / 4 >= walking_frames)
+					++frame_walk;
+					if (frame_walk / 4 >= walking_frames)
 					{
-						frame = 0;
+						frame_walk = 0;
 					}
 
 				}
-				else if (currentKeyStates[SDL_SCANCODE_LEFT])
+				else if (dot.mVelX < 0)
 				{
-					SDL_RenderClear(gRenderer);
-					SDL_Rect* currentClip = &slime_walk_clips[frame / 4];
-					very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-					background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+					SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
 					slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
-					//Update screen
-					SDL_RenderPresent(gRenderer);
-					//Go to next frame
-					SDL_Delay(delta_x);
-					++frame;
-					//Cycle animation
-					if (frame / 4 >= walking_frames)
+					++frame_walk;
+					if (frame_walk / 4 >= walking_frames)
 					{
-						frame = 0;
+						frame_walk = 0;
 					}
-				}
-				else if (currentKeyStates[SDL_SCANCODE_UP])
-				{
-					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-					SDL_RenderClear(gRenderer);
-					//Render current frame
-					SDL_Rect* currentClip = &slime_stand_clips[frame / 6];
-					very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-					background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
-					slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-					//Update screen
-					SDL_RenderPresent(gRenderer);
-					//Go to next frame
-					SDL_Delay(12);
-					++frame;
-					//Cycle animation
-					if (frame / 6 >= standing_frames)
-					{
-						frame = 0;
-					}
-					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-					SDL_RenderClear(gRenderer);
-				}
-				else if (currentKeyStates[SDL_SCANCODE_DOWN])
-				{
-					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-					SDL_RenderClear(gRenderer);
-					//Render current frame
-					SDL_Rect* currentClip = &slime_stand_clips[frame / 6];
-					very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-					background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
-					slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-					//Update screen
-					SDL_RenderPresent(gRenderer);
-					//Go to next frame
-					SDL_Delay(12);
-					++frame;
-					//Cycle animation
-					if (frame / 6 >= standing_frames)
-					{
-						frame = 0;
-					}
-					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-					SDL_RenderClear(gRenderer);
 				}
 				else
 				{
-					//Clear screen
-					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-					SDL_RenderClear(gRenderer);
-					SDL_Rect* currentClip = &slime_stand_clips[frame / 6];
-					very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-					background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+					SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
 					slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-					//Update screen
-					SDL_RenderPresent(gRenderer);
-					//Go to next frame
-					SDL_Delay(12);
-					++frame;
-					//Cycle animation
-					if (frame / 6 >= standing_frames)
+					++frame_stand;
+					if (frame_stand / 6 >= standing_frames)
 					{
-						frame = 0;
+						frame_stand = 0;
 					}
-					SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-					SDL_RenderClear(gRenderer);
 				}
+				//更新渲染器，渲染当前材质
+				SDL_RenderPresent(gRenderer);
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+				SDL_RenderClear(gRenderer);
+				SDL_Delay(12);
 			}
 		}
 	}
-
-	//Free resources and close SDL
+	//释放资源并结束SDL
 	close();
+}
+
+Uint32 callback(Uint32 interval, void* param)
+{
+	printf("1sdfghb");
+	SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
+	return 0;
 }
 
 int main(int argc, char* args[])
 {
-	//Main loop flag
+	SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
 	bool quit = false;
-
-	//Event handler
-	//SDL_Event e;
-
-	//The dot that will be moving around on the screen
-	
-	slime_move();
-
+	update();
+	SDL_RemoveTimer(timerID1);
 	return 0;
 }
 
