@@ -14,7 +14,6 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
 
 # Fortran module files
 *.mod
@@ -24,9 +23,19 @@
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.exe
 *.out
 *.app
+
+# Visual Studio Generated Files
+*.vcxproj.user
+*.aps
+.vs
+*.sln
+Release
+Debug
+
+#Github Files
+.github
