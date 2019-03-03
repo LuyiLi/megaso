@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string>
 #include "Player.h"
-#include "LTtexture.h"
+#include "LTexture.h"
 #include "settings.h"
 
 //碰撞点设置
@@ -248,7 +248,7 @@ Uint32 callback(Uint32 interval, void* param)
 		}
 	}
 	//更新渲染器，渲染当前材质
-	SDL_RenderFillRect(gRenderer, &wall);
+	SDL_RenderDrawRect(gRenderer, &wall);
 	SDL_Rect playerRec;
 	SDL_RenderDrawRect(gRenderer, &player.mCollider);
 	SDL_RenderPresent(gRenderer);

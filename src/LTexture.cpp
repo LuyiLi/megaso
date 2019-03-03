@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "LTtexture.h"
+#include "LTexture.h"
 #include <stdio.h>
 #include <iostream>
 #include <SDL.h>

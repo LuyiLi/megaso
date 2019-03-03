@@ -41,13 +41,13 @@
     <ClInclude Include="inc\global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\LTtexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="inc\settings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inc\Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\LTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
