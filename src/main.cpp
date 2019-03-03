@@ -8,11 +8,11 @@
 #include "LTtexture.h"
 #include "settings.h"
 
+//碰撞点设置
 Dot dot;
 //碰撞墙面设置
 SDL_Rect wall;
 bool quit = false;
-
 //SDL初始化函数声明
 bool init();
 bool loadMedia();
@@ -37,7 +37,6 @@ SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
 /*碰撞点材质*/
 LTexture gDotTexture;
-
 
 bool init()
 {
@@ -365,8 +364,6 @@ int main(int argc, char* args[])
 		}
 		else
 		{
-
-
 			bool quit = false;
 			int velocity = 3;
 			SDL_Event e;
@@ -374,6 +371,7 @@ int main(int argc, char* args[])
 			wall.y = 290;
 			wall.w = 1000;
 			wall.h = 400;
+			//初始化渲染时钟
 			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
 			while (!quit)
 			{
@@ -391,17 +389,4 @@ int main(int argc, char* args[])
 		}
 	}
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
-
-
-
+/*********************************************************/
