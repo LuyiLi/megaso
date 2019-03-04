@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string>
 #include "Player.h"
-#include "LTexture.h"
+
 #include "settings.h"
 
 //碰撞点设置
@@ -21,14 +21,7 @@ void close();
 SDL_Renderer* gRenderer = NULL;
 //窗口设定
 SDL_Window* gWindow = NULL;
-/*站立状态图像切片*/
-const int standing_frames = 6;
-SDL_Rect slime_stand_clips[standing_frames];
-LTexture slime_standing_texture;
-/*行走状态图像切片*/
-const int walking_frames = 4;
-SDL_Rect slime_walk_clips[walking_frames];
-LTexture slime_walking_texture;
+
 /*地面图像切片*/
 SDL_Rect background_clips[1];
 LTexture background_texture;
@@ -115,73 +108,9 @@ bool loadMedia()
 		background_clips[0].w = 2048;
 		background_clips[0].h = 208;
 	}
-
-	if (!slime_walking_texture.loadFromFile("images/slime_walk.png"))
+	if (!player.initPlayerTexture())
 	{
-		printf("Failed to load walking animation texture!\n");
 		success = false;
-	}
-	else
-	{
-		//Set sprite clips
-		slime_walk_clips[0].x = 0;
-		slime_walk_clips[0].y = 0;
-		slime_walk_clips[0].w = 416;
-		slime_walk_clips[0].h = 304;
-
-		slime_walk_clips[1].x = 416;
-		slime_walk_clips[1].y = 0;
-		slime_walk_clips[1].w = 416;
-		slime_walk_clips[1].h = 304;
-
-		slime_walk_clips[2].x = 832;
-		slime_walk_clips[2].y = 0;
-		slime_walk_clips[2].w = 416;
-		slime_walk_clips[2].h = 304;
-
-		slime_walk_clips[3].x = 1248;
-		slime_walk_clips[3].y = 0;
-		slime_walk_clips[3].w = 416;
-		slime_walk_clips[3].h = 304;
-	}
-	//Load sprite sheet texture
-	if (!slime_standing_texture.loadFromFile("images/slime_stand.png"))
-	{
-		printf("Failed to load walking animation texture!\n");
-		success = false;
-	}
-	else
-	{
-		//Set sprite clips
-		slime_stand_clips[0].x = 0;
-		slime_stand_clips[0].y = 0;
-		slime_stand_clips[0].w = 416;
-		slime_stand_clips[0].h = 304;
-
-		slime_stand_clips[1].x = 416;
-		slime_stand_clips[1].y = 0;
-		slime_stand_clips[1].w = 416;
-		slime_stand_clips[1].h = 304;
-
-		slime_stand_clips[2].x = 832;
-		slime_stand_clips[2].y = 0;
-		slime_stand_clips[2].w = 416;
-		slime_stand_clips[2].h = 304;
-
-		slime_stand_clips[3].x = 1248;
-		slime_stand_clips[3].y = 0;
-		slime_stand_clips[3].w = 416;
-		slime_stand_clips[3].h = 304;
-
-		slime_stand_clips[4].x = 1664;
-		slime_stand_clips[4].y = 0;
-		slime_stand_clips[4].w = 416;
-		slime_stand_clips[4].h = 304;
-
-		slime_stand_clips[5].x = 2080;
-		slime_stand_clips[5].y = 0;
-		slime_stand_clips[5].w = 416;
-		slime_stand_clips[5].h = 304;
 	}
 	return success;
 }
@@ -189,8 +118,8 @@ bool loadMedia()
 void close()
 {
 	//Free loaded images
-	slime_standing_texture.free();
-	slime_walking_texture.free();
+	//slime_standing_texture.free();
+	//slime_walking_texture.free();
 
 	//Destroy window	
 	SDL_DestroyRenderer(gRenderer);
@@ -205,8 +134,7 @@ void close()
 
 Uint32 callback(Uint32 interval, void* param)
 {
-	static int frame_walk = 0;
-	static int frame_stand = 0;
+	
 	player.move(wall);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
@@ -216,40 +144,11 @@ Uint32 callback(Uint32 interval, void* param)
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
 	background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
 
-	if (player.mVelX > 0)
-	{
-		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-		++frame_walk;
-		if (frame_walk / 4 >= walking_frames)
-		{
-			frame_walk = 0;
-		}
+	player.moveAction();
 
-	}
-	else if (player.mVelX < 0)
-	{
-		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
-		++frame_walk;
-		if (frame_walk / 4 >= walking_frames)
-		{
-			frame_walk = 0;
-		}
-	}
-	else
-	{
-		SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-		slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-		++frame_stand;
-		if (frame_stand / 6 >= standing_frames)
-		{
-			frame_stand = 0;
-		}
-	}
+	
 	//更新渲染器，渲染当前材质
 	SDL_RenderDrawRect(gRenderer, &wall);
-	SDL_Rect playerRec;
 	SDL_RenderDrawRect(gRenderer, &player.mCollider);
 	SDL_RenderPresent(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -274,12 +173,11 @@ int main(int argc, char* args[])
 		else
 		{
 			bool quit = false;
-			int velocity = 3;
 			SDL_Event e;
-			wall.x = -1000;
+			wall.x = 0;
 			wall.y = 400;
-			wall.w = 10000;
-			wall.h = 400;
+			wall.w = 900;
+			wall.h = 100;
 			//初始化渲染时钟
 			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
 			while (!quit)
