@@ -41,6 +41,7 @@ public:
 	int getVelX();
 	int getVelY();
 
+	bool canJump;
 	//The velocity of the Player
 	int mVelX, mVelY;
 

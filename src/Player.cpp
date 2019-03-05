@@ -37,9 +37,9 @@ void Player::handleEvent(SDL_Event& e)
 		switch (e.key.keysym.sym)
 		{
 		case SDLK_UP:
-			if (checkCollision(this, wall))
+			if (canJump)
 			{
-				mVelY = -20;
+				mVelY = -21;
 			}
 			break;
 		case SDLK_LEFT: acceleration --; break;
@@ -77,6 +77,7 @@ void Player::move(SDL_Rect& wall)
 	if (!checkCollision(this, wall))
 	{
 		mVelY += g;
+		canJump = false;
 	}
 	//Move the Player up or down
 	posY += mVelY;
@@ -88,6 +89,7 @@ void Player::move(SDL_Rect& wall)
 		//Move back
 		posY -= mVelY;
 		mVelY = 0;
+		canJump = true;
 		mCollider.y = posY;
 	}
 
