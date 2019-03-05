@@ -29,7 +29,7 @@ public:
 	//Moves the Player and checks collision
 	void move(SDL_Rect& wall);
 
-	void moveAction();
+	void moveAction(int, int);
 	bool initPlayerTexture();
 
 	//Shows the Player on the screen

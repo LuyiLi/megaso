@@ -5,11 +5,13 @@
 #include <stdio.h>
 #include <string>
 #include "Player.h"
-
+#include "Camera.h"
 #include "settings.h"
 
 //碰撞点设置
 Player player;
+
+Camera cam;
 //碰撞墙面设置
 SDL_Rect wall;
 bool quit = false;
@@ -134,7 +136,8 @@ void close()
 
 Uint32 callback(Uint32 interval, void* param)
 {
-	
+	int deltaX = cam.countCompensateX(SCREEN_WIDTH, pos_x);
+	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, pos_y);
 	player.move(wall);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
@@ -142,9 +145,9 @@ Uint32 callback(Uint32 interval, void* param)
 	/*以下是一次渲染包含的材质*/
 
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-	background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+	background_texture.render(deltaX, 400+deltaY, background_clips, 0, NULL, SDL_FLIP_NONE);
 
-	player.moveAction();
+	player.moveAction(deltaX,deltaY);
 
 	
 	//更新渲染器，渲染当前材质
