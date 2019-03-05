@@ -10,7 +10,15 @@
 
 extern SDL_Renderer* gRenderer;
 
-bool checkCollision(SDL_Rect a, SDL_Rect b)
+enum CollisionType
+{
+	COLLISION_TOP = 1,
+	COLLISION_SIDE = 2,
+	COLLISION_NONE = 0,
+	COLLISION_ERROR = -1
+};
+
+bool intersect(SDL_Rect a, SDL_Rect b)
 {
 	//The sides of the rectangles
 	int leftA, leftB;
@@ -31,30 +39,25 @@ bool checkCollision(SDL_Rect a, SDL_Rect b)
 	bottomB = b.y + b.h;
 
 	//If any of the sides from A are outside of B
-	if (bottomA <= topB)
-	{
+	if (bottomA <= topB || topA >= bottomB || rightA <= leftB || leftA >= rightB)
 		return false;
-	}
-
-	if (topA >= bottomB)
-	{
-		return false;
-	}
-
-	if (rightA <= leftB)
-	{
-		return false;
-	}
-
-	if (leftA >= rightB)
-	{
-		return false;
-	}
-
 	//If none of the sides from A are outside B
 	return true;
 }
 
+CollisionType checkCollision(Player *player, SDL_Rect rectB)
+{
+	int mVelX, mVelY;
+
+	//Calculate the sides of rect A
+	SDL_Rect rectA = player->mCollider;
+
+	//Check if there is collison from the side
+	if (!intersect(rectA, rectB))
+		return COLLISION_NONE;
+	else
+		return COLLISION_SIDE;
+}
 SDL_Texture* loadTexture(std::string path)
 {
 	//The final texture

@@ -36,13 +36,13 @@ void Player::handleEvent(SDL_Event& e)
 		switch (e.key.keysym.sym)
 		{
 		case SDLK_UP:
-			if (checkCollision(mCollider, wall))
+			if (checkCollision(this, wall))
 			{
 				mVelY = -20;
 			}
 			break;
-		case SDLK_LEFT: mVelX -= Player_VEL; break;
-		case SDLK_RIGHT: mVelX += Player_VEL; break;
+		case SDLK_LEFT: acceleration --; break;
+		case SDLK_RIGHT: acceleration ++; break;
 		}
 	}
 	//If a key was released
@@ -51,8 +51,8 @@ void Player::handleEvent(SDL_Event& e)
 		//Adjust the velocity
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_LEFT: mVelX = 0; break;
-		case SDLK_RIGHT: mVelX = 0; break;
+		case SDLK_LEFT: mVelX = 0; acceleration++; break;
+		case SDLK_RIGHT: mVelX = 0; acceleration--;  break;
 		}
 	}
 }
@@ -60,27 +60,29 @@ void Player::handleEvent(SDL_Event& e)
 void Player::move(SDL_Rect& wall)
 {
 	//Move the Player left or right
-	posX += mVelX;
-	mCollider.x = posX+19;
-	if (!checkCollision(mCollider, wall))
+	if(!checkCollision(this, wall) && abs(mVelX) < Player_VEL)
+		mVelX += acceleration;
+
+	mCollider.x += mVelX;
+	posX = mCollider.x - 19;
+	
+	if (checkCollision(this, wall) == COLLISION_SIDE)
+	{
+		//Move back
+		mCollider.x-= mVelX;
+		mVelX = 0;
+		posX = mCollider.x - 19;
+	}
+	if (!checkCollision(this, wall))
 	{
 		mVelY += g;
 	}
-
-	if (checkCollision(mCollider, wall))
-	{
-		//Move back
-		posX -= mVelX;
-		mVelX = 0;
-		mCollider.x = posX;
-	}
-
 	//Move the Player up or down
 	posY += mVelY;
 	mCollider.y = posY;
 
 	//If the Player collided or went too far up or down
-	if ((posY < 0) || (posY + Player_HEIGHT > SCREEN_HEIGHT) || checkCollision(mCollider, wall))
+	if ((posY < 0) || (posY + Player_HEIGHT > SCREEN_HEIGHT) || checkCollision(this, wall) == COLLISION_SIDE)
 	{
 		//Move back
 		posY -= mVelY;
@@ -104,7 +106,7 @@ void Player::moveAction()
 	
 	static int frame_walk = 0;
 	static int frame_stand = 0;
-	if (mVelX > 0)
+	if (acceleration > 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
 		slime_walking_texture.render((posX), (posY), currentClip, 0, NULL, SDL_FLIP_NONE);
@@ -115,7 +117,7 @@ void Player::moveAction()
 		}
 
 	}
-	else if (mVelX < 0)
+	else if (acceleration < 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
 		slime_walking_texture.render((posX), (posY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
@@ -216,4 +218,14 @@ int Player::getPosX()
 int Player::getPosY()
 {
 	return posY;
+}
+
+int Player::getVelX()
+{
+	return mVelX;
+}
+
+int Player :: getVelY()
+{
+	return mVelY;
 }

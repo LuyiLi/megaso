@@ -15,6 +15,8 @@ public:
 	int posX;
 	int posY;
 
+	int acceleration;
+
 	//Maximum axis velocity of the Player
 	static const int Player_VEL = 5;
 
@@ -35,6 +37,9 @@ public:
 
 	int getPosX();
 	int getPosY();
+
+	int getVelX();
+	int getVelY();
 
 	//The velocity of the Player
 	int mVelX, mVelY;

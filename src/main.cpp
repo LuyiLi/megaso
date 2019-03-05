@@ -176,7 +176,7 @@ int main(int argc, char* args[])
 			SDL_Event e;
 			wall.x = 0;
 			wall.y = 400;
-			wall.w = 900;
+			wall.w = 400;
 			wall.h = 100;
 			//≥ı ºªØ‰÷»æ ±÷”
 			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
