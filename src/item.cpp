@@ -1,12 +1,12 @@
 #include "pch.h"
-#include "item.h"
+#include "Item.h"
 
 
-item::item()
+Item::Item()
 {
 }
 
 
-item::~item()
+Item::~Item()
 {
 }

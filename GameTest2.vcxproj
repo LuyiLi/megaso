@@ -167,14 +167,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="inc\Camera.h" />
     <ClInclude Include="inc\Player.h" />
     <ClInclude Include="inc\pch.h" />
     <ClInclude Include="inc\item.h" />
     <ClInclude Include="inc\global.h" />
     <ClInclude Include="inc\LTexture.h" />
     <ClInclude Include="inc\settings.h" />
+    <ClInclude Include="inc\SavingControl.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\SavingControl.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\item.cpp" />
     <ClCompile Include="src\LTexture.cpp" />

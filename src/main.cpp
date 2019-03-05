@@ -5,37 +5,60 @@
 #include <stdio.h>
 #include <string>
 #include "Player.h"
-
+#include "Camera.h"
 #include "settings.h"
+#include "SavingControl.h"
 
-//碰撞点设置
+//玩家设置
 Player player;
+
+//相机设置
+Camera cam;
+
 //碰撞墙面设置
 SDL_Rect wall;
+
+//存档控制器设置
+SavingControl savingControler;
+
+//状态为未退出
 bool quit = false;
+
 //SDL初始化函数声明
 bool init();
+
+//媒体加载函数声明
 bool loadMedia();
+
+//程序退出函数声明
 void close();
+
 //渲染器设定
 SDL_Renderer* gRenderer = NULL;
+
 //窗口设定
 SDL_Window* gWindow = NULL;
 
 /*地面图像切片*/
 SDL_Rect background_clips[1];
 LTexture background_texture;
+
 /*背景图像切片*/
 SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
+
 /*碰撞点材质*/
 LTexture gPlayerTexture;
+
+int target[2333] = {0};
 
 bool init()
 {
 	//Initialization flag
 	bool success = true;
-
+	savingControler.fileRead(target);
+	player.mCollider.x = target[0];
+	player.mCollider.y = target[1];
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
 	{
@@ -117,6 +140,10 @@ bool loadMedia()
 
 void close()
 {
+	int data[2333] = {0};
+	data[0] = player.mCollider.x;
+	data[1] = player.mCollider.y;
+	savingControler.fileWrite(data);
 	//Free loaded images
 	//slime_standing_texture.free();
 	//slime_walking_texture.free();
@@ -134,7 +161,8 @@ void close()
 
 Uint32 callback(Uint32 interval, void* param)
 {
-	
+	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
+	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 	player.move(wall);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
@@ -142,9 +170,9 @@ Uint32 callback(Uint32 interval, void* param)
 	/*以下是一次渲染包含的材质*/
 
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-	background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+	background_texture.render(deltaX, 400+deltaY, background_clips, 0, NULL, SDL_FLIP_NONE);
 
-	player.moveAction();
+	player.moveAction(deltaX,deltaY);
 
 	
 	//更新渲染器，渲染当前材质
@@ -176,7 +204,7 @@ int main(int argc, char* args[])
 			SDL_Event e;
 			wall.x = 0;
 			wall.y = 400;
-			wall.w = 900;
+			wall.w = 400;
 			wall.h = 100;
 			//初始化渲染时钟
 			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
@@ -188,6 +216,7 @@ int main(int argc, char* args[])
 					if (e.type == SDL_QUIT)
 					{
 						quit = true;
+						close();
 					}
 					player.handleEvent(e);
 				}

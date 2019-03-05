@@ -1,12 +1,17 @@
 #pragma once
-#include <string>
-class item
+enum ItemType
+{
+	ITEM_NULL = 0,
+	ITEM_BLOCK = 1
+};
+
+
+class Item
 {
 public:
-	item();
-	~item();
-protected:
-	int ID = 0;
-	std::string a;
+	Item();
+	~Item();
+	int ID;
+	ItemType itemType;
 };
 
