@@ -5,6 +5,7 @@
 #include <string>
 #include "Player.h"
 #include "global.h"
+#include "Camera.h"
 
 extern int pos_x;
 extern int pos_y;
@@ -102,7 +103,7 @@ void Player::render(int camX, int camY)
 }
 */
 
-void Player::moveAction()
+void Player::moveAction(int deltaX, int deltaY)
 {
 	
 	static int frame_walk = 0;
@@ -110,7 +111,7 @@ void Player::moveAction()
 	if (mVelX > 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
+		slime_walking_texture.render((pos_x+deltaX), (pos_y+deltaY), currentClip, 0, NULL, SDL_FLIP_NONE);
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -121,7 +122,7 @@ void Player::moveAction()
 	else if (mVelX < 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
+		slime_walking_texture.render((pos_x + deltaX), (pos_y + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -131,7 +132,7 @@ void Player::moveAction()
 	else
 	{
 		SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-		slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
+		slime_standing_texture.render((pos_x + deltaX), (pos_y + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE);
 		++frame_stand;
 		if (frame_stand / 6 >= 6)
 		{
