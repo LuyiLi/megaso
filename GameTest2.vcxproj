@@ -167,7 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
+    <ClInclude Include="inc\Camera.h" />
     <ClInclude Include="inc\Player.h" />
     <ClInclude Include="inc\pch.h" />
     <ClInclude Include="inc\item.h" />
@@ -177,7 +177,7 @@
     <ClInclude Include="inc\SavingControl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\SavingControl.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\item.cpp" />
