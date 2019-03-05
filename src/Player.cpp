@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "global.h"
 #include "Camera.h"
+#include "SavingControl.h"
 
 Player::Player()
 {
@@ -79,16 +80,16 @@ void Player::move(SDL_Rect& wall)
 		mVelY += g;
 	}
 	//Move the Player up or down
-	posY += mVelY;
-	mCollider.y = posY;
+	mCollider.y += mVelY;
+	posY = mCollider.y;
 
 	//If the Player collided or went too far up or down
 	if ((posY < 0) || (posY + Player_HEIGHT > SCREEN_HEIGHT) || checkCollision(this, wall) == COLLISION_SIDE)
 	{
 		//Move back
-		posY -= mVelY;
+		mCollider.y -= mVelY;
 		mVelY = 0;
-		mCollider.y = posY;
+		posY = mCollider.y;
 	}
 
 }

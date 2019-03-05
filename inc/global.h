@@ -47,8 +47,6 @@ bool intersect(SDL_Rect a, SDL_Rect b)
 
 CollisionType checkCollision(Player *player, SDL_Rect rectB)
 {
-	int mVelX, mVelY;
-
 	//Calculate the sides of rect A
 	SDL_Rect rectA = player->mCollider;
 

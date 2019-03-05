@@ -174,9 +174,11 @@
     <ClInclude Include="inc\global.h" />
     <ClInclude Include="inc\LTexture.h" />
     <ClInclude Include="inc\settings.h" />
+    <ClInclude Include="inc\SavingControl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="src\SavingControl.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\item.cpp" />
     <ClCompile Include="src\LTexture.cpp" />
