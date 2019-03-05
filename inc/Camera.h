@@ -11,5 +11,6 @@ public:
 	int countCompensateX(int, int);
 	int countCompensateY(int, int);
 	~Camera();
+
 };
 

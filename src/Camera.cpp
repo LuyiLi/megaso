@@ -12,17 +12,16 @@ Camera::Camera()
 
 int Camera::countCompensateX(int screenWidth, int posX)
 {
-	int x = screenWidth / 2 - posX;
+	int x = screenWidth / 2 - 104 - posX;
 	return x;
 }
 
 int Camera::countCompensateY(int screenHight, int posY)
 {
-	int y = screenHight / 2 - posY;
+	int y = screenHight / 2 - 76 - posY;
 	return y;
 }
 
 Camera::~Camera()
 {
 }
-
