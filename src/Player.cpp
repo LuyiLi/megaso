@@ -6,14 +6,11 @@
 #include "Player.h"
 #include "global.h"
 
-extern int pos_x;
-extern int pos_y;
-
 Player::Player()
 {
 	//Initialize the offsets
-	//pos_x = 0;
-	//pos_y = 0;
+	//posX = 0;
+	//posY = 0;
 
 	//Set collision box dimension
 	mCollider.w = Player_WIDTH;
@@ -63,8 +60,8 @@ void Player::handleEvent(SDL_Event& e)
 void Player::move(SDL_Rect& wall)
 {
 	//Move the Player left or right
-	pos_x += mVelX;
-	mCollider.x = pos_x+19;
+	posX += mVelX;
+	mCollider.x = posX+19;
 	if (!checkCollision(mCollider, wall))
 	{
 		mVelY += g;
@@ -73,22 +70,22 @@ void Player::move(SDL_Rect& wall)
 	if (checkCollision(mCollider, wall))
 	{
 		//Move back
-		pos_x -= mVelX;
+		posX -= mVelX;
 		mVelX = 0;
-		mCollider.x = pos_x;
+		mCollider.x = posX;
 	}
 
 	//Move the Player up or down
-	pos_y += mVelY;
-	mCollider.y = pos_y;
+	posY += mVelY;
+	mCollider.y = posY;
 
 	//If the Player collided or went too far up or down
-	if ((pos_y < 0) || (pos_y + Player_HEIGHT > SCREEN_HEIGHT) || checkCollision(mCollider, wall))
+	if ((posY < 0) || (posY + Player_HEIGHT > SCREEN_HEIGHT) || checkCollision(mCollider, wall))
 	{
 		//Move back
-		pos_y -= mVelY;
+		posY -= mVelY;
 		mVelY = 0;
-		mCollider.y = pos_y;
+		mCollider.y = posY;
 	}
 
 }
@@ -97,8 +94,8 @@ void Player::move(SDL_Rect& wall)
 void Player::render(int camX, int camY)
 {
 	//Show the dot relative to the camera
-	slime_standing_texture.render(pos_x - camX, pos_y - camY);
-	slime_walking_texture.render(pos_x - camX, pos_y - camY);
+	slime_standing_texture.render(posX - camX, posY - camY);
+	slime_walking_texture.render(posX - camX, posY - camY);
 }
 */
 
@@ -110,7 +107,7 @@ void Player::moveAction()
 	if (mVelX > 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
+		slime_walking_texture.render((posX), (posY), currentClip, 0, NULL, SDL_FLIP_NONE);
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -121,7 +118,7 @@ void Player::moveAction()
 	else if (mVelX < 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
+		slime_walking_texture.render((posX), (posY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -131,7 +128,7 @@ void Player::moveAction()
 	else
 	{
 		SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-		slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
+		slime_standing_texture.render((posX), (posY), currentClip, 0, NULL, SDL_FLIP_NONE);
 		++frame_stand;
 		if (frame_stand / 6 >= 6)
 		{
@@ -213,10 +210,10 @@ bool Player::initPlayerTexture()
 
 int Player::getPosX()
 {
-	return pos_x;
+	return posX;
 }
 
 int Player::getPosY()
 {
-	return pos_y;
+	return posY;
 }

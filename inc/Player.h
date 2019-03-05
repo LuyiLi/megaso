@@ -1,8 +1,5 @@
 #pragma once
 #include "LTexture.h"
-//Åö×²µãÀà
-extern int pos_x;
-extern int pos_y;
 extern const int g;
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
@@ -13,6 +10,10 @@ public:
 	//The dimensions of the Player
 	static const int Player_WIDTH = 170;
 	static const int Player_HEIGHT = 152;
+	
+	//The position of the Player
+	int posX;
+	int posY;
 
 	//Maximum axis velocity of the Player
 	static const int Player_VEL = 5;
