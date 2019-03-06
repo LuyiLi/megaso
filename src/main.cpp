@@ -1,4 +1,4 @@
-//Í·ÎÄ¼ş
+//Í·ï¿½Ä¼ï¿½
 #include "pch.h"
 #include <SDL.h>
 #include <SDL_image.h>
@@ -10,60 +10,60 @@
 #include "SavingControl.h"
 #include "Map.h"
 
-//Íæ¼ÒÉèÖÃ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 Player player;
 
-//Ïà»úÉèÖÃ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 Camera cam;
 
-//Åö×²Ç½ÃæÉèÖÃ
+//ï¿½ï¿½×²Ç½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 SDL_Rect wall;
 
-//´æµµ¿ØÖÆÆ÷ÉèÖÃ
+//ï¿½æµµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 SavingControl savingControler;
 
-//×´Ì¬ÎªÎ´ÍË³ö
+//×´Ì¬ÎªÎ´ï¿½Ë³ï¿½
 bool quit = false;
 
-//SDL³õÊ¼»¯º¯ÊıÉùÃ÷
+//SDLï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 bool init();
 
-//Ã½Ìå¼ÓÔØº¯ÊıÉùÃ÷
+//Ã½ï¿½ï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 bool loadMedia();
 
-//³ÌĞòÍË³öº¯ÊıÉùÃ÷
+//ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void close();
 
-//äÖÈ¾Æ÷Éè¶¨
+//ï¿½ï¿½È¾ï¿½ï¿½ï¿½è¶¨
 SDL_Renderer* gRenderer = NULL;
 
-//´°¿ÚÉè¶¨
+//ï¿½ï¿½ï¿½ï¿½ï¿½è¶¨
 SDL_Window* gWindow = NULL;
 
-/*µØÃæÍ¼ÏñÇĞÆ¬*/
+/*ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Æ¬*/
 SDL_Rect background_clips[1];
 LTexture background_texture;
 
-/*±³¾°Í¼ÏñÇĞÆ¬*/
+/*ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Æ¬*/
 SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
 
-/*Åö×²µã²ÄÖÊ*/
+/*ï¿½ï¿½×²ï¿½ï¿½ï¿½ï¿½ï¿½*/
 LTexture gPlayerTexture;
 
-/*µØÍ¼²ÄÖÊ°ü*/
+/*ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Ê°ï¿½*/
 SDL_Rect mapClips[2];
 LTexture mapTexture;
 
-/*´´½¨Ö÷µØÍ¼*/
-Map mainmap;
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼*/
+Map mainMap;
 
 
 int target[2333] = {0};
 
 bool init()
 {
-	//Éú³É³õÊ¼µØÍ¼
+	//ï¿½ï¿½ï¿½É³ï¿½Ê¼ï¿½ï¿½Í¼
 	if (mainmap.checkIfExist())
 	{
 		mainmap.mapRead();
@@ -193,7 +193,7 @@ Uint32 callback(Uint32 interval, void* param)
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
 
-	/*ÒÔÏÂÊÇÒ»´ÎäÖÈ¾°üº¬µÄ²ÄÖÊ*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½*/
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
 	int absX = 0, absY = 0;
 	for (int i = 0; i < 100; i++)
@@ -201,10 +201,10 @@ Uint32 callback(Uint32 interval, void* param)
 		for (int j = 0; j < 100; j++)
 		{
 			
-			if (mainmap.mapData[i][j])
+			if (mainMap.mapData[i][j])
 			{
 				
-				SDL_Rect* currentClip = &mapClips[mainmap.mapData[i][j]-1];
+				SDL_Rect* currentClip = &mapClips[mainMap.mapData[i][j]-1];
 				mapTexture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE);
 				
 			}
@@ -220,9 +220,7 @@ Uint32 callback(Uint32 interval, void* param)
 	player.moveAction(deltaX,deltaY);
 
 	
-	//¸üĞÂäÖÈ¾Æ÷£¬äÖÈ¾µ±Ç°²ÄÖÊ
-	SDL_RenderDrawRect(gRenderer, &wall);
-	SDL_RenderDrawRect(gRenderer, &player.mCollider);
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½
 	SDL_RenderPresent(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
@@ -238,7 +236,7 @@ int main(int argc, char* args[])
 	}
 	else
 	{
-		//ÔØÈëÃ½Ìå
+		//ï¿½ï¿½ï¿½ï¿½Ã½ï¿½ï¿½
 		if (!loadMedia())
 		{
 			printf("Failed to load media!\n");
@@ -251,7 +249,7 @@ int main(int argc, char* args[])
 			wall.y = 5000;
 			wall.w = 10000;
 			wall.h = 100;
-			//³õÊ¼»¯äÖÈ¾Ê±ÖÓ
+			//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½È¾Ê±ï¿½ï¿½
 			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
 			while (!quit)
 			{

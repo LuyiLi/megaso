@@ -7,6 +7,8 @@
 #include "global.h"
 #include "Camera.h"
 #include "SavingControl.h"
+#include "Map.h"
+extern Map mainMap;
 
 Player::Player()
 {
@@ -23,6 +25,14 @@ Player::Player()
 	mVelX = 0;
 	mVelY = 0;
 	canJump = true;
+
+	for (int i = 0; i < 25; i++)
+	{
+		rectArray[i].x = 0;
+		rectArray[i].y = 0;
+		rectArray[i].w = 100;
+		rectArray[i].h = 100;
+	}
 }
 
 void Player::handleEvent(SDL_Event& e)
@@ -37,6 +47,7 @@ void Player::handleEvent(SDL_Event& e)
 			if (canJump)
 			{
 				mVelY = -21;
+				canJump = false;
 			}
 			break;
 		case SDLK_LEFT: acceleration--; break;
@@ -59,31 +70,27 @@ void Player::move(SDL_Rect& wall)
 {
 	if (!acceleration)
 		mVelX = 0;
-	//Move the Player left or right
-	if (!checkCollision(this, wall) && abs(mVelX) < Player_VEL)
-		mVelX += acceleration;
 
 	mCollider.x += mVelX;
 	posX = mCollider.x - 19;
 
-	if (checkCollision(this, wall) == COLLISION_SIDE)
+	if (checkCollisionX())
 	{
 		//Move back
 		mCollider.x -= mVelX;
 		mVelX = 0;
 		posX = mCollider.x - 19;
 	}
-	if (!checkCollision(this, wall))
-	{
-		mVelY += g;
-		canJump = false;
-	}
+	else if(abs(mVelX) <= Player_VEL)
+		mVelX += acceleration;
+
+	
 	//Move the Player up or down
 	posY += mVelY;
 	mCollider.y = posY;
 
-	//If the Player collided or went too far up or down
-	if ((posY < 0) || checkCollision(this, wall) == COLLISION_SIDE)
+	//If the Player collided
+	if (checkCollisionY())
 	{
 		//Move back
 		posY -= mVelY;
@@ -91,6 +98,68 @@ void Player::move(SDL_Rect& wall)
 		canJump = true;
 		mCollider.y = posY;
 	}
+	else
+	{
+		if (abs(mVelY) < 25)
+			mVelY += g;
+		if (mVelY > 2)
+		canJump = false;
+	}
+	if (blockPosY != posY / 100 || blockPosX != posX / 100)
+	{
+		blockPosX = posX / 100;
+		blockPosY = posY / 100;
+		updateCollisionBox();
+	}
+		
+	
+}
+
+bool Player::checkCollisionX()
+{
+	for (int i = 0; i < 25; i++)
+	{
+		if (rectArray[i].x == 0 && rectArray[i].y == 0)
+			continue;
+		if (intersect(mCollider, rectArray[i]))
+			return true;
+	}
+
+	return false;
+}
+
+bool Player::checkCollisionY()
+{
+	for (int i = 0; i < 25; i++)
+	{
+		if (rectArray[i].x == 0 && rectArray[i].y == 0)
+			continue;
+		if (intersect(mCollider, rectArray[i]))
+			return true;
+	}
+	return false;
+}
+
+void Player::updateCollisionBox()
+{
+	int startBlockX, startBlockY;
+	startBlockX = blockPosY - 2 < 0 ? 0 : blockPosY;
+	startBlockY = blockPosX - 2 < 0 ? 0 : blockPosX;
+
+	for (int i = 0; i<5; i++)
+		for (int j = 0; j < 5; j++)
+		{
+			if (mainMap.mapData[startBlockX + i][startBlockY + j])
+			{
+				rectArray[i + 5 * j].x = 100 * (blockPosX + j);
+				rectArray[i + 5 * j].y = 100 * (blockPosY + i);
+			}
+			else
+			{
+				rectArray[i + 5 * j].x = 0;
+				rectArray[i + 5 * j].y = 0;
+			}
+		}
 
 }
 
