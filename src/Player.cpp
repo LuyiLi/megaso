@@ -22,15 +22,11 @@ Player::Player()
 	//Initialize the velocity
 	mVelX = 0;
 	mVelY = 0;
+	canJump = true;
 }
 
 void Player::handleEvent(SDL_Event& e)
 {
-	SDL_Rect wall;
-	wall.x = 0;
-	wall.y = 260;
-	wall.w = 1000;
-	wall.h = 400;
 	//If a key was pressed
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
 	{
@@ -38,13 +34,13 @@ void Player::handleEvent(SDL_Event& e)
 		switch (e.key.keysym.sym)
 		{
 		case SDLK_UP:
-			if (checkCollision(this, wall))
+			if (canJump)
 			{
-				mVelY = -20;
+				mVelY = -21;
 			}
 			break;
-		case SDLK_LEFT: acceleration --; break;
-		case SDLK_RIGHT: acceleration ++; break;
+		case SDLK_LEFT: acceleration--; break;
+		case SDLK_RIGHT: acceleration++; break;
 		}
 	}
 	//If a key was released
@@ -61,35 +57,39 @@ void Player::handleEvent(SDL_Event& e)
 
 void Player::move(SDL_Rect& wall)
 {
+	if (!acceleration)
+		mVelX = 0;
 	//Move the Player left or right
-	if(!checkCollision(this, wall) && abs(mVelX) < Player_VEL)
+	if (!checkCollision(this, wall) && abs(mVelX) < Player_VEL)
 		mVelX += acceleration;
 
 	mCollider.x += mVelX;
 	posX = mCollider.x - 19;
-	
+
 	if (checkCollision(this, wall) == COLLISION_SIDE)
 	{
 		//Move back
-		mCollider.x-= mVelX;
+		mCollider.x -= mVelX;
 		mVelX = 0;
 		posX = mCollider.x - 19;
 	}
 	if (!checkCollision(this, wall))
 	{
 		mVelY += g;
+		canJump = false;
 	}
 	//Move the Player up or down
-	mCollider.y += mVelY;
-	posY = mCollider.y;
+	posY += mVelY;
+	mCollider.y = posY;
 
 	//If the Player collided or went too far up or down
-	if ((posY < 0) || (posY + Player_HEIGHT > SCREEN_HEIGHT) || checkCollision(this, wall) == COLLISION_SIDE)
+	if ((posY < 0) || checkCollision(this, wall) == COLLISION_SIDE)
 	{
 		//Move back
-		mCollider.y -= mVelY;
+		posY -= mVelY;
 		mVelY = 0;
-		posY = mCollider.y;
+		canJump = true;
+		mCollider.y = posY;
 	}
 
 }
@@ -105,13 +105,13 @@ void Player::render(int camX, int camY)
 
 void Player::moveAction(int deltaX, int deltaY)
 {
-	
+
 	static int frame_walk = 0;
 	static int frame_stand = 0;
 	if (acceleration > 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((posX+deltaX), (posY+deltaY), currentClip, 0, NULL, SDL_FLIP_NONE);
+		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE);
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -140,7 +140,6 @@ void Player::moveAction(int deltaX, int deltaY)
 		}
 	}
 }
-
 bool Player::initPlayerTexture()
 {
 	if (!slime_walking_texture.loadFromFile("images/slime_walk.png"))

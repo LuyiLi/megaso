@@ -15,6 +15,8 @@ public:
 	int posX;
 	int posY;
 
+	bool canJump;
+
 	int acceleration;
 
 	//Maximum axis velocity of the Player

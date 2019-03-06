@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "settings.h"
 #include "SavingControl.h"
+#include "Map.h"
 
 //玩家设置
 Player player;
@@ -50,15 +51,25 @@ LTexture very_behind_background_texture;
 /*碰撞点材质*/
 LTexture gPlayerTexture;
 
+/*地图材质包*/
+SDL_Rect mapClips[2];
+LTexture mapTexture;
+
+/*创建主地图*/
+Map mainmap;
+
+
 int target[2333] = {0};
 
 bool init()
 {
+	//生成初始地图
+	mainmap.generateMap();
 	//Initialization flag
 	bool success = true;
-	savingControler.fileRead(target);
-	player.mCollider.x = target[0];
-	player.mCollider.y = target[1];
+	//savingControler.fileRead(target);
+	player.mCollider.x = 0;
+	player.mCollider.y = 0;
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
 	{
@@ -119,17 +130,21 @@ bool loadMedia()
 		very_behind_background_clips[0].w = 1800;
 		very_behind_background_clips[0].h = 1196;
 	}
+	if (mapTexture.loadFromFile("images/mapTexture.png"))
+	{
+		mapClips[0].x = 0;
+		mapClips[0].y = 0;
+		mapClips[0].w = 200;
+		mapClips[0].h = 200;
+
+		mapClips[1].x = 200;
+		mapClips[1].y = 0;
+		mapClips[1].w = 200;
+		mapClips[1].h = 200;
+	}
 	else
 	{
 		printf("SDL,TQL,WSL");
-	}
-	//Load sprite sheet texture
-	if (background_texture.loadFromFile("images/test_bg.png"))
-	{
-		background_clips[0].x = 0;
-		background_clips[0].y = 0;
-		background_clips[0].w = 2048;
-		background_clips[0].h = 208;
 	}
 	if (!player.initPlayerTexture())
 	{
@@ -168,9 +183,27 @@ Uint32 callback(Uint32 interval, void* param)
 	SDL_RenderClear(gRenderer);
 
 	/*以下是一次渲染包含的材质*/
-
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-	background_texture.render(deltaX, 400+deltaY, background_clips, 0, NULL, SDL_FLIP_NONE);
+	int absX = 0, absY = 0;
+	for (int i = 0; i < 100; i++)
+	{
+		for (int j = 0; j < 100; j++)
+		{
+			
+			if (mainmap.mapData[i][j])
+			{
+				
+				SDL_Rect* currentClip = &mapClips[mainmap.mapData[i][j]-1];
+				mapTexture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE);
+				absY += 100;
+			}
+		}
+		absY = 0;
+		absX += 100;
+	}
+	
+	
+	//background_texture.render(deltaX, 400+deltaY, background_clips, 0, NULL, SDL_FLIP_NONE);
 
 	player.moveAction(deltaX,deltaY);
 
@@ -203,8 +236,8 @@ int main(int argc, char* args[])
 			bool quit = false;
 			SDL_Event e;
 			wall.x = 0;
-			wall.y = 400;
-			wall.w = 400;
+			wall.y = 5000;
+			wall.w = 10000;
 			wall.h = 100;
 			//初始化渲染时钟
 			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
