@@ -64,11 +64,20 @@ int target[2333] = {0};
 bool init()
 {
 	//生成初始地图
-	mainmap.generateMap();
+	if (mainmap.checkIfExist())
+	{
+		mainmap.mapRead();
+	}
+	else
+	{
+		mainmap.generateMap();
+		mainmap.mapRead();
+	}
+	
 	//Initialization flag
 	bool success = true;
 	//savingControler.fileRead(target);
-	player.mCollider.x = 0;
+	player.mCollider.x = 5000;
 	player.mCollider.y = 0;
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
@@ -159,6 +168,8 @@ void close()
 	data[0] = player.mCollider.x;
 	data[1] = player.mCollider.y;
 	savingControler.fileWrite(data);
+
+	mainmap.mapWrite(mainmap.mapData);
 	//Free loaded images
 	//slime_standing_texture.free();
 	//slime_walking_texture.free();
@@ -195,8 +206,9 @@ Uint32 callback(Uint32 interval, void* param)
 				
 				SDL_Rect* currentClip = &mapClips[mainmap.mapData[i][j]-1];
 				mapTexture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE);
-				absY += 100;
+				
 			}
+			absY += 100;
 		}
 		absY = 0;
 		absX += 100;
