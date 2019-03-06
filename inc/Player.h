@@ -15,7 +15,14 @@ public:
 	int posX;
 	int posY;
 
+	int blockPosX;
+	int blockPosY;
+
+	bool canJump;
+
 	int acceleration;
+
+	SDL_Rect rectArray[25];
 
 	//Maximum axis velocity of the Player
 	static const int Player_VEL = 5;
@@ -27,10 +34,14 @@ public:
 	void handleEvent(SDL_Event& e);
 
 	//Moves the Player and checks collision
-	void move(SDL_Rect& wall);
+	void move();
 
 	void moveAction(int, int);
 	bool initPlayerTexture();
+
+	bool checkCollision();
+
+	void updateCollisionBox();
 
 	//Shows the Player on the screen
 	void render(int camX, int camY);

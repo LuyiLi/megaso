@@ -40,3 +40,6 @@ x64
 
 #Github Files
 .github
+
+#Game save files
+*.txt

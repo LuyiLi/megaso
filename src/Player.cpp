@@ -7,30 +7,33 @@
 #include "global.h"
 #include "Camera.h"
 #include "SavingControl.h"
+#include "Map.h"
+extern Map mainMap;
 
 Player::Player()
 {
 	//Initialize the offsets
-	//posX = 0;
-	//posY = 0;
 
 	//Set collision box dimension
 	mCollider.w = Player_WIDTH;
 	mCollider.h = Player_HEIGHT;
 
-
 	//Initialize the velocity
 	mVelX = 0;
 	mVelY = 0;
+	canJump = true;
+
+	for (int i = 0; i < 25; i++)
+	{
+		rectArray[i].x = 0;
+		rectArray[i].y = 0;
+		rectArray[i].w = 100;
+		rectArray[i].h = 100;
+	}
 }
 
 void Player::handleEvent(SDL_Event& e)
 {
-	SDL_Rect wall;
-	wall.x = 0;
-	wall.y = 260;
-	wall.w = 1000;
-	wall.h = 400;
 	//If a key was pressed
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
 	{
@@ -38,13 +41,14 @@ void Player::handleEvent(SDL_Event& e)
 		switch (e.key.keysym.sym)
 		{
 		case SDLK_UP:
-			if (checkCollision(this, wall))
+			if (canJump)
 			{
-				mVelY = -20;
+				mVelY = -21;
+				canJump = false;
 			}
 			break;
-		case SDLK_LEFT: acceleration --; break;
-		case SDLK_RIGHT: acceleration ++; break;
+		case SDLK_LEFT: acceleration--; break;
+		case SDLK_RIGHT: acceleration++; break;
 		}
 	}
 	//If a key was released
@@ -59,39 +63,86 @@ void Player::handleEvent(SDL_Event& e)
 	}
 }
 
-void Player::move(SDL_Rect& wall)
+void Player::move()
 {
-	//Move the Player left or right
-	if(!checkCollision(this, wall) && abs(mVelX) < Player_VEL)
-		mVelX += acceleration;
+	if (!acceleration)
+		mVelX = 0;
 
 	mCollider.x += mVelX;
 	posX = mCollider.x - 19;
-	
-	if (checkCollision(this, wall) == COLLISION_SIDE)
+
+	if (checkCollision())
 	{
 		//Move back
-		mCollider.x-= mVelX;
+		mCollider.x -= mVelX;
 		mVelX = 0;
 		posX = mCollider.x - 19;
 	}
-	if (!checkCollision(this, wall))
-	{
-		mVelY += g;
-	}
+	else if(abs(mVelX) <= Player_VEL)
+		mVelX += acceleration;
+
+	
 	//Move the Player up or down
 	mCollider.y += mVelY;
 	posY = mCollider.y;
 
-	//If the Player collided or went too far up or down
-	if ((posY < 0) || (posY + Player_HEIGHT > SCREEN_HEIGHT) || checkCollision(this, wall) == COLLISION_SIDE)
+	//If the Player collided
+	if (checkCollision())
 	{
 		//Move back
 		mCollider.y -= mVelY;
 		mVelY = 0;
 		posY = mCollider.y;
+		canJump = true;
+	}
+	else
+	{
+		if (abs(mVelY) < 25)
+			mVelY += g;
+		if (mVelY > 5)
+			canJump = false;
+	}
+	if (blockPosY != posY / 100 || blockPosX != posX / 100)
+	{
+		blockPosX = posX / 100;
+		blockPosY = posY / 100;
+		updateCollisionBox();
+	}
+}
+
+bool Player::checkCollision()
+{
+	for (int i = 0; i < 25; i++)
+	{
+		if (rectArray[i].x == 0 && rectArray[i].y == 0)
+			continue;
+		if (intersect(mCollider, rectArray[i]))
+			return true;
 	}
 
+	return false;
+}
+
+void Player::updateCollisionBox()
+{
+	int startBlockX, startBlockY;
+	startBlockX = blockPosY - 2 < 0 ? 0 : blockPosY;
+	startBlockY = blockPosX - 2 < 0 ? 0 : blockPosX;
+
+	for (int i = 0; i<5; i++)
+		for (int j = 0; j < 5; j++)
+		{
+			if (mainMap.mapData[startBlockX + i][startBlockY + j])
+			{
+				rectArray[i + 5 * j].x = 100 * (blockPosX + j);
+				rectArray[i + 5 * j].y = 100 * (blockPosY + i);
+			}
+			else
+			{
+				rectArray[i + 5 * j].x = 0;
+				rectArray[i + 5 * j].y = 0;
+			}
+		}
 }
 
 /*
@@ -105,13 +156,13 @@ void Player::render(int camX, int camY)
 
 void Player::moveAction(int deltaX, int deltaY)
 {
-	
+
 	static int frame_walk = 0;
 	static int frame_stand = 0;
 	if (acceleration > 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((posX+deltaX), (posY+deltaY), currentClip, 0, NULL, SDL_FLIP_NONE);
+		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE);
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
