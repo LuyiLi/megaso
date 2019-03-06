@@ -64,14 +64,14 @@ int target[2333] = {0};
 bool init()
 {
 	//���ɳ�ʼ��ͼ
-	if (mainmap.checkIfExist())
+	if (mainMap.checkIfExist())
 	{
-		mainmap.mapRead();
+		mainMap.mapRead();
 	}
 	else
 	{
-		mainmap.generateMap();
-		mainmap.mapRead();
+		mainMap.generateMap();
+		mainMap.mapRead();
 	}
 	
 	//Initialization flag
@@ -169,7 +169,7 @@ void close()
 	data[1] = player.mCollider.y;
 	savingControler.fileWrite(data);
 
-	mainmap.mapWrite(mainmap.mapData);
+	mainMap.mapWrite(mainMap.mapData);
 	//Free loaded images
 	//slime_standing_texture.free();
 	//slime_walking_texture.free();
