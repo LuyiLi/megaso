@@ -56,7 +56,7 @@ SDL_Rect mapClips[2];
 LTexture mapTexture;
 
 /*创建主地图*/
-Map mainmap;
+Map mainMap;
 
 
 int target[2333] = {0};
@@ -64,7 +64,7 @@ int target[2333] = {0};
 bool init()
 {
 	//生成初始地图
-	mainmap.generateMap();
+	mainMap.generateMap();
 	//Initialization flag
 	bool success = true;
 	//savingControler.fileRead(target);
@@ -190,13 +190,14 @@ Uint32 callback(Uint32 interval, void* param)
 		for (int j = 0; j < 100; j++)
 		{
 			
-			if (mainmap.mapData[i][j])
+			if (mainMap.mapData[i][j])
 			{
 				
-				SDL_Rect* currentClip = &mapClips[mainmap.mapData[i][j]-1];
+				SDL_Rect* currentClip = &mapClips[mainMap.mapData[i][j]-1];
 				mapTexture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE);
-				absY += 100;
+				
 			}
+			absY += 100;
 		}
 		absY = 0;
 		absX += 100;
@@ -209,8 +210,6 @@ Uint32 callback(Uint32 interval, void* param)
 
 	
 	//更新渲染器，渲染当前材质
-	SDL_RenderDrawRect(gRenderer, &wall);
-	SDL_RenderDrawRect(gRenderer, &player.mCollider);
 	SDL_RenderPresent(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
