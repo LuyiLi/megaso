@@ -35,7 +35,6 @@ void SavingControl::fileRead(int* target)
 		int negativeFlag = 0;
 		while ((presentChar = fgetc(fp))!=EOF)
 		{
-			printf("%c", presentChar);
 			if (presentChar == 'E')
 			{
 				fclose(fp);
@@ -69,7 +68,6 @@ void SavingControl::fileRead(int* target)
 			}
 		}
 		fclose(fp);
-		printf("\n%d %d\n", target[0], target[1]);
 	}
 }
 

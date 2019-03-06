@@ -63,7 +63,6 @@ void Map::mapRead()
 		int negativeFlag = 0;
 		while ((presentChar = fgetc(fp)) != EOF)
 		{
-			printf("%c", presentChar);
 			if (presentChar == 'E')
 			{
 				fclose(fp);
@@ -103,14 +102,6 @@ void Map::mapRead()
 			}
 		}
 		fclose(fp);
-		for(int a = 0;a < m;a++)
-		{
-			for (int b = 0; b < n; b++)
-			{
-				printf("%d ", mapData[a][b]);
-			}
-			printf("\n");
-		}
 	}
 }
 

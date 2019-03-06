@@ -34,13 +34,12 @@ public:
 	void handleEvent(SDL_Event& e);
 
 	//Moves the Player and checks collision
-	void move(SDL_Rect& wall);
+	void move();
 
 	void moveAction(int, int);
 	bool initPlayerTexture();
 
-	bool checkCollisionX();
-	bool checkCollisionY();
+	bool checkCollision();
 
 	void updateCollisionBox();
 

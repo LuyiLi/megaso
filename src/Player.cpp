@@ -13,13 +13,10 @@ extern Map mainMap;
 Player::Player()
 {
 	//Initialize the offsets
-	//posX = 0;
-	//posY = 0;
 
 	//Set collision box dimension
 	mCollider.w = Player_WIDTH;
 	mCollider.h = Player_HEIGHT;
-
 
 	//Initialize the velocity
 	mVelX = 0;
@@ -66,7 +63,7 @@ void Player::handleEvent(SDL_Event& e)
 	}
 }
 
-void Player::move(SDL_Rect& wall)
+void Player::move()
 {
 	if (!acceleration)
 		mVelX = 0;
@@ -74,7 +71,7 @@ void Player::move(SDL_Rect& wall)
 	mCollider.x += mVelX;
 	posX = mCollider.x - 19;
 
-	if (checkCollisionX())
+	if (checkCollision())
 	{
 		//Move back
 		mCollider.x -= mVelX;
@@ -86,24 +83,24 @@ void Player::move(SDL_Rect& wall)
 
 	
 	//Move the Player up or down
-	posY += mVelY;
-	mCollider.y = posY;
+	mCollider.y += mVelY;
+	posY = mCollider.y;
 
 	//If the Player collided
-	if (checkCollisionY())
+	if (checkCollision())
 	{
 		//Move back
-		posY -= mVelY;
+		mCollider.y -= mVelY;
 		mVelY = 0;
+		posY = mCollider.y;
 		canJump = true;
-		mCollider.y = posY;
 	}
 	else
 	{
 		if (abs(mVelY) < 25)
 			mVelY += g;
-		if (mVelY > 2)
-		canJump = false;
+		if (mVelY > 5)
+			canJump = false;
 	}
 	if (blockPosY != posY / 100 || blockPosX != posX / 100)
 	{
@@ -111,11 +108,9 @@ void Player::move(SDL_Rect& wall)
 		blockPosY = posY / 100;
 		updateCollisionBox();
 	}
-		
-	
 }
 
-bool Player::checkCollisionX()
+bool Player::checkCollision()
 {
 	for (int i = 0; i < 25; i++)
 	{
@@ -125,18 +120,6 @@ bool Player::checkCollisionX()
 			return true;
 	}
 
-	return false;
-}
-
-bool Player::checkCollisionY()
-{
-	for (int i = 0; i < 25; i++)
-	{
-		if (rectArray[i].x == 0 && rectArray[i].y == 0)
-			continue;
-		if (intersect(mCollider, rectArray[i]))
-			return true;
-	}
 	return false;
 }
 
@@ -160,7 +143,6 @@ void Player::updateCollisionBox()
 				rectArray[i + 5 * j].y = 0;
 			}
 		}
-
 }
 
 /*
@@ -209,6 +191,7 @@ void Player::moveAction(int deltaX, int deltaY)
 		}
 	}
 }
+
 bool Player::initPlayerTexture()
 {
 	if (!slime_walking_texture.loadFromFile("images/slime_walk.png"))

@@ -16,9 +16,6 @@ Player player;
 //�������
 Camera cam;
 
-//��ײǽ������
-SDL_Rect wall;
-
 //�浵����������
 SavingControl savingControler;
 
@@ -59,7 +56,7 @@ LTexture mapTexture;
 Map mainMap;
 
 
-int target[2333] = {0};
+int target[3] = {0};
 
 bool init()
 {
@@ -76,9 +73,9 @@ bool init()
 	
 	//Initialization flag
 	bool success = true;
-	//savingControler.fileRead(target);
-	player.mCollider.x = 5000;
-	player.mCollider.y = 0;
+	savingControler.fileRead(target);
+	player.mCollider.x = target[0];
+	player.mCollider.y = target[1];
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
 	{
@@ -189,7 +186,7 @@ Uint32 callback(Uint32 interval, void* param)
 {
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
-	player.move(wall);
+	player.move();
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
 
@@ -213,10 +210,6 @@ Uint32 callback(Uint32 interval, void* param)
 		absY = 0;
 		absX += 100;
 	}
-	
-	
-	//background_texture.render(deltaX, 400+deltaY, background_clips, 0, NULL, SDL_FLIP_NONE);
-
 	player.moveAction(deltaX,deltaY);
 
 	
@@ -245,10 +238,6 @@ int main(int argc, char* args[])
 		{
 			bool quit = false;
 			SDL_Event e;
-			wall.x = 0;
-			wall.y = 5000;
-			wall.w = 10000;
-			wall.h = 100;
 			//��ʼ����Ⱦʱ��
 			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
 			while (!quit)
