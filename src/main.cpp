@@ -64,7 +64,6 @@ int target[2333] = {0};
 bool init()
 {
 	//生成初始地图
-	mainMap.generateMap();
 	//Initialization flag
 	bool success = true;
 	//savingControler.fileRead(target);
