@@ -37,7 +37,7 @@ public:
 	void move();
 
 	void moveAction(int, int);
-	bool initPlayerTexture();
+	bool loadTexture();
 
 	bool checkCollision();
 

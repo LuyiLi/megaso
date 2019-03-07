@@ -2,13 +2,34 @@
 #include "Map.h"
 #include <stdio.h>
 #include <io.h>
-
+#include "Player.h"
+#include "Camera.h"
+extern Player player;
+extern Camera cam;
 
 Map::Map()
 {
 	int mapData[xBlockNumber][yBlockNumber] = { 0 };
+	
 }
 
+bool Map::loadTexture()
+{
+	if (mapTexture.loadFromFile("images/mapTexture.png"))
+	{
+		mapClips[0].x = 0;
+		mapClips[0].y = 0;
+		mapClips[0].w = 200;
+		mapClips[0].h = 200;
+
+		mapClips[1].x = 200;
+		mapClips[1].y = 0;
+		mapClips[1].w = 200;
+		mapClips[1].h = 200;
+		return true;
+	}
+	return false;
+}
 
 Map::~Map()
 {
@@ -19,6 +40,25 @@ int Map::updateCollisionBox()
 	return 0;
 }
 
+void Map::render(int deltaX, int deltaY)
+{
+	int absX = 0, absY = 0;
+	for (int i = 0; i < 100; i++)
+	{
+		for (int j = 0; j < 100; j++)
+		{
+
+			if (mapData[i][j])
+			{
+				SDL_Rect* currentClip = &mapClips[mapData[i][j] - 1];
+				mapTexture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE);
+			}
+			absY += 100;
+		}
+		absY = 0;
+		absX += 100;
+	}
+}
 int Map::checkIfExist()
 {
 	FILE *fp;
@@ -105,6 +145,20 @@ void Map::mapRead()
 	}
 }
 
+/*
+@brief break a block on the map
+@param The BLOCK position of the map
+*/
+
+void Map::breakBlock(int x, int y)
+{
+	mapData[x][y] = 0;
+}
+
+void Map::putBlock(int x, int y, int ID)
+{
+	mapData[x][y] = ID;
+}
 
 void Map::mapWrite(int targetMap[100][100])
 {

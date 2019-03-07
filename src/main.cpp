@@ -48,10 +48,6 @@ LTexture very_behind_background_texture;
 /*��ײ�����*/
 LTexture gPlayerTexture;
 
-/*��ͼ���ʰ�*/
-SDL_Rect mapClips[2];
-LTexture mapTexture;
-
 /*��������ͼ*/
 Map mainMap;
 
@@ -136,23 +132,12 @@ bool loadMedia()
 		very_behind_background_clips[0].w = 1800;
 		very_behind_background_clips[0].h = 1196;
 	}
-	if (mapTexture.loadFromFile("images/mapTexture.png"))
-	{
-		mapClips[0].x = 0;
-		mapClips[0].y = 0;
-		mapClips[0].w = 200;
-		mapClips[0].h = 200;
 
-		mapClips[1].x = 200;
-		mapClips[1].y = 0;
-		mapClips[1].w = 200;
-		mapClips[1].h = 200;
-	}
 	else
 	{
 		printf("SDL,TQL,WSL");
 	}
-	if (!player.initPlayerTexture())
+	if (!player.loadTexture() || !mainMap.loadTexture())
 	{
 		success = false;
 	}
@@ -184,32 +169,14 @@ void close()
 
 Uint32 callback(Uint32 interval, void* param)
 {
+	
+	player.move();
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
-	player.move();
-	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	SDL_RenderClear(gRenderer);
 
 	/*������һ����Ⱦ�����Ĳ���*/
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-	int absX = 0, absY = 0;
-	for (int i = 0; i < 100; i++)
-	{
-		for (int j = 0; j < 100; j++)
-		{
-			
-			if (mainMap.mapData[i][j])
-			{
-				
-				SDL_Rect* currentClip = &mapClips[mainMap.mapData[i][j]-1];
-				mapTexture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE);
-				
-			}
-			absY += 100;
-		}
-		absY = 0;
-		absX += 100;
-	}
+	mainMap.render(deltaX, deltaY);
 	player.moveAction(deltaX,deltaY);
 
 	
