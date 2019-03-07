@@ -7,7 +7,7 @@ class Map
 public:
 	Map();
 	~Map();
-	const int blockSize = 100;
+	const int blockSize = 50;
 	SDL_Rect mapClips[2];
 	LTexture mapTexture;
 	static const int xBlockNumber = 100;

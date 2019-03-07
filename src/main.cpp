@@ -205,16 +205,16 @@ Uint32 callback(Uint32 interval, void* param)
 	SDL_Rect* highLightPocketClip = &pocketUI_clips[1];
 
 	/*������һ����Ⱦ�����Ĳ���*/
-	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
+	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
 	mainMap.render(deltaX, deltaY);
 
 	for (int w = 0; w < 10; w++)
 	{
-		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*w, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE);
+		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*w, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE,2);
 	}
 	if (pocketNumber > 0 && pocketNumber < 11)
 	{
-		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*(pocketNumber - 1), SCREEN_HEIGHT - 60, highLightPocketClip, 0, NULL, SDL_FLIP_NONE);
+		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*(pocketNumber - 1), SCREEN_HEIGHT - 60, highLightPocketClip, 0, NULL, SDL_FLIP_NONE,2);
 	}
 	
 	player.moveAction(deltaX,deltaY);
@@ -244,8 +244,8 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 	mouseState = SDL_GetMouseState(&mouseX, &mouseY);
 	absMouseX = mouseX - cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	absMouseY = mouseY - cam.countCompensateY(SCREEN_HEIGHT, player.posY);
-	blockMouseX = absMouseX / 100;
-	blockMouseY = absMouseY / 100;
+	blockMouseX = absMouseX / 50;
+	blockMouseY = absMouseY / 50;
 	//If the same button is still being pressed
 	if (mouseState == prevMouseState)
 	{
@@ -361,13 +361,6 @@ int main(int argc, char* args[])
 					{
 						//Get mouse position
 						mouseTimerCallback(0, &mouseState);
-				
-						if (e.button.button == SDL_BUTTON_RIGHT)
-						{
-							printf("%d %d CREATE\n", absMouseX / 100, absMouseY / 100);
-							mainMap.putBlock(absMouseX / 100, absMouseY / 100, 1);
-							player.updateCollisionBox();
-						}
 					}
 					player.handleEvent(e);
 				}

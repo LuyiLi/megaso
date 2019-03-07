@@ -15,8 +15,8 @@ Player::Player()
 	//Initialize the offsets
 
 	//Set collision box dimension
-	mCollider.w = Player_WIDTH;
-	mCollider.h = Player_HEIGHT;
+	mCollider.w = Player_WIDTH/2;
+	mCollider.h = Player_HEIGHT/2;
 
 	//Initialize the velocity
 	mVelX = 0;
@@ -27,8 +27,8 @@ Player::Player()
 	{
 		rectArray[i].x = 0;
 		rectArray[i].y = 0;
-		rectArray[i].w = 100;
-		rectArray[i].h = 100;
+		rectArray[i].w = 50;
+		rectArray[i].h = 50;
 	}
 }
 
@@ -102,10 +102,10 @@ void Player::move()
 		if (mVelY > 5)
 			canJump = false;
 	}
-	if (blockPosY != posY / 100 || blockPosX != posX / 100)
+	if (blockPosY != posY / 50 || blockPosX != posX / 50)
 	{
-		blockPosX = posX / 100;
-		blockPosY = posY / 100;
+		blockPosX = posX / 50;
+		blockPosY = posY / 50;
 		updateCollisionBox();
 	}
 }
@@ -134,8 +134,8 @@ void Player::updateCollisionBox()
 		{
 			if (mainMap.mapData[startBlockX + i][startBlockY + j])
 			{
-				rectArray[i + 5 * j].x = 100 * (startBlockY + j);
-				rectArray[i + 5 * j].y = 100 * (startBlockX + i);
+				rectArray[i + 5 * j].x = 50 * (startBlockY + j);
+				rectArray[i + 5 * j].y = 50 * (startBlockX + i);
 			}
 			else
 			{
@@ -162,7 +162,7 @@ void Player::moveAction(int deltaX, int deltaY)
 	if (acceleration > 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE);
+		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE,4);
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -173,7 +173,7 @@ void Player::moveAction(int deltaX, int deltaY)
 	else if (acceleration < 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
+		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL,4);
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -183,7 +183,7 @@ void Player::moveAction(int deltaX, int deltaY)
 	else
 	{
 		SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-		slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE);
+		slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE,4);
 		++frame_stand;
 		if (frame_stand / 6 >= 6)
 		{

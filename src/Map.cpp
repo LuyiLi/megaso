@@ -51,12 +51,12 @@ void Map::render(int deltaX, int deltaY)
 			if (mapData[i][j])
 			{
 				SDL_Rect* currentClip = &mapClips[mapData[i][j] - 1];
-				mapTexture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE);
+				mapTexture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE,4);
 			}
-			absY += 100;
+			absY += 50;
 		}
 		absY = 0;
-		absX += 100;
+		absX += 50;
 	}
 }
 int Map::checkIfExist()
