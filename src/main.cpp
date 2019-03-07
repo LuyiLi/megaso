@@ -52,6 +52,9 @@ LTexture crack_texture;
 SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
 
+SDL_Rect newMap_clips[233];
+LTexture newMap_texture;
+
 SDL_Rect pocketUI_clips[2];
 LTexture pocketUI_texture;
 
@@ -181,6 +184,24 @@ bool loadMedia()
 		crack_clips[2].y = 0;
 		crack_clips[2].w = 100;
 		crack_clips[2].h = 100;
+	}
+
+	if (crack_texture.loadFromFile("images/crack.png"))
+	{
+		newMap_clips[0].x = 0;
+		newMap_clips[0].y = 0;
+		newMap_clips[0].w = 100;
+		newMap_clips[0].h = 100;
+
+		newMap_clips[1].x = 100;
+		newMap_clips[1].y = 0;
+		newMap_clips[1].w = 100;
+		newMap_clips[1].h = 100;
+
+		newMap_clips[2].x = 200;
+		newMap_clips[2].y = 0;
+		newMap_clips[2].w = 100;
+		newMap_clips[2].h = 100;
 	}
 
 	else
