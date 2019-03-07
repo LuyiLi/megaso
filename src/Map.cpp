@@ -5,7 +5,9 @@
 #include "Player.h"
 #include "Camera.h"
 #include "item.h"
+
 extern Player player;
+extern bool intersect(SDL_Rect, SDL_Rect);
 
 Map::Map()
 {
@@ -157,8 +159,16 @@ void Map::breakBlock(int x, int y)
 
 void Map::putBlock(int x, int y, int ID)
 {
-	if(!mapData[y][x])
-		mapData[y][x] = ID;
+	SDL_Rect tempRect;
+	if (!mapData[y][x])
+	{
+		tempRect.x = 50 * x;
+		tempRect.y = 50 * y;
+		tempRect.w = 50;
+		tempRect.h = 50;
+		if(!intersect(tempRect, player.mCollider))
+			mapData[y][x] = ID;
+	}
 }
 
 void Map::mapWrite(int targetMap[100][100])

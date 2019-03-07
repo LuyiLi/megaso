@@ -87,18 +87,6 @@ bool intersectY(SDL_Rect a, SDL_Rect b)
 	return true;
 }
 
-CollisionType checkCollisionSimple(Player *player, SDL_Rect rectB)
-{
-	//Calculate the sides of rect A
-	SDL_Rect rectA = player->mCollider;
-
-	//Check if there is collison from the side
-	if (!intersect(rectA, rectB))
-		return COLLISION_NONE;
-	else
-		return COLLISION_SIDE;
-}
-
 SDL_Texture* loadTexture(std::string path)
 {
 	//The final texture

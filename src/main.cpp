@@ -217,7 +217,7 @@ bool loadMedia()
 
 void close()
 {
-	int data[2333] = {0};
+	int data[3] = {0};
 	data[0] = player.mCollider.x;
 	data[1] = player.mCollider.y;
 	savingControler.fileWrite(data);
@@ -256,7 +256,7 @@ Uint32 callback(Uint32 interval, void* param)
 	SDL_Rect* crackClip2 = &crack_clips[1];
 	SDL_Rect* crackClip3 = &crack_clips[2];
 
-	if (crackFlag&&mainMap.mapData[blockMouseY][blockMouseX])
+	if (crackFlag && mainMap.mapData[blockMouseY][blockMouseX])
 	{
 		switch (crackFlag)
 		{
