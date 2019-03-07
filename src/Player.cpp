@@ -40,15 +40,15 @@ void Player::handleEvent(SDL_Event& e)
 		//Adjust the velocity
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_UP:
+		case SDLK_w:
 			if (canJump)
 			{
 				mVelY = -21;
 				canJump = false;
 			}
 			break;
-		case SDLK_LEFT: acceleration--; break;
-		case SDLK_RIGHT: acceleration++; break;
+		case SDLK_a: acceleration--; break;
+		case SDLK_d: acceleration++; break;
 		}
 	}
 	//If a key was released
@@ -57,8 +57,8 @@ void Player::handleEvent(SDL_Event& e)
 		//Adjust the velocity
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_LEFT: mVelX = 0; acceleration++; break;
-		case SDLK_RIGHT: mVelX = 0; acceleration--;  break;
+		case SDLK_a: mVelX = 0; acceleration++; break;
+		case SDLK_d: mVelX = 0; acceleration--;  break;
 		}
 	}
 }

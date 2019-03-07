@@ -49,6 +49,9 @@ LTexture background_texture;
 SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
 
+SDL_Rect pocketUI_clips[2];
+LTexture pocketUI_texture;
+
 /*��ײ�����*/
 LTexture gPlayerTexture;
 
@@ -57,7 +60,7 @@ Map mainMap;
 
 /*Creat a timer*/
 LTimer timer;
-
+int pocketNumber = 0;
 int breakTime = 2000;
 int startTime = 0;
 int target[3] = {0};
@@ -144,6 +147,18 @@ bool loadMedia()
 		very_behind_background_clips[0].w = 1800;
 		very_behind_background_clips[0].h = 1196;
 	}
+	if (pocketUI_texture.loadFromFile("images/pocket.png"))
+	{
+		pocketUI_clips[0].x = 0;
+		pocketUI_clips[0].y = 0;
+		pocketUI_clips[0].w = 100;
+		pocketUI_clips[0].h = 100;
+
+		pocketUI_clips[2].x = 100;
+		pocketUI_clips[2].y = 0;
+		pocketUI_clips[2].w = 100;
+		pocketUI_clips[2].h = 100;
+	}
 
 	else
 	{
@@ -186,9 +201,15 @@ Uint32 callback(Uint32 interval, void* param)
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
+	SDL_Rect* generalPocketClip = &pocketUI_clips[0];
+	SDL_Rect* highLightPocketClip = &pocketUI_clips[1];
+
 	/*������һ����Ⱦ�����Ĳ���*/
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
 	mainMap.render(deltaX, deltaY);
+
+	pocketUI_texture.render(0, 0, generalPocketClip, 0, NULL, SDL_FLIP_NONE);
+
 	player.moveAction(deltaX,deltaY);
 
 	
@@ -302,6 +323,26 @@ int main(int argc, char* args[])
 						quit = true;
 						close();
 					}
+
+					if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+					{
+						//Adjust the velocity
+						switch (e.key.keysym.sym)
+						{
+						case SDLK_1: pocketNumber = 1; break;
+						case SDLK_2: pocketNumber = 2; break;
+						case SDLK_3: pocketNumber = 3; break;
+						case SDLK_4: pocketNumber = 4; break;
+						case SDLK_5: pocketNumber = 5; break;
+						case SDLK_6: pocketNumber = 6; break;
+						case SDLK_7: pocketNumber = 7; break;
+						case SDLK_8: pocketNumber = 8; break;
+						case SDLK_9: pocketNumber = 9; break;
+						case SDLK_0: pocketNumber = 10; break;
+						}
+						printf("%d\n", pocketNumber);
+					}
+
 					if (e.type == SDL_MOUSEBUTTONDOWN)
 					{
 						//Get mouse position
