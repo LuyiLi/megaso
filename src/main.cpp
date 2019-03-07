@@ -1,48 +1,77 @@
-//Í·ÎÄ¼þ
+//Í·ï¿½Ä¼ï¿½
 #include "pch.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdio.h>
 #include <string>
 #include "Player.h"
-#include "LTexture.h"
+#include "Camera.h"
 #include "settings.h"
+#include "SavingControl.h"
+#include "Map.h"
 
-//Åö×²µãÉèÖÃ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 Player player;
-//Åö×²Ç½ÃæÉèÖÃ
-SDL_Rect wall;
+
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+Camera cam;
+
+//ï¿½æµµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+SavingControl savingControler;
+
+//×´Ì¬ÎªÎ´ï¿½Ë³ï¿½
 bool quit = false;
-//SDL³õÊ¼»¯º¯ÊýÉùÃ÷
+
+//SDLï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 bool init();
+
+//Ã½ï¿½ï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 bool loadMedia();
+
+//ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void close();
-//äÖÈ¾Æ÷Éè¶¨
+
+//ï¿½ï¿½È¾ï¿½ï¿½ï¿½è¶¨
 SDL_Renderer* gRenderer = NULL;
-//´°¿ÚÉè¶¨
+
+//ï¿½ï¿½ï¿½ï¿½ï¿½è¶¨
 SDL_Window* gWindow = NULL;
-/*Õ¾Á¢×´Ì¬Í¼ÏñÇÐÆ¬*/
-const int standing_frames = 6;
-SDL_Rect slime_stand_clips[standing_frames];
-LTexture slime_standing_texture;
-/*ÐÐ×ß×´Ì¬Í¼ÏñÇÐÆ¬*/
-const int walking_frames = 4;
-SDL_Rect slime_walk_clips[walking_frames];
-LTexture slime_walking_texture;
-/*µØÃæÍ¼ÏñÇÐÆ¬*/
+
+/*ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Æ¬*/
 SDL_Rect background_clips[1];
 LTexture background_texture;
-/*±³¾°Í¼ÏñÇÐÆ¬*/
+
+/*ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½Æ¬*/
 SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
-/*Åö×²µã²ÄÖÊ*/
+
+/*ï¿½ï¿½×²ï¿½ï¿½ï¿½ï¿½ï¿½*/
 LTexture gPlayerTexture;
+
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼*/
+Map mainMap;
+
+
+int target[3] = {0};
 
 bool init()
 {
+	//ï¿½ï¿½ï¿½É³ï¿½Ê¼ï¿½ï¿½Í¼
+	if (mainMap.checkIfExist())
+	{
+		mainMap.mapRead();
+	}
+	else
+	{
+		mainMap.generateMap();
+		mainMap.mapRead();
+	}
+	
 	//Initialization flag
 	bool success = true;
-
+	savingControler.fileRead(target);
+	player.mCollider.x = target[0];
+	player.mCollider.y = target[1];
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
 	{
@@ -103,94 +132,29 @@ bool loadMedia()
 		very_behind_background_clips[0].w = 1800;
 		very_behind_background_clips[0].h = 1196;
 	}
+
 	else
 	{
 		printf("SDL,TQL,WSL");
 	}
-	//Load sprite sheet texture
-	if (background_texture.loadFromFile("images/test_bg.png"))
+	if (!player.loadTexture() || !mainMap.loadTexture())
 	{
-		background_clips[0].x = 0;
-		background_clips[0].y = 0;
-		background_clips[0].w = 2048;
-		background_clips[0].h = 208;
-	}
-
-	if (!slime_walking_texture.loadFromFile("images/slime_walk.png"))
-	{
-		printf("Failed to load walking animation texture!\n");
 		success = false;
-	}
-	else
-	{
-		//Set sprite clips
-		slime_walk_clips[0].x = 0;
-		slime_walk_clips[0].y = 0;
-		slime_walk_clips[0].w = 416;
-		slime_walk_clips[0].h = 304;
-
-		slime_walk_clips[1].x = 416;
-		slime_walk_clips[1].y = 0;
-		slime_walk_clips[1].w = 416;
-		slime_walk_clips[1].h = 304;
-
-		slime_walk_clips[2].x = 832;
-		slime_walk_clips[2].y = 0;
-		slime_walk_clips[2].w = 416;
-		slime_walk_clips[2].h = 304;
-
-		slime_walk_clips[3].x = 1248;
-		slime_walk_clips[3].y = 0;
-		slime_walk_clips[3].w = 416;
-		slime_walk_clips[3].h = 304;
-	}
-	//Load sprite sheet texture
-	if (!slime_standing_texture.loadFromFile("images/slime_stand.png"))
-	{
-		printf("Failed to load walking animation texture!\n");
-		success = false;
-	}
-	else
-	{
-		//Set sprite clips
-		slime_stand_clips[0].x = 0;
-		slime_stand_clips[0].y = 0;
-		slime_stand_clips[0].w = 416;
-		slime_stand_clips[0].h = 304;
-
-		slime_stand_clips[1].x = 416;
-		slime_stand_clips[1].y = 0;
-		slime_stand_clips[1].w = 416;
-		slime_stand_clips[1].h = 304;
-
-		slime_stand_clips[2].x = 832;
-		slime_stand_clips[2].y = 0;
-		slime_stand_clips[2].w = 416;
-		slime_stand_clips[2].h = 304;
-
-		slime_stand_clips[3].x = 1248;
-		slime_stand_clips[3].y = 0;
-		slime_stand_clips[3].w = 416;
-		slime_stand_clips[3].h = 304;
-
-		slime_stand_clips[4].x = 1664;
-		slime_stand_clips[4].y = 0;
-		slime_stand_clips[4].w = 416;
-		slime_stand_clips[4].h = 304;
-
-		slime_stand_clips[5].x = 2080;
-		slime_stand_clips[5].y = 0;
-		slime_stand_clips[5].w = 416;
-		slime_stand_clips[5].h = 304;
 	}
 	return success;
 }
 
 void close()
 {
+	int data[2333] = {0};
+	data[0] = player.mCollider.x;
+	data[1] = player.mCollider.y;
+	savingControler.fileWrite(data);
+
+	mainMap.mapWrite(mainMap.mapData);
 	//Free loaded images
-	slime_standing_texture.free();
-	slime_walking_texture.free();
+	//slime_standing_texture.free();
+	//slime_walking_texture.free();
 
 	//Destroy window	
 	SDL_DestroyRenderer(gRenderer);
@@ -205,52 +169,18 @@ void close()
 
 Uint32 callback(Uint32 interval, void* param)
 {
-	static int frame_walk = 0;
-	static int frame_stand = 0;
-	player.move(wall);
-	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	SDL_RenderClear(gRenderer);
+	
+	player.move();
+	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
+	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
-	/*ÒÔÏÂÊÇÒ»´ÎäÖÈ¾°üº¬µÄ²ÄÖÊ*/
-
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½*/
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
-	background_texture.render(0, 400, background_clips, 0, NULL, SDL_FLIP_NONE);
+	mainMap.render(deltaX, deltaY);
+	player.moveAction(deltaX,deltaY);
 
-	if (player.mVelX > 0)
-	{
-		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-		++frame_walk;
-		if (frame_walk / 4 >= walking_frames)
-		{
-			frame_walk = 0;
-		}
-
-	}
-	else if (player.mVelX < 0)
-	{
-		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
-		++frame_walk;
-		if (frame_walk / 4 >= walking_frames)
-		{
-			frame_walk = 0;
-		}
-	}
-	else
-	{
-		SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-		slime_standing_texture.render((pos_x), (pos_y), currentClip, 0, NULL, SDL_FLIP_NONE);
-		++frame_stand;
-		if (frame_stand / 6 >= standing_frames)
-		{
-			frame_stand = 0;
-		}
-	}
-	//¸üÐÂäÖÈ¾Æ÷£¬äÖÈ¾µ±Ç°²ÄÖÊ
-	SDL_RenderDrawRect(gRenderer, &wall);
-	SDL_Rect playerRec;
-	SDL_RenderDrawRect(gRenderer, &player.mCollider);
+	
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½
 	SDL_RenderPresent(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
@@ -266,7 +196,7 @@ int main(int argc, char* args[])
 	}
 	else
 	{
-		//ÔØÈëÃ½Ìå
+		//ï¿½ï¿½ï¿½ï¿½Ã½ï¿½ï¿½
 		if (!loadMedia())
 		{
 			printf("Failed to load media!\n");
@@ -274,13 +204,8 @@ int main(int argc, char* args[])
 		else
 		{
 			bool quit = false;
-			int velocity = 3;
 			SDL_Event e;
-			wall.x = -1000;
-			wall.y = 400;
-			wall.w = 10000;
-			wall.h = 400;
-			//³õÊ¼»¯äÖÈ¾Ê±ÖÓ
+			//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½È¾Ê±ï¿½ï¿½
 			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
 			while (!quit)
 			{
@@ -290,6 +215,28 @@ int main(int argc, char* args[])
 					if (e.type == SDL_QUIT)
 					{
 						quit = true;
+						close();
+					}
+					if (e.type == SDL_MOUSEBUTTONDOWN)
+					{
+						//Get mouse position
+						int mouseX, mouseY;
+						SDL_GetMouseState(&mouseX, &mouseY);
+						int absMouseX = mouseX - cam.countCompensateX(SCREEN_WIDTH, player.posX);
+						int absMouseY = mouseY - cam.countCompensateY(SCREEN_HEIGHT, player.posY);
+						if (e.button.button == SDL_BUTTON_LEFT)
+						{
+							printf("%d %d DELETE\n", absMouseX / 100, absMouseY / 100);
+							mainMap.breakBlock(absMouseX/100, absMouseY/100);
+							player.updateCollisionBox();
+						}
+						else if (e.button.button == SDL_BUTTON_RIGHT)
+						{
+							printf("%d %d CREATE\n", absMouseX / 100, absMouseY / 100);
+							mainMap.putBlock(absMouseX/100, absMouseY/100, 1);
+							player.updateCollisionBox();
+						}
+						
 					}
 					player.handleEvent(e);
 				}
