@@ -181,7 +181,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LTimer.cpp" />
-    <ClCompile Include="src\Block.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\SavingControl.cpp" />

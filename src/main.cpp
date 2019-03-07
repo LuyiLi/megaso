@@ -59,8 +59,12 @@ Map mainMap;
 LTimer timer;
 
 int breakTime = 2000;
-
+int startTime = 0;
 int target[3] = {0};
+
+int mouseX, mouseY, mouseState;
+int absMouseX;
+int absMouseY;//mouseState = 0/1/2/4  NULL/left/middle/right
 
 bool init()
 {
@@ -196,6 +200,79 @@ Uint32 callback(Uint32 interval, void* param)
 	return 0;
 }
 
+Uint32 mouseTimerCallback(Uint32 interval, void* param)
+{
+	static int prevMouseState;
+	static int blockMouseX, blockMouseY, prevBlockMouseX, prevBlockMouseY;
+	static int flag = 0;
+	mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+	absMouseX = mouseX - cam.countCompensateX(SCREEN_WIDTH, player.posX);
+	absMouseY = mouseY - cam.countCompensateY(SCREEN_HEIGHT, player.posY);
+	blockMouseX = absMouseX / 100;
+	blockMouseY = absMouseY / 100;
+	//If the same button is still being pressed
+	if (mouseState == prevMouseState)
+	{
+		//If pressed the left buttom
+		if (mouseState == 1)
+		{
+			//If the mouse is on the same place
+			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY)
+			{
+				//Break the block if time is enough
+				if (flag == 30)
+				{
+					mainMap.breakBlock(blockMouseX, blockMouseY);
+					player.updateCollisionBox();
+					flag = 0;
+					SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
+					return 0;
+				}
+				// If time is not enough
+				flag++;
+				printf("%d\n", flag);
+				SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
+				return 0;
+			}
+			//If the mouse moved to another block
+			flag = 0;
+			prevBlockMouseX = blockMouseX;
+			prevBlockMouseY = blockMouseY;
+			SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
+			return 0;
+		}
+		else if (mouseState == 4)
+		//keep putting things on the floor
+			if (blockMouseX != prevBlockMouseX || blockMouseY != prevBlockMouseY)
+			{
+			mainMap.putBlock(blockMouseX, blockMouseY, 1);
+			player.updateCollisionBox();
+			prevBlockMouseX = blockMouseX;
+			prevBlockMouseY = blockMouseY;
+			SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
+			return 0;
+			}
+			else
+			{
+				SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
+				return 0;
+			}
+		else if (!mouseState)
+		{
+			return 0;
+		}
+		
+	}
+	flag = 0;
+	prevMouseState = mouseState;
+	SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
+	return 0;
+	
+
+	//SDL_TimerID mouseTimer = SDL_AddTimer(10, mouseTimerCallback, (void*)mouseState);
+	return 0;
+}
+
 int main(int argc, char* args[])
 {
 	if (!init())
@@ -225,32 +302,15 @@ int main(int argc, char* args[])
 						quit = true;
 						close();
 					}
-					if (e.type == SDL_MOUSEBUTTONDOWN||e.type == SDL_MOUSEBUTTONUP)
+					if (e.type == SDL_MOUSEBUTTONDOWN)
 					{
 						//Get mouse position
-						int mouseX, mouseY;
-						SDL_GetMouseState(&mouseX, &mouseY);
-						int absMouseX = mouseX - cam.countCompensateX(SCREEN_WIDTH, player.posX);
-						int absMouseY = mouseY - cam.countCompensateY(SCREEN_HEIGHT, player.posY);
-						if (e.button.button == SDL_BUTTON_LEFT && e.type == SDL_MOUSEBUTTONDOWN)
-						{
-							if (!timer.isStarted())
-							{
-								timer.start();
-							}
-						}
-						if (e.button.button == SDL_BUTTON_LEFT&& e.type == SDL_MOUSEBUTTONUP)
-						{
-							printf("%d %d DELETE\n", absMouseX / 100, absMouseY / 100);
-							timer.stop();
-							printf("%d\n", timer.getTicks());
-							mainMap.breakBlock(absMouseX/100, absMouseY/100);
-							player.updateCollisionBox();
-						}
-						else if (e.button.button == SDL_BUTTON_RIGHT)
+						mouseTimerCallback(0, &mouseState);
+				
+						if (e.button.button == SDL_BUTTON_RIGHT)
 						{
 							printf("%d %d CREATE\n", absMouseX / 100, absMouseY / 100);
-							mainMap.putBlock(absMouseX/100, absMouseY/100, 1);
+							mainMap.putBlock(absMouseX / 100, absMouseY / 100, 1);
 							player.updateCollisionBox();
 						}
 					}

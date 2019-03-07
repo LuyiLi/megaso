@@ -157,7 +157,8 @@ void Map::breakBlock(int x, int y)
 
 void Map::putBlock(int x, int y, int ID)
 {
-	mapData[y][x] = ID;
+	if(!mapData[y][x])
+		mapData[y][x] = ID;
 }
 
 void Map::mapWrite(int targetMap[100][100])
