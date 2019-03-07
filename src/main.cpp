@@ -235,7 +235,7 @@ Uint32 callback(Uint32 interval, void* param)
 	SDL_Rect* crackClip2 = &crack_clips[1];
 	SDL_Rect* crackClip3 = &crack_clips[2];
 
-	if (crackFlag)
+	if (crackFlag&&mainMap.mapData[blockMouseY][blockMouseX])
 	{
 		switch (crackFlag)
 		{
