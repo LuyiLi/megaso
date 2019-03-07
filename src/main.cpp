@@ -1,4 +1,3 @@
-//ͷ�ļ�
 #include "pch.h"
 #include <SDL.h>
 #include <SDL_image.h>
@@ -9,6 +8,10 @@
 #include "settings.h"
 #include "SavingControl.h"
 #include "Map.h"
+#include "item.h"
+#include "ItemList.h"
+
+Item itemList[100];
 
 //�������
 Player player;

@@ -98,6 +98,7 @@ CollisionType checkCollisionSimple(Player *player, SDL_Rect rectB)
 	else
 		return COLLISION_SIDE;
 }
+
 SDL_Texture* loadTexture(std::string path)
 {
 	//The final texture
@@ -124,5 +125,4 @@ SDL_Texture* loadTexture(std::string path)
 
 	return newTexture;
 }
-
 #endif // !GLOBAL_H
