@@ -6,7 +6,6 @@
 #include "Camera.h"
 #include "item.h"
 extern Player player;
-extern Camera cam;
 
 Map::Map()
 {
@@ -153,12 +152,12 @@ void Map::mapRead()
 
 void Map::breakBlock(int x, int y)
 {
-	mapData[x][y] = 0;
+	mapData[y][x] = 0;
 }
 
 void Map::putBlock(int x, int y, int ID)
 {
-	mapData[x][y] = ID;
+	mapData[y][x] = ID;
 }
 
 void Map::mapWrite(int targetMap[100][100])

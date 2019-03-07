@@ -10,8 +10,9 @@
 #include "Map.h"
 #include "item.h"
 #include "ItemList.h"
-
+#include "LTimer.h"
 Item itemList[100];
+
 
 //�������
 Player player;
@@ -54,6 +55,10 @@ LTexture gPlayerTexture;
 /*��������ͼ*/
 Map mainMap;
 
+/*Creat a timer*/
+LTimer timer;
+
+int breakTime = 2000;
 
 int target[3] = {0};
 
@@ -220,22 +225,34 @@ int main(int argc, char* args[])
 						quit = true;
 						close();
 					}
-					if (e.type == SDL_MOUSEBUTTONDOWN)
+					if (e.type == SDL_MOUSEBUTTONDOWN||e.type == SDL_MOUSEBUTTONUP)
 					{
 						//Get mouse position
 						int mouseX, mouseY;
 						SDL_GetMouseState(&mouseX, &mouseY);
 						int absMouseX = mouseX - cam.countCompensateX(SCREEN_WIDTH, player.posX);
 						int absMouseY = mouseY - cam.countCompensateY(SCREEN_HEIGHT, player.posY);
-						if (e.button.button == SDL_BUTTON_LEFT)
+						if (e.button.button == SDL_BUTTON_LEFT && e.type == SDL_MOUSEBUTTONDOWN)
+						{
+							if (!timer.isStarted())
+							{
+								timer.start();
+							}
+						}
+						if (e.button.button == SDL_BUTTON_LEFT&& e.type == SDL_MOUSEBUTTONUP)
 						{
 							printf("%d %d DELETE\n", absMouseX / 100, absMouseY / 100);
+							timer.stop();
+							printf("%d\n", timer.getTicks());
+							mainMap.breakBlock(absMouseX/100, absMouseY/100);
+							player.updateCollisionBox();
 						}
-						if (e.button.button == SDL_BUTTON_RIGHT)
+						else if (e.button.button == SDL_BUTTON_RIGHT)
 						{
 							printf("%d %d CREATE\n", absMouseX / 100, absMouseY / 100);
+							mainMap.putBlock(absMouseX/100, absMouseY/100, 1);
+							player.updateCollisionBox();
 						}
-						
 					}
 					player.handleEvent(e);
 				}
