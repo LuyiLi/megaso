@@ -126,16 +126,16 @@ bool Player::checkCollision()
 void Player::updateCollisionBox()
 {
 	int startBlockX, startBlockY;
-	startBlockX = blockPosY - 2 < 0 ? 0 : blockPosY;
-	startBlockY = blockPosX - 2 < 0 ? 0 : blockPosX;
+	startBlockX = blockPosY - 2;
+	startBlockY = blockPosX - 1;
 
 	for (int i = 0; i<5; i++)
 		for (int j = 0; j < 5; j++)
 		{
 			if (mainMap.mapData[startBlockX + i][startBlockY + j])
 			{
-				rectArray[i + 5 * j].x = 100 * (blockPosX + j);
-				rectArray[i + 5 * j].y = 100 * (blockPosY + i);
+				rectArray[i + 5 * j].x = 100 * (startBlockY + j);
+				rectArray[i + 5 * j].y = 100 * (startBlockX + i);
 			}
 			else
 			{

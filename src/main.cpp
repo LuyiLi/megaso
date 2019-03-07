@@ -212,7 +212,15 @@ Uint32 callback(Uint32 interval, void* param)
 
 	player.moveAction(deltaX,deltaY);
 
-	
+	//Render the collision box
+	SDL_Rect tempRect[25];
+	for (int i = 0; i < 25; i++) 
+	{
+		tempRect[i] = player.rectArray[i];
+		tempRect[i].x += deltaX;
+		tempRect[i].y += deltaY;
+	}
+	SDL_RenderDrawRects(gRenderer, tempRect, 25);
 	//������Ⱦ������Ⱦ��ǰ����
 	SDL_RenderPresent(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
