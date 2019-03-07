@@ -227,10 +227,14 @@ int main(int argc, char* args[])
 						if (e.button.button == SDL_BUTTON_LEFT)
 						{
 							printf("%d %d DELETE\n", absMouseX / 100, absMouseY / 100);
+							mainMap.breakBlock(absMouseX/100, absMouseY/100);
+							player.updateCollisionBox();
 						}
-						if (e.button.button == SDL_BUTTON_RIGHT)
+						else if (e.button.button == SDL_BUTTON_RIGHT)
 						{
 							printf("%d %d CREATE\n", absMouseX / 100, absMouseY / 100);
+							mainMap.putBlock(absMouseX/100, absMouseY/100, 1);
+							player.updateCollisionBox();
 						}
 						
 					}
