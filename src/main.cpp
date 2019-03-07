@@ -154,10 +154,10 @@ bool loadMedia()
 		pocketUI_clips[0].w = 100;
 		pocketUI_clips[0].h = 100;
 
-		pocketUI_clips[2].x = 100;
-		pocketUI_clips[2].y = 0;
-		pocketUI_clips[2].w = 100;
-		pocketUI_clips[2].h = 100;
+		pocketUI_clips[1].x = 100;
+		pocketUI_clips[1].y = 0;
+		pocketUI_clips[1].w = 100;
+		pocketUI_clips[1].h = 100;
 	}
 
 	else
@@ -208,8 +208,15 @@ Uint32 callback(Uint32 interval, void* param)
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE);
 	mainMap.render(deltaX, deltaY);
 
-	pocketUI_texture.render(0, 0, generalPocketClip, 0, NULL, SDL_FLIP_NONE);
-
+	for (int w = 0; w < 10; w++)
+	{
+		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*w, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE);
+	}
+	if (pocketNumber > 0 && pocketNumber < 11)
+	{
+		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*(pocketNumber - 1), SCREEN_HEIGHT - 60, highLightPocketClip, 0, NULL, SDL_FLIP_NONE);
+	}
+	
 	player.moveAction(deltaX,deltaY);
 
 	
@@ -340,7 +347,6 @@ int main(int argc, char* args[])
 						case SDLK_9: pocketNumber = 9; break;
 						case SDLK_0: pocketNumber = 10; break;
 						}
-						printf("%d\n", pocketNumber);
 					}
 
 					if (e.type == SDL_MOUSEBUTTONDOWN)
