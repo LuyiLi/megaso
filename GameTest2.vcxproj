@@ -177,8 +177,10 @@
     <ClInclude Include="inc\LTexture.h" />
     <ClInclude Include="inc\settings.h" />
     <ClInclude Include="inc\SavingControl.h" />
+    <ClInclude Include="inc\LTimer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\LTimer.cpp" />
     <ClCompile Include="src\Block.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Map.cpp" />
