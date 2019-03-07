@@ -45,6 +45,9 @@ SDL_Window* gWindow = NULL;
 SDL_Rect background_clips[1];
 LTexture background_texture;
 
+SDL_Rect crack_clips[3];
+LTexture crack_texture;
+
 /*����ͼ����Ƭ*/
 SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
@@ -66,6 +69,8 @@ int startTime = 0;
 int target[3] = {0};
 
 int mouseX, mouseY, mouseState;
+int crackFlag;
+int blockMouseX, blockMouseY;
 int absMouseX;
 int absMouseY;//mouseState = 0/1/2/4  NULL/left/middle/right
 
@@ -160,6 +165,24 @@ bool loadMedia()
 		pocketUI_clips[1].h = 100;
 	}
 
+	if (crack_texture.loadFromFile("images/crack.png"))
+	{
+		crack_clips[0].x = 0;
+		crack_clips[0].y = 0;
+		crack_clips[0].w = 100;
+		crack_clips[0].h = 100;
+
+		crack_clips[1].x = 100;
+		crack_clips[1].y = 0;
+		crack_clips[1].w = 100;
+		crack_clips[1].h = 100;
+
+		crack_clips[2].x = 200;
+		crack_clips[2].y = 0;
+		crack_clips[2].w = 100;
+		crack_clips[2].h = 100;
+	}
+
 	else
 	{
 		printf("SDL,TQL,WSL");
@@ -208,6 +231,20 @@ Uint32 callback(Uint32 interval, void* param)
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
 	mainMap.render(deltaX, deltaY);
 
+	SDL_Rect* crackClip1 = &crack_clips[0];
+	SDL_Rect* crackClip2 = &crack_clips[1];
+	SDL_Rect* crackClip3 = &crack_clips[2];
+
+	if (crackFlag)
+	{
+		switch (crackFlag)
+		{
+		case 1:crack_texture.render(blockMouseX*50 + deltaX, blockMouseY*50 + deltaY, crackClip1, 0, NULL, SDL_FLIP_NONE, 2); break;
+		case 2:crack_texture.render(blockMouseX*50 + deltaX, blockMouseY*50 + deltaY, crackClip2, 0, NULL, SDL_FLIP_NONE, 2); break;
+		case 3:crack_texture.render(blockMouseX*50 + deltaX, blockMouseY*50 + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 2); break;
+		}
+	}
+
 	for (int w = 0; w < 10; w++)
 	{
 		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*w, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE,2);
@@ -239,7 +276,7 @@ Uint32 callback(Uint32 interval, void* param)
 Uint32 mouseTimerCallback(Uint32 interval, void* param)
 {
 	static int prevMouseState;
-	static int blockMouseX, blockMouseY, prevBlockMouseX, prevBlockMouseY;
+	static int prevBlockMouseX, prevBlockMouseY;
 	static int flag = 0;
 	mouseState = SDL_GetMouseState(&mouseX, &mouseY);
 	absMouseX = mouseX - cam.countCompensateX(SCREEN_WIDTH, player.posX);
@@ -256,25 +293,28 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY)
 			{
 				//Break the block if time is enough
-				if (flag == 30)
+				if (flag == 39)
 				{
 					mainMap.breakBlock(blockMouseX, blockMouseY);
 					player.updateCollisionBox();
 					flag = 0;
-					SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
+					crackFlag = 0;
+					SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 					return 0;
 				}
 				// If time is not enough
+				crackFlag = flag / 10;
 				flag++;
-				printf("%d\n", flag);
-				SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
+				
+				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 				return 0;
 			}
 			//If the mouse moved to another block
 			flag = 0;
+			crackFlag = 0;
 			prevBlockMouseX = blockMouseX;
 			prevBlockMouseY = blockMouseY;
-			SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
+			SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 			return 0;
 		}
 		else if (mouseState == 4)
@@ -285,21 +325,23 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 			player.updateCollisionBox();
 			prevBlockMouseX = blockMouseX;
 			prevBlockMouseY = blockMouseY;
-			SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
+			SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 			return 0;
 			}
 			else
 			{
-				SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
+				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 				return 0;
 			}
 		else if (!mouseState)
 		{
+			crackFlag = 0;
 			return 0;
 		}
 		
 	}
 	flag = 0;
+	crackFlag = 0;
 	prevMouseState = mouseState;
 	SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
 	return 0;

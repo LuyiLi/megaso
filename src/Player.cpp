@@ -43,7 +43,7 @@ void Player::handleEvent(SDL_Event& e)
 		case SDLK_w:
 			if (canJump)
 			{
-				mVelY = -21;
+				mVelY = -15;
 				canJump = false;
 			}
 			break;
@@ -69,14 +69,14 @@ void Player::move()
 		mVelX = 0;
 
 	mCollider.x += mVelX;
-	posX = mCollider.x - 19;
+	posX = mCollider.x - 10;
 
 	if (checkCollision())
 	{
 		//Move back
 		mCollider.x -= mVelX;
 		mVelX = 0;
-		posX = mCollider.x - 19;
+		posX = mCollider.x - 10;
 	}
 	else if(abs(mVelX) <= Player_VEL)
 		mVelX += acceleration;
