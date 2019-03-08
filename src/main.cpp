@@ -431,7 +431,14 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 			prevBlockMouseY = blockMouseY;
 			SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 			return 0;
-		}
+			}
+			else
+			{
+				prevBlockMouseX = blockMouseX;
+				prevBlockMouseY = blockMouseY;
+				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
+				return 0;
+			}
 		else if (!mouseState)
 		{
 			crackFlag = 0;
@@ -442,7 +449,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 	flag = 0;
 	crackFlag = 0;
 	prevMouseState = mouseState;
-	SDL_TimerID mouseTimer = SDL_AddTimer(20, mouseTimerCallback, (void*)mouseState);
+	SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 	return 0;
 	
 
