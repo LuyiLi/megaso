@@ -43,7 +43,8 @@ void close();
 TTF_Font *gFont = NULL;
 
 //Rendered texture
-LTexture gTextTexture;
+LTexture gTextTexture1[10];
+LTexture gTextTexture2[10];
 
 //��Ⱦ���趨
 SDL_Renderer* gRenderer = NULL;
@@ -179,22 +180,13 @@ bool loadMedia()
 	bool success = true;
 
 	//Open the font
-	gFont = TTF_OpenFont("comic.ttf", 28);
+	gFont = TTF_OpenFont("comic.ttf", 32);
 	if (gFont == NULL)
 	{
 		printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
 		success = false;
 	}
-	else
-	{
-		//Render text
-		SDL_Color textColor = { 255, 255, 255 };
-		if (!gTextTexture.loadFromRenderedText("I LIKE TO PLAY REIMU-RUBO", textColor))
-		{
-			printf("Failed to render text texture!\n");
-			success = false;
-		}
-	}
+	
 	
 	if (very_behind_background_texture.loadFromFile("images/very_behind_bg.png"))
 	{
@@ -262,11 +254,8 @@ void close()
 	gWindow = NULL;
 	gRenderer = NULL;
 	//Free loaded images
-	gTextTexture.free();
 
 	//Free global font
-	TTF_CloseFont(gFont);
-	gFont = NULL;
 
 	//Quit SDL subsystems
 	IMG_Quit();
@@ -283,6 +272,31 @@ Uint32 callback(Uint32 interval, void* param)
 
 	SDL_Rect* generalPocketClip = &pocketUI_clips[0];
 	SDL_Rect* highLightPocketClip = &pocketUI_clips[1];
+
+	for (int pocketPos = 0; pocketPos < 10; pocketPos++)
+	{
+		char str1[23];
+
+		SDL_Color textColorWhite = { 255, 255, 255 };
+		SDL_Color textColorBlack = { 0, 0, 0 };
+
+		if (mainPocket.pocketData[1][pocketPos] < 10)
+		{
+			_itoa_s(mainPocket.pocketData[1][pocketPos], str1, 10);
+			char newStr1[23] = " ";
+			strcat_s(newStr1, str1);
+
+			gTextTexture1[pocketPos].loadFromRenderedText(newStr1, textColorBlack);
+			gTextTexture2[pocketPos].loadFromRenderedText(newStr1, textColorWhite);
+		}
+		else
+		{
+			_itoa_s(mainPocket.pocketData[1][pocketPos], str1, 10);
+			//Render text
+			gTextTexture1[pocketPos].loadFromRenderedText(str1, textColorBlack);
+			gTextTexture2[pocketPos].loadFromRenderedText(str1, textColorWhite);
+		}
+	}
 
 	/*������һ����Ⱦ�����Ĳ���*/
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
@@ -313,10 +327,21 @@ Uint32 callback(Uint32 interval, void* param)
 	
 	for (int p = 0; p < 10; p++)
 	{
-		SDL_Rect* currentPocketClip = &mainMap.newMap_clips[mainPocket.pocketData[0][p]];
-		mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p +12, SCREEN_HEIGHT - 60+12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
+		if (mainPocket.pocketData[1][p])
+		{
+			SDL_Rect* currentPocketClip = &mainMap.newMap_clips[mainPocket.pocketData[0][p]];
+			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
+		}
 	}
-	gTextTexture.render((SCREEN_WIDTH - gTextTexture.getWidth()) / 2, (SCREEN_HEIGHT - gTextTexture.getHeight()) / 2,0,0,NULL,SDL_FLIP_NONE,1);
+	for (int m = 0; m < 10; m++)
+	{
+		if (mainPocket.pocketData[1][m])
+		{
+			gTextTexture1[m].render(SCREEN_WIDTH / 2 - 250 + 26 + 50 * m, SCREEN_HEIGHT - 60 + 18, 0, 0, NULL, SDL_FLIP_NONE, 1);
+			gTextTexture2[m].render(SCREEN_WIDTH / 2 - 250 + 24 + 50 * m, SCREEN_HEIGHT - 60 + 16, 0, 0, NULL, SDL_FLIP_NONE, 1);
+		}
+	}
+	
 
 	player.moveAction(deltaX,deltaY);
 
@@ -384,10 +409,11 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 		else if (mouseState == 4)
 		//keep putting things on the floor
 
-			if (blockMouseX != prevBlockMouseX || blockMouseY != prevBlockMouseY)
+			if ((blockMouseX != prevBlockMouseX || blockMouseY != prevBlockMouseY)&& mainPocket.pocketData[1][pocketNumber - 1])
 			{
 			//mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
 			mainMap.putBlock(blockMouseX, blockMouseY, mainPocket.pocketData[0][pocketNumber-1]);
+			mainPocket.pocketData[1][pocketNumber - 1]--;
 			player.updateCollisionBox();
 			prevBlockMouseX = blockMouseX;
 			prevBlockMouseY = blockMouseY;
