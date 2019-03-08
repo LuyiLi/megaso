@@ -4,6 +4,12 @@
 #include <iostream>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
+
+//Globally used font
+extern TTF_Font *gFont;
+extern LTexture gTextTexture;
+
 LTexture::LTexture()
 {
 	//Initialize
@@ -60,7 +66,6 @@ bool LTexture::loadFromFile(std::string path)
 	return mTexture != NULL;
 }
 
-#ifdef _SDL_TTF_H
 bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor)
 {
 	//Get rid of preexisting texture
@@ -68,13 +73,17 @@ bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor
 
 	//Render text surface
 	SDL_Surface* textSurface = TTF_RenderText_Solid(gFont, textureText.c_str(), textColor);
-	if (textSurface != NULL)
+	if (textSurface == NULL)
+	{
+		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+	}
+	else
 	{
 		//Create texture from surface pixels
 		mTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
 		if (mTexture == NULL)
 		{
-			printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+			return false;
 		}
 		else
 		{
@@ -86,16 +95,11 @@ bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor
 		//Get rid of old surface
 		SDL_FreeSurface(textSurface);
 	}
-	else
-	{
-		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
-	}
-
 
 	//Return success
 	return mTexture != NULL;
 }
-#endif
+
 
 void LTexture::free()
 {
@@ -127,7 +131,7 @@ void LTexture::setAlpha(Uint8 alpha)
 	SDL_SetTextureAlphaMod(mTexture, alpha);
 }
 
-void LTexture::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
+void LTexture::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip,int scale)
 {
 	//Set rendering space and render to screen
 	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
@@ -135,8 +139,8 @@ void LTexture::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* cen
 	//Set clip rendering dimensions
 	if (clip != NULL)
 	{
-		renderQuad.w = clip->w / 2;
-		renderQuad.h = clip->h / 2;
+		renderQuad.w = clip->w / scale;
+		renderQuad.h = clip->h / scale;
 	}
 
 	//Render to screen

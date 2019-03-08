@@ -8,27 +8,30 @@
 #include "Camera.h"
 #include "SavingControl.h"
 #include "Map.h"
+#include "pocket.h"
+
 extern Map mainMap;
+extern pocket mainPocket;
 
 Player::Player()
 {
 	//Initialize the offsets
 
 	//Set collision box dimension
-	mCollider.w = Player_WIDTH;
-	mCollider.h = Player_HEIGHT;
+	mCollider.w = Player_WIDTH/2;
+	mCollider.h = Player_HEIGHT/2;
 
 	//Initialize the velocity
 	mVelX = 0;
 	mVelY = 0;
 	canJump = true;
 
-	for (int i = 0; i < 25; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		rectArray[i].x = 0;
 		rectArray[i].y = 0;
-		rectArray[i].w = 100;
-		rectArray[i].h = 100;
+		rectArray[i].w = 50;
+		rectArray[i].h = 50;
 	}
 }
 
@@ -37,19 +40,23 @@ void Player::handleEvent(SDL_Event& e)
 	//If a key was pressed
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
 	{
-		//Adjust the velocity
-		switch (e.key.keysym.sym)
+		if (e.key.keysym.sym == SDLK_w || e.key.keysym.sym == SDLK_SPACE)
 		{
-		case SDLK_UP:
 			if (canJump)
 			{
-				mVelY = -21;
+				mVelY = -15;
 				canJump = false;
 			}
-			break;
-		case SDLK_LEFT: acceleration--; break;
-		case SDLK_RIGHT: acceleration++; break;
 		}
+		else if (e.key.keysym.sym == SDLK_a)
+		{
+			acceleration--;
+		}
+		else if (e.key.keysym.sym == SDLK_d)
+		{
+			acceleration++;
+		}
+
 	}
 	//If a key was released
 	else if (e.type == SDL_KEYUP && e.key.repeat == 0)
@@ -57,8 +64,8 @@ void Player::handleEvent(SDL_Event& e)
 		//Adjust the velocity
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_LEFT: mVelX = 0; acceleration++; break;
-		case SDLK_RIGHT: mVelX = 0; acceleration--;  break;
+		case SDLK_a: mVelX = 0; acceleration++; break;
+		case SDLK_d: mVelX = 0; acceleration--;  break;
 		}
 	}
 }
@@ -69,14 +76,14 @@ void Player::move()
 		mVelX = 0;
 
 	mCollider.x += mVelX;
-	posX = mCollider.x - 19;
+	posX = mCollider.x - 10;
 
 	if (checkCollision())
 	{
 		//Move back
 		mCollider.x -= mVelX;
 		mVelX = 0;
-		posX = mCollider.x - 19;
+		posX = mCollider.x - 10;
 	}
 	else if(abs(mVelX) <= Player_VEL)
 		mVelX += acceleration;
@@ -102,17 +109,17 @@ void Player::move()
 		if (mVelY > 5)
 			canJump = false;
 	}
-	if (blockPosY != posY / 100 || blockPosX != posX / 100)
+	if (blockPosY != mCollider.y / 50 || blockPosX != mCollider.x / 50)
 	{
-		blockPosX = posX / 100;
-		blockPosY = posY / 100;
+		blockPosX = mCollider.x / 50;
+		blockPosY = mCollider.y / 50;
 		updateCollisionBox();
 	}
 }
 
 bool Player::checkCollision()
 {
-	for (int i = 0; i < 25; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		if (rectArray[i].x == 0 && rectArray[i].y == 0)
 			continue;
@@ -123,24 +130,59 @@ bool Player::checkCollision()
 	return false;
 }
 
+void Player::pickUpItem(droppedItem *droppeditem)
+{
+	if (droppeditem->item.itemType != ITEM_NULL)
+		if (intersect(mCollider, droppeditem->mCollider))
+		{
+			mainPocket.pocketUpdate();
+			//todo :put it inside the backpack
+			int existFlag = 0;
+			for (int i = 0; i < 10; i++)
+			{
+				if (mainPocket.pocketData[0][i] == droppeditem->item.ID)
+				{
+					mainPocket.pocketData[1][i]++;
+					existFlag = 1;
+					droppeditem->deleteItem();
+					break;
+				}
+			}
+			if (!existFlag)
+			{
+				for (int i = 0; i < 10; i++)
+				{
+					if (mainPocket.pocketData[0][i] == 0)
+					{
+						mainPocket.pocketData[0][i] = droppeditem->item.ID;
+						mainPocket.pocketData[1][i]++;
+						droppeditem->deleteItem();
+						break;
+					}
+				}
+			}
+		}
+
+}
+
 void Player::updateCollisionBox()
 {
 	int startBlockX, startBlockY;
-	startBlockX = blockPosY - 2 < 0 ? 0 : blockPosY;
-	startBlockY = blockPosX - 2 < 0 ? 0 : blockPosX;
+	startBlockX = blockPosY - 1;
+	startBlockY = blockPosX - 1;
 
-	for (int i = 0; i<5; i++)
-		for (int j = 0; j < 5; j++)
+	for (int i = 0; i<4; i++)
+		for (int j = 0; j < 4; j++)
 		{
 			if (mainMap.mapData[startBlockX + i][startBlockY + j])
 			{
-				rectArray[i + 5 * j].x = 100 * (blockPosX + j);
-				rectArray[i + 5 * j].y = 100 * (blockPosY + i);
+				rectArray[i + 4 * j].x = 50 * (startBlockY + j);
+				rectArray[i + 4 * j].y = 50 * (startBlockX + i);
 			}
 			else
 			{
-				rectArray[i + 5 * j].x = 0;
-				rectArray[i + 5 * j].y = 0;
+				rectArray[i + 4 * j].x = 0;
+				rectArray[i + 4 * j].y = 0;
 			}
 		}
 }
@@ -162,7 +204,7 @@ void Player::moveAction(int deltaX, int deltaY)
 	if (acceleration > 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE);
+		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE,4);
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -173,7 +215,7 @@ void Player::moveAction(int deltaX, int deltaY)
 	else if (acceleration < 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL);
+		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL,4);
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -183,7 +225,7 @@ void Player::moveAction(int deltaX, int deltaY)
 	else
 	{
 		SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-		slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE);
+		slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE,4);
 		++frame_stand;
 		if (frame_stand / 6 >= 6)
 		{
@@ -192,7 +234,7 @@ void Player::moveAction(int deltaX, int deltaY)
 	}
 }
 
-bool Player::initPlayerTexture()
+bool Player::loadTexture()
 {
 	if (!slime_walking_texture.loadFromFile("images/slime_walk.png"))
 	{

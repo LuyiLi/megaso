@@ -1,5 +1,7 @@
 #pragma once
 #include "LTexture.h"
+#include "droppedItem.h"
+
 extern const int g;
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
@@ -22,7 +24,7 @@ public:
 
 	int acceleration;
 
-	SDL_Rect rectArray[25];
+	SDL_Rect rectArray[16];
 
 	//Maximum axis velocity of the Player
 	static const int Player_VEL = 5;
@@ -37,10 +39,10 @@ public:
 	void move();
 
 	void moveAction(int, int);
-	bool initPlayerTexture();
+	bool loadTexture();
 
 	bool checkCollision();
-
+	void pickUpItem(droppedItem *);
 	void updateCollisionBox();
 
 	//Shows the Player on the screen

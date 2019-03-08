@@ -4,6 +4,8 @@
 
 Item::Item()
 {
+	ID = 0;
+	itemType = ITEM_NULL;
 }
 
 
