@@ -12,6 +12,9 @@
 #include "ItemList.h"
 #include "LTimer.h"
 #include "pocket.h"
+#include <SDL_ttf.h>
+#include <cmath>
+
 Item itemList[100];
 
 
@@ -35,6 +38,12 @@ bool loadMedia();
 
 //�����˳���������
 void close();
+
+//Globally used font
+TTF_Font *gFont = NULL;
+
+//Rendered texture
+LTexture gTextTexture;
 
 //��Ⱦ���趨
 SDL_Renderer* gRenderer = NULL;
@@ -151,6 +160,12 @@ bool init()
 					printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
 					success = false;
 				}
+				//Initialize SDL_ttf
+				if (TTF_Init() == -1)
+				{
+					printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+					success = false;
+				}
 			}
 		}
 	}
@@ -162,6 +177,25 @@ bool loadMedia()
 {
 	//Loading success flag
 	bool success = true;
+
+	//Open the font
+	gFont = TTF_OpenFont("comic.ttf", 28);
+	if (gFont == NULL)
+	{
+		printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
+		success = false;
+	}
+	else
+	{
+		//Render text
+		SDL_Color textColor = { 255, 255, 255 };
+		if (!gTextTexture.loadFromRenderedText("I LIKE TO PLAY REIMU-RUBO", textColor))
+		{
+			printf("Failed to render text texture!\n");
+			success = false;
+		}
+	}
+	
 	if (very_behind_background_texture.loadFromFile("images/very_behind_bg.png"))
 	{
 		very_behind_background_clips[0].x = 0;
@@ -227,10 +261,17 @@ void close()
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
 	gRenderer = NULL;
+	//Free loaded images
+	gTextTexture.free();
+
+	//Free global font
+	TTF_CloseFont(gFont);
+	gFont = NULL;
 
 	//Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
+	TTF_Quit();
 }
 
 Uint32 callback(Uint32 interval, void* param)
@@ -275,7 +316,8 @@ Uint32 callback(Uint32 interval, void* param)
 		SDL_Rect* currentPocketClip = &mainMap.newMap_clips[mainPocket.pocketData[0][p]];
 		mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p +12, SCREEN_HEIGHT - 60+12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 	}
-	
+	gTextTexture.render((SCREEN_WIDTH - gTextTexture.getWidth()) / 2, (SCREEN_HEIGHT - gTextTexture.getHeight()) / 2,0,0,NULL,SDL_FLIP_NONE,1);
+
 	player.moveAction(deltaX,deltaY);
 
 	//Render the collision box
