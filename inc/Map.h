@@ -8,8 +8,8 @@ public:
 	Map();
 	~Map();
 	const int blockSize = 50;
-	SDL_Rect mapClips[2];
-	LTexture mapTexture;
+	SDL_Rect newMap_clips[233];
+	LTexture newMap_texture;
 	static const int xBlockNumber = 100;
 	static const int yBlockNumber = 100;
 	int mapData[xBlockNumber][yBlockNumber];

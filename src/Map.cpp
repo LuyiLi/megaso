@@ -15,20 +15,55 @@ Map::Map()
 
 bool Map::loadTexture()
 {
-	if (mapTexture.loadFromFile("images/mapTexture.png"))
+	if (newMap_texture.loadFromFile("images/newMapTexture.png"))
 	{
-		mapClips[0].x = 0;
-		mapClips[0].y = 0;
-		mapClips[0].w = 200;
-		mapClips[0].h = 200;
+		newMap_clips[0].x = 0;
+		newMap_clips[0].y = 0;
+		newMap_clips[0].w = 100;
+		newMap_clips[0].h = 100;
 
-		mapClips[1].x = 200;
-		mapClips[1].y = 0;
-		mapClips[1].w = 200;
-		mapClips[1].h = 200;
+		newMap_clips[1].x = 100;
+		newMap_clips[1].y = 0;
+		newMap_clips[1].w = 100;
+		newMap_clips[1].h = 100;
+
+		newMap_clips[2].x = 200;
+		newMap_clips[2].y = 0;
+		newMap_clips[2].w = 100;
+		newMap_clips[2].h = 100;
+
+		newMap_clips[3].x = 300;
+		newMap_clips[3].y = 0;
+		newMap_clips[3].w = 100;
+		newMap_clips[3].h = 100;
+
+		newMap_clips[4].x = 400;
+		newMap_clips[4].y = 0;
+		newMap_clips[4].w = 100;
+		newMap_clips[4].h = 100;
+
+		newMap_clips[5].x = 500;
+		newMap_clips[5].y = 0;
+		newMap_clips[5].w = 100;
+		newMap_clips[5].h = 100;
+
+		newMap_clips[6].x = 600;
+		newMap_clips[6].y = 0;
+		newMap_clips[6].w = 100;
+		newMap_clips[6].h = 100;
+
+		newMap_clips[7].x = 700;
+		newMap_clips[7].y = 0;
+		newMap_clips[7].w = 100;
+		newMap_clips[7].h = 100;
+
 		return true;
 	}
-	return false;
+	else 
+	{
+		return false;
+	}
+	
 }
 
 Map::~Map()
@@ -50,8 +85,8 @@ void Map::render(int deltaX, int deltaY)
 
 			if (mapData[i][j])
 			{
-				SDL_Rect* currentClip = &mapClips[mapData[i][j] - 1];
-				mapTexture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE,4);
+				SDL_Rect* currentClip = &newMap_clips[mapData[i][j]];
+				newMap_texture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE,2);
 			}
 			absY += 50;
 		}
@@ -74,19 +109,23 @@ int Map::checkIfExist()
 	}
 }
 
+extern int pocketNumber;
+
 void Map::generateMap()
 {
 	for (int i = 0; i < xBlockNumber; i++)
 	{
-		for (int j = 50; j <yBlockNumber; j++)
+		for (int j = 0; j < yBlockNumber; j++)
+		{
 			if (j == 50)
 			{
 				mapData[j][i] = 1;
 			}
-			else 
+			else
 			{
 				mapData[j][i] = 2;
 			}
+		}
 	}
 }
 
