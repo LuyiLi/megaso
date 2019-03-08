@@ -11,6 +11,7 @@
 #include "item.h"
 #include "ItemList.h"
 #include "LTimer.h"
+#include "pocket.h"
 Item itemList[100];
 
 
@@ -52,8 +53,6 @@ LTexture crack_texture;
 SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
 
-SDL_Rect newMap_clips[233];
-LTexture newMap_texture;
 
 SDL_Rect pocketUI_clips[2];
 LTexture pocketUI_texture;
@@ -66,7 +65,10 @@ Map mainMap;
 
 /*Creat a timer*/
 LTimer timer;
-int pocketNumber = 0;
+
+pocket mainPocket;
+
+int pocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
 int target[3] = {0};
@@ -87,9 +89,21 @@ bool init()
 	else
 	{
 		mainMap.generateMap();
+		mainMap.mapWrite(mainMap.mapData);
 		mainMap.mapRead();
 	}
 	
+	if (mainPocket.checkIfExist())
+	{
+		mainPocket.pocketRead();
+	}
+	else
+	{
+		mainPocket.pocketGenerate();
+		mainPocket.pocketWrite(mainPocket.pocketData);
+		mainPocket.pocketRead();
+	}
+
 	//Initialization flag
 	bool success = true;
 	savingControler.fileRead(target);
@@ -205,10 +219,9 @@ void close()
 	savingControler.fileWrite(data);
 
 	mainMap.mapWrite(mainMap.mapData);
+	mainPocket.pocketWrite(mainPocket.pocketData);
 	//Free loaded images
-	//slime_standing_texture.free();
-	//slime_walking_texture.free();
-
+	very_behind_background_texture.free();
 	//Destroy window	
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
@@ -255,6 +268,12 @@ Uint32 callback(Uint32 interval, void* param)
 	if (pocketNumber > 0 && pocketNumber < 11)
 	{
 		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*(pocketNumber - 1), SCREEN_HEIGHT - 60, highLightPocketClip, 0, NULL, SDL_FLIP_NONE,2);
+	}
+	
+	for (int p = 0; p < 10; p++)
+	{
+		SDL_Rect* currentPocketClip = &mainMap.newMap_clips[mainPocket.pocketData[0][p]];
+		mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p +12, SCREEN_HEIGHT - 60+12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 	}
 	
 	player.moveAction(deltaX,deltaY);
@@ -322,9 +341,11 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 		}
 		else if (mouseState == 4)
 		//keep putting things on the floor
+
 			if (blockMouseX != prevBlockMouseX || blockMouseY != prevBlockMouseY)
 			{
-			mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
+			//mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
+			mainMap.putBlock(blockMouseX, blockMouseY, mainPocket.pocketData[0][pocketNumber-1]);
 			player.updateCollisionBox();
 			prevBlockMouseX = blockMouseX;
 			prevBlockMouseY = blockMouseY;
