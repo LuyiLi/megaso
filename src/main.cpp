@@ -186,24 +186,6 @@ bool loadMedia()
 		crack_clips[2].h = 100;
 	}
 
-	if (crack_texture.loadFromFile("images/crack.png"))
-	{
-		newMap_clips[0].x = 0;
-		newMap_clips[0].y = 0;
-		newMap_clips[0].w = 100;
-		newMap_clips[0].h = 100;
-
-		newMap_clips[1].x = 100;
-		newMap_clips[1].y = 0;
-		newMap_clips[1].w = 100;
-		newMap_clips[1].h = 100;
-
-		newMap_clips[2].x = 200;
-		newMap_clips[2].y = 0;
-		newMap_clips[2].w = 100;
-		newMap_clips[2].h = 100;
-	}
-
 	else
 	{
 		printf("SDL,TQL,WSL");
@@ -342,7 +324,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 		//keep putting things on the floor
 			if (blockMouseX != prevBlockMouseX || blockMouseY != prevBlockMouseY)
 			{
-			mainMap.putBlock(blockMouseX, blockMouseY, 1);
+			mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
 			player.updateCollisionBox();
 			prevBlockMouseX = blockMouseX;
 			prevBlockMouseY = blockMouseY;
