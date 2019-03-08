@@ -10,9 +10,10 @@
 #include "Map.h"
 #include "item.h"
 #include "ItemList.h"
-#include "LTimer.h"
+#include "droppedItem.h"
 Item itemList[100];
 
+droppedItem droppedItemList[200];
 
 //�������
 Player player;
@@ -64,8 +65,6 @@ LTexture gPlayerTexture;
 /*��������ͼ*/
 Map mainMap;
 
-/*Creat a timer*/
-LTimer timer;
 int pocketNumber = 0;
 int breakTime = 2000;
 int startTime = 0;
@@ -89,7 +88,9 @@ bool init()
 		mainMap.generateMap();
 		mainMap.mapRead();
 	}
-	
+	//init the itemList
+	initItemList();
+
 	//Initialization flag
 	bool success = true;
 	savingControler.fileRead(target);
@@ -222,8 +223,13 @@ void close()
 
 Uint32 callback(Uint32 interval, void* param)
 {
-	
+	for (int i = 0; i < 200; i++)
+	{
+		player.pickUpItem(&droppedItemList[i]);
+		droppedItemList[i].move();
+	}
 	player.move();
+	
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
@@ -258,6 +264,10 @@ Uint32 callback(Uint32 interval, void* param)
 	}
 	
 	player.moveAction(deltaX,deltaY);
+
+	// Render the dropped items
+	for (int i = 0; i < 200; i++)
+		droppedItemList[i].render(deltaX, deltaY);
 
 	//Render the collision box
 	SDL_Rect tempRect[16];
@@ -296,10 +306,13 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY)
 			{
 				//Break the block if time is enough
-				if (flag == 39)
+				if (flag == 40)
 				{
 					mainMap.breakBlock(blockMouseX, blockMouseY);
 					player.updateCollisionBox();
+					//update dropped item's collision box
+					for (int i = 0; i < 200; i++)
+						droppedItemList[i].updateCollisionBox();
 					flag = 0;
 					crackFlag = 0;
 					SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
@@ -322,19 +335,13 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 		}
 		else if (mouseState == 4)
 		//keep putting things on the floor
-			if (blockMouseX != prevBlockMouseX || blockMouseY != prevBlockMouseY)
-			{
+		{
 			mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
 			player.updateCollisionBox();
 			prevBlockMouseX = blockMouseX;
 			prevBlockMouseY = blockMouseY;
 			SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 			return 0;
-			}
-			else
-			{
-				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
-				return 0;
 			}
 		else if (!mouseState)
 		{

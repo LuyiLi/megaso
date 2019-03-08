@@ -167,6 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="inc\droppedItem.h" />
     <ClInclude Include="inc\Camera.h" />
     <ClInclude Include="inc\ItemList.h" />
     <ClInclude Include="inc\Map.h" />
@@ -177,10 +178,9 @@
     <ClInclude Include="inc\LTexture.h" />
     <ClInclude Include="inc\settings.h" />
     <ClInclude Include="inc\SavingControl.h" />
-    <ClInclude Include="inc\LTimer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\LTimer.cpp" />
+    <ClCompile Include="src\droppedItem.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\SavingControl.cpp" />
@@ -194,6 +194,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\global.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

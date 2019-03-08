@@ -1,5 +1,7 @@
 #pragma once
 #include "LTexture.h"
+#include "droppedItem.h"
+
 extern const int g;
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
@@ -40,7 +42,7 @@ public:
 	bool loadTexture();
 
 	bool checkCollision();
-
+	void pickUpItem(droppedItem *);
 	void updateCollisionBox();
 
 	//Shows the Player on the screen

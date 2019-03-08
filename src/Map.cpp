@@ -8,6 +8,8 @@
 
 extern Player player;
 extern bool intersect(SDL_Rect, SDL_Rect);
+extern droppedItem droppedItemList[200];
+extern Item itemList[100];
 
 Map::Map()
 {
@@ -131,6 +133,8 @@ void Map::generateMap()
 	}
 }
 
+
+
 void Map::mapRead()
 {
 	FILE *fp;
@@ -193,7 +197,14 @@ void Map::mapRead()
 
 void Map::breakBlock(int x, int y)
 {
+	for (int i = 0; i < 200; i++)
+		if (droppedItemList[i].item.itemType == ITEM_NULL)
+		{
+			droppedItemList[i].create(50 * x + 15, 50 * y, itemList[1]);
+			break;
+		}
 	mapData[y][x] = 0;
+	
 }
 
 void Map::putBlock(int x, int y, int ID)

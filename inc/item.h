@@ -17,7 +17,8 @@ public:
 	char itemName[40];
 	char itemDescription[2333];
 	int maxStack;
-	void drop();
+	SDL_Rect itemClips[1];
+	LTexture itemTexture;
 
 	//The folling contents are for Blocks only
 	char blockTexturePath[40];

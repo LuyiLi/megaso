@@ -8,7 +8,9 @@
 #include "Camera.h"
 #include "SavingControl.h"
 #include "Map.h"
+
 extern Map mainMap;
+
 
 Player::Player()
 {
@@ -121,6 +123,17 @@ bool Player::checkCollision()
 	}
 
 	return false;
+}
+
+void Player::pickUpItem(droppedItem *droppeditem)
+{
+	if (droppeditem->item.itemType != ITEM_NULL)
+		if (intersect(mCollider, droppeditem->mCollider))
+		{
+			//todo :put it inside the backpack
+			droppeditem->deleteItem();
+		}
+
 }
 
 void Player::updateCollisionBox()
