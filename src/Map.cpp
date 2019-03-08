@@ -13,8 +13,7 @@ extern Item itemList[100];
 
 Map::Map()
 {
-	int mapData[xBlockNumber][yBlockNumber] = { 0 };
-	
+	int mapData[xBlockNumber][yBlockNumber] = {0};
 }
 
 bool Map::loadTexture()
@@ -104,12 +103,12 @@ int Map::checkIfExist()
 	fopen_s(&fp, "map.txt", "r");
 	if (fp == NULL)
 	{
-		return 1;
+		return 0;
 	}
 	else
 	{
 		fclose(fp);
-		return 0;
+		return 1;
 	}
 }
 
@@ -124,6 +123,10 @@ void Map::generateMap()
 			if (j == 50)
 			{
 				mapData[j][i] = 1;
+			}
+			else if (j < 50)
+			{
+				mapData[j][i] = 0;
 			}
 			else
 			{

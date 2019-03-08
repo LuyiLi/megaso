@@ -4,6 +4,12 @@
 #include <iostream>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
+
+//Globally used font
+extern TTF_Font *gFont;
+extern LTexture gTextTexture;
+
 LTexture::LTexture()
 {
 	//Initialize
@@ -60,7 +66,6 @@ bool LTexture::loadFromFile(std::string path)
 	return mTexture != NULL;
 }
 
-#ifdef _SDL_TTF_H
 bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor)
 {
 	//Get rid of preexisting texture
@@ -68,7 +73,11 @@ bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor
 
 	//Render text surface
 	SDL_Surface* textSurface = TTF_RenderText_Solid(gFont, textureText.c_str(), textColor);
-	if (textSurface != NULL)
+	if (textSurface == NULL)
+	{
+		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+	}
+	else
 	{
 		//Create texture from surface pixels
 		mTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
@@ -86,16 +95,11 @@ bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor
 		//Get rid of old surface
 		SDL_FreeSurface(textSurface);
 	}
-	else
-	{
-		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
-	}
-
 
 	//Return success
 	return mTexture != NULL;
 }
-#endif
+
 
 void LTexture::free()
 {

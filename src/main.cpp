@@ -11,6 +11,10 @@
 #include "item.h"
 #include "ItemList.h"
 #include "droppedItem.h"
+#include "pocket.h"
+#include <SDL_ttf.h>
+#include <cmath>
+
 Item itemList[100];
 
 droppedItem droppedItemList[200];
@@ -36,6 +40,12 @@ bool loadMedia();
 //�����˳���������
 void close();
 
+//Globally used font
+TTF_Font *gFont = NULL;
+
+//Rendered texture
+LTexture gTextTexture;
+
 //��Ⱦ���趨
 SDL_Renderer* gRenderer = NULL;
 
@@ -53,8 +63,6 @@ LTexture crack_texture;
 SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
 
-SDL_Rect newMap_clips[233];
-LTexture newMap_texture;
 
 SDL_Rect pocketUI_clips[2];
 LTexture pocketUI_texture;
@@ -65,7 +73,9 @@ LTexture gPlayerTexture;
 /*��������ͼ*/
 Map mainMap;
 
-int pocketNumber = 0;
+pocket mainPocket;
+
+int pocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
 int target[3] = {0};
@@ -86,10 +96,22 @@ bool init()
 	else
 	{
 		mainMap.generateMap();
+		mainMap.mapWrite(mainMap.mapData);
 		mainMap.mapRead();
 	}
 	//init the itemList
 	initItemList();
+	
+	if (mainPocket.checkIfExist())
+	{
+		mainPocket.pocketRead();
+	}
+	else
+	{
+		mainPocket.pocketGenerate();
+		mainPocket.pocketWrite(mainPocket.pocketData);
+		mainPocket.pocketRead();
+	}
 
 	//Initialization flag
 	bool success = true;
@@ -138,6 +160,12 @@ bool init()
 					printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
 					success = false;
 				}
+				//Initialize SDL_ttf
+				if (TTF_Init() == -1)
+				{
+					printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+					success = false;
+				}
 			}
 		}
 	}
@@ -149,6 +177,25 @@ bool loadMedia()
 {
 	//Loading success flag
 	bool success = true;
+
+	//Open the font
+	gFont = TTF_OpenFont("comic.ttf", 28);
+	if (gFont == NULL)
+	{
+		printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
+		success = false;
+	}
+	else
+	{
+		//Render text
+		SDL_Color textColor = { 255, 255, 255 };
+		if (!gTextTexture.loadFromRenderedText("I LIKE TO PLAY REIMU-RUBO", textColor))
+		{
+			printf("Failed to render text texture!\n");
+			success = false;
+		}
+	}
+	
 	if (very_behind_background_texture.loadFromFile("images/very_behind_bg.png"))
 	{
 		very_behind_background_clips[0].x = 0;
@@ -206,19 +253,25 @@ void close()
 	savingControler.fileWrite(data);
 
 	mainMap.mapWrite(mainMap.mapData);
+	mainPocket.pocketWrite(mainPocket.pocketData);
 	//Free loaded images
-	//slime_standing_texture.free();
-	//slime_walking_texture.free();
-
+	very_behind_background_texture.free();
 	//Destroy window	
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
 	gRenderer = NULL;
+	//Free loaded images
+	gTextTexture.free();
+
+	//Free global font
+	TTF_CloseFont(gFont);
+	gFont = NULL;
 
 	//Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
+	TTF_Quit();
 }
 
 Uint32 callback(Uint32 interval, void* param)
@@ -263,6 +316,13 @@ Uint32 callback(Uint32 interval, void* param)
 		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*(pocketNumber - 1), SCREEN_HEIGHT - 60, highLightPocketClip, 0, NULL, SDL_FLIP_NONE,2);
 	}
 	
+	for (int p = 0; p < 10; p++)
+	{
+		SDL_Rect* currentPocketClip = &mainMap.newMap_clips[mainPocket.pocketData[0][p]];
+		mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p +12, SCREEN_HEIGHT - 60+12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
+	}
+	gTextTexture.render((SCREEN_WIDTH - gTextTexture.getWidth()) / 2, (SCREEN_HEIGHT - gTextTexture.getHeight()) / 2,0,0,NULL,SDL_FLIP_NONE,1);
+
 	player.moveAction(deltaX,deltaY);
 
 	// Render the dropped items
@@ -335,8 +395,11 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 		}
 		else if (mouseState == 4)
 		//keep putting things on the floor
-		{
-			mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
+
+			if (blockMouseX != prevBlockMouseX || blockMouseY != prevBlockMouseY)
+			{
+			//mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
+			mainMap.putBlock(blockMouseX, blockMouseY, mainPocket.pocketData[0][pocketNumber-1]);
 			player.updateCollisionBox();
 			prevBlockMouseX = blockMouseX;
 			prevBlockMouseY = blockMouseY;
