@@ -396,8 +396,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 		else if (mouseState == 4)
 		//keep putting things on the floor
 
-			if (blockMouseX != prevBlockMouseX || blockMouseY != prevBlockMouseY)
-			{
+		{
 			//mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
 			mainMap.putBlock(blockMouseX, blockMouseY, mainPocket.pocketData[0][pocketNumber-1]);
 			player.updateCollisionBox();
@@ -405,7 +404,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 			prevBlockMouseY = blockMouseY;
 			SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 			return 0;
-			}
+		}
 		else if (!mouseState)
 		{
 			crackFlag = 0;
