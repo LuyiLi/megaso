@@ -31,6 +31,19 @@ int pocket::checkIfExist()
 	}
 }
 
+void pocket::pocketUpdate()
+{
+	for (int i = 0; i < 10; i++)
+	{
+	
+		if (pocketData[0][i] == 0 || pocketData[1][i] == 0)
+		{
+			pocketData[0][i] = 0;
+			pocketData[1][i] = 0;
+		}
+	}
+}
+
 void pocket::pocketWrite(int targrtPocket[2][10])
 {
 	FILE *fp;

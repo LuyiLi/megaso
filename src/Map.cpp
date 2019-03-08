@@ -5,11 +5,13 @@
 #include "Player.h"
 #include "Camera.h"
 #include "item.h"
+#include "pocket.h"
 
 extern Player player;
 extern bool intersect(SDL_Rect, SDL_Rect);
 extern droppedItem droppedItemList[200];
 extern Item itemList[100];
+extern pocket mainPocket;
 
 Map::Map()
 {
@@ -203,7 +205,7 @@ void Map::breakBlock(int x, int y)
 	for (int i = 0; i < 200; i++)
 		if (droppedItemList[i].item.itemType == ITEM_NULL)
 		{
-			droppedItemList[i].create(50 * x + 15, 50 * y, itemList[1]);
+			droppedItemList[i].create(50 * x + 15, 50 * y, itemList[mapData[y][x]]);
 			break;
 		}
 	mapData[y][x] = 0;
@@ -223,6 +225,7 @@ void Map::putBlock(int x, int y, int ID)
 			if (!intersect(tempRect, player.mCollider))
 			{
 				mapData[y][x] = ID;
+				mainPocket.pocketData[1][pocketNumber - 1]--;
 				return;
 			}
 	}

@@ -18,10 +18,15 @@ void initItemList()
 	itemList[0].itemDescription[0] = '\0';
 	itemList[0].maxStack = 0;
 	//ID = 1
-	itemList[1].ID = 1;
-	itemList[1].itemType = ITEM_BLOCK;
+	
 	strcpy_s(itemList[1].itemName,"Dirt");
 	strcpy_s(itemList[1].itemDescription, "A fundemental block for constructing");
 	itemList[1].maxStack = 99;
 	itemList[1].blockHardness = 2;
+	for (int i = 1; i < 100; i++)
+	{
+		itemList[i].ID = i;
+		itemList[i].itemType = ITEM_BLOCK;
+	}
+	
 }

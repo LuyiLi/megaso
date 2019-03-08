@@ -8,9 +8,10 @@
 #include "Camera.h"
 #include "SavingControl.h"
 #include "Map.h"
+#include "pocket.h"
 
 extern Map mainMap;
-
+extern pocket mainPocket;
 
 Player::Player()
 {
@@ -39,19 +40,23 @@ void Player::handleEvent(SDL_Event& e)
 	//If a key was pressed
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
 	{
-		//Adjust the velocity
-		switch (e.key.keysym.sym)
+		if (e.key.keysym.sym == SDLK_w || e.key.keysym.sym == SDLK_SPACE)
 		{
-		case SDLK_w:
 			if (canJump)
 			{
 				mVelY = -15;
 				canJump = false;
 			}
-			break;
-		case SDLK_a: acceleration--; break;
-		case SDLK_d: acceleration++; break;
 		}
+		else if (e.key.keysym.sym == SDLK_a)
+		{
+			acceleration--;
+		}
+		else if (e.key.keysym.sym == SDLK_d)
+		{
+			acceleration++;
+		}
+
 	}
 	//If a key was released
 	else if (e.type == SDL_KEYUP && e.key.repeat == 0)
@@ -130,8 +135,32 @@ void Player::pickUpItem(droppedItem *droppeditem)
 	if (droppeditem->item.itemType != ITEM_NULL)
 		if (intersect(mCollider, droppeditem->mCollider))
 		{
+			mainPocket.pocketUpdate();
 			//todo :put it inside the backpack
-			droppeditem->deleteItem();
+			int existFlag = 0;
+			for (int i = 0; i < 10; i++)
+			{
+				if (mainPocket.pocketData[0][i] == droppeditem->item.ID)
+				{
+					mainPocket.pocketData[1][i]++;
+					existFlag = 1;
+					droppeditem->deleteItem();
+					break;
+				}
+			}
+			if (!existFlag)
+			{
+				for (int i = 0; i < 10; i++)
+				{
+					if (mainPocket.pocketData[0][i] == 0)
+					{
+						mainPocket.pocketData[0][i] = droppeditem->item.ID;
+						mainPocket.pocketData[1][i]++;
+						droppeditem->deleteItem();
+						break;
+					}
+				}
+			}
 		}
 
 }

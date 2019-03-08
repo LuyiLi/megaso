@@ -249,10 +249,6 @@ void close()
 	//Free loaded images
 	very_behind_background_texture.free();
 	//Destroy window	
-	SDL_DestroyRenderer(gRenderer);
-	SDL_DestroyWindow(gWindow);
-	gWindow = NULL;
-	gRenderer = NULL;
 	//Free loaded images
 
 	//Free global font
@@ -395,6 +391,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 				{
 					mainMap.breakBlock(blockMouseX, blockMouseY);
 					player.updateCollisionBox();
+					mainPocket.pocketUpdate();
 					//update dropped item's collision box
 					for (int i = 0; i < 200; i++)
 						droppedItemList[i].updateCollisionBox();
@@ -425,7 +422,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 			{
 			//mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
 			mainMap.putBlock(blockMouseX, blockMouseY, mainPocket.pocketData[0][pocketNumber-1]);
-			mainPocket.pocketData[1][pocketNumber - 1]--;
+			
 			player.updateCollisionBox();
 			prevBlockMouseX = blockMouseX;
 			prevBlockMouseY = blockMouseY;
@@ -504,7 +501,31 @@ int main(int argc, char* args[])
 						case SDLK_0: pocketNumber = 10; break;
 						}
 					}
-
+					if (e.type == SDL_MOUSEWHEEL)
+					{
+						if (e.wheel.y == -1)
+						{
+							if (pocketNumber == 10)
+							{
+								pocketNumber = 1;
+							}
+							else
+							{
+								pocketNumber++;
+							}
+						}
+						else if (e.wheel.y == 1)
+						{
+							if (pocketNumber == 1)
+							{
+								pocketNumber = 10;
+							}
+							else
+							{
+								pocketNumber--;
+							}
+						}
+					}
 					if (e.type == SDL_MOUSEBUTTONDOWN)
 					{
 						//Get mouse position

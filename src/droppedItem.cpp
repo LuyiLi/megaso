@@ -53,7 +53,6 @@ void droppedItem::move()
 	{
 		//Move the droppedItem up or down
 		mCollider.y += mVelY;
-		posY = mCollider.y;
 
 		//If the droppedItem collided
 		if (checkCollision())
@@ -61,7 +60,6 @@ void droppedItem::move()
 			//Move back
 			mCollider.y -= mVelY;
 			mVelY = 0;
-			posY = mCollider.y;
 		}
 		else
 		{
@@ -108,13 +106,16 @@ void droppedItem::render(int deltaX, int deltaY)
 		tempRect = mCollider;
 		tempRect.x += deltaX;
 		tempRect.y += deltaY;
-		SDL_RenderDrawRect(gRenderer, &tempRect);
 		SDL_Rect tempRect2;
-		tempRect = collisionRect;
-		tempRect.x += deltaX;
-		tempRect.y += deltaY;
-		SDL_RenderDrawRect(gRenderer, &tempRect);
+		tempRect2 = collisionRect;
+		tempRect2.x += deltaX;
+		tempRect2.y += deltaY;
+		
 		//todo: change the texture
+		SDL_Rect* currentDroppedItemClip = &mainMap.newMap_clips[item.ID];
+		mainMap.newMap_texture.render(mCollider.x+deltaX,mCollider.y+deltaY, currentDroppedItemClip, 0, NULL, SDL_FLIP_NONE, 4);
+		SDL_RenderDrawRect(gRenderer, &tempRect);
+		SDL_RenderDrawRect(gRenderer, &tempRect2);
 	}
 }
 /*
