@@ -14,7 +14,6 @@ public:
 	static const int xBlockNumber = 100;
 	static const int yBlockNumber = 100;
 	int mapData[xBlockNumber][yBlockNumber];
-	SDL_Rect collisionRect[5][5];
 	int updateCollisionBox();
 	void render(int deltaX, int deltaY);
 	bool loadTexture();

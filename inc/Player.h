@@ -22,7 +22,7 @@ public:
 
 	int acceleration;
 
-	SDL_Rect rectArray[25];
+	SDL_Rect rectArray[16];
 
 	//Maximum axis velocity of the Player
 	static const int Player_VEL = 5;

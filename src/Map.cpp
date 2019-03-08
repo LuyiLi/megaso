@@ -166,8 +166,12 @@ void Map::putBlock(int x, int y, int ID)
 		tempRect.y = 50 * y;
 		tempRect.w = 50;
 		tempRect.h = 50;
-		if(!intersect(tempRect, player.mCollider))
-			mapData[y][x] = ID;
+		if(mapData[y][x + 1] || mapData[y + 1][x] || mapData[y - 1][x] || mapData[y][x - 1])
+			if (!intersect(tempRect, player.mCollider))
+			{
+				mapData[y][x] = ID;
+				return;
+			}
 	}
 }
 

@@ -23,7 +23,7 @@ Player::Player()
 	mVelY = 0;
 	canJump = true;
 
-	for (int i = 0; i < 25; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		rectArray[i].x = 0;
 		rectArray[i].y = 0;
@@ -102,17 +102,17 @@ void Player::move()
 		if (mVelY > 5)
 			canJump = false;
 	}
-	if (blockPosY != posY / 50 || blockPosX != posX / 50)
+	if (blockPosY != mCollider.y / 50 || blockPosX != mCollider.x / 50)
 	{
-		blockPosX = posX / 50;
-		blockPosY = posY / 50;
+		blockPosX = mCollider.x / 50;
+		blockPosY = mCollider.y / 50;
 		updateCollisionBox();
 	}
 }
 
 bool Player::checkCollision()
 {
-	for (int i = 0; i < 25; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		if (rectArray[i].x == 0 && rectArray[i].y == 0)
 			continue;
@@ -126,21 +126,21 @@ bool Player::checkCollision()
 void Player::updateCollisionBox()
 {
 	int startBlockX, startBlockY;
-	startBlockX = blockPosY - 2;
+	startBlockX = blockPosY - 1;
 	startBlockY = blockPosX - 1;
 
-	for (int i = 0; i<5; i++)
-		for (int j = 0; j < 5; j++)
+	for (int i = 0; i<4; i++)
+		for (int j = 0; j < 4; j++)
 		{
 			if (mainMap.mapData[startBlockX + i][startBlockY + j])
 			{
-				rectArray[i + 5 * j].x = 50 * (startBlockY + j);
-				rectArray[i + 5 * j].y = 50 * (startBlockX + i);
+				rectArray[i + 4 * j].x = 50 * (startBlockY + j);
+				rectArray[i + 4 * j].y = 50 * (startBlockX + i);
 			}
 			else
 			{
-				rectArray[i + 5 * j].x = 0;
-				rectArray[i + 5 * j].y = 0;
+				rectArray[i + 4 * j].x = 0;
+				rectArray[i + 4 * j].y = 0;
 			}
 		}
 }
