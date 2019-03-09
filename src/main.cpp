@@ -89,7 +89,7 @@ int absMouseY;//mouseState = 0/1/2/4  NULL/left/middle/right
 
 bool init()
 {
-	//���ɳ�ʼ��ͼ
+	//Check if map.txt exist, generate one if not
 	if (mainMap.checkIfExist())
 	{
 		mainMap.mapRead();
@@ -100,9 +100,11 @@ bool init()
 		mainMap.mapWrite(mainMap.mapData);
 		mainMap.mapRead();
 	}
-	//init the itemList
+
+	//init the ItemList
 	initItemList();
-	
+
+	//Check if pocket.txt exist, generate one if not
 	if (mainPocket.checkIfExist())
 	{
 		mainPocket.pocketRead();
@@ -116,9 +118,12 @@ bool init()
 
 	//Initialization flag
 	bool success = true;
+
+	//Read position from saving.txt
 	savingControler.fileRead(target);
 	player.mCollider.x = target[0];
 	player.mCollider.y = target[1];
+
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
 	{
@@ -170,7 +175,6 @@ bool init()
 			}
 		}
 	}
-
 	return success;
 }
 
@@ -187,7 +191,7 @@ bool loadMedia()
 		success = false;
 	}
 	
-	
+	//Load very behind background
 	if (very_behind_background_texture.loadFromFile("images/very_behind_bg.png"))
 	{
 		very_behind_background_clips[0].x = 0;
@@ -195,6 +199,8 @@ bool loadMedia()
 		very_behind_background_clips[0].w = 1800;
 		very_behind_background_clips[0].h = 1196;
 	}
+
+	//Load pocket
 	if (pocketUI_texture.loadFromFile("images/pocket.png"))
 	{
 		pocketUI_clips[0].x = 0;
@@ -208,6 +214,7 @@ bool loadMedia()
 		pocketUI_clips[1].h = 100;
 	}
 
+	//Load crack effect
 	if (crack_texture.loadFromFile("images/crack.png"))
 	{
 		crack_clips[0].x = 0;
@@ -225,11 +232,12 @@ bool loadMedia()
 		crack_clips[2].w = 100;
 		crack_clips[2].h = 100;
 	}
-
 	else
 	{
 		printf("SDL,TQL,WSL");
 	}
+
+	//If failed
 	if (!player.loadTexture() || !mainMap.loadTexture())
 	{
 		success = false;
@@ -239,20 +247,19 @@ bool loadMedia()
 
 void close()
 {
+	//Saving last position into saving.txt
 	int data[3] = {0};
 	data[0] = player.mCollider.x;
 	data[1] = player.mCollider.y;
 	savingControler.fileWrite(data);
 
+	//Saving last map condition into map.txt
 	mainMap.mapWrite(mainMap.mapData);
 	mainPocket.pocketWrite(mainPocket.pocketData);
+	
 	//Free loaded images
 	very_behind_background_texture.free();
-	//Destroy window	
-	//Free loaded images
-
-	//Free global font
-
+	
 	//Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
@@ -261,32 +268,40 @@ void close()
 
 Uint32 callback(Uint32 interval, void* param)
 {
+	//
 	for (int i = 0; i < 200; i++)
 	{
 		player.pickUpItem(&droppedItemList[i]);
 		droppedItemList[i].move();
 	}
+
+	//Reimu-Rubo moves
 	player.move();
 	
+	//Calculate coordinate system offset
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
+	//Clips of the 2 mode of pocket
 	SDL_Rect* generalPocketClip = &pocketUI_clips[0];
 	SDL_Rect* highLightPocketClip = &pocketUI_clips[1];
 
+	//Shadow effect by rendering twice
 	for (int pocketPos = 0; pocketPos < 10; pocketPos++)
 	{
 		char str1[23];
 
+		//Set render color
 		SDL_Color textColorWhite = { 255, 255, 255 };
 		SDL_Color textColorBlack = { 0, 0, 0 };
 
+		//Space before a single number & none for 2-digit number, to get numbers right-aligned
 		if (mainPocket.pocketData[1][pocketPos] < 10)
 		{
 			_itoa_s(mainPocket.pocketData[1][pocketPos], str1, 10);
 			char newStr1[23] = " ";
 			strcat_s(newStr1, str1);
-
+			//Render text
 			gTextTexture1[pocketPos].loadFromRenderedText(newStr1, textColorBlack);
 			gTextTexture2[pocketPos].loadFromRenderedText(newStr1, textColorWhite);
 		}
@@ -299,14 +314,18 @@ Uint32 callback(Uint32 interval, void* param)
 		}
 	}
 
-	/*������һ����Ⱦ�����Ĳ���*/
+	//Render very behind background
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
+	
+	//Render map
 	mainMap.render(deltaX, deltaY);
 
+	//3 Clips for crack effects
 	SDL_Rect* crackClip1 = &crack_clips[0];
 	SDL_Rect* crackClip2 = &crack_clips[1];
 	SDL_Rect* crackClip3 = &crack_clips[2];
 
+	//Calculate crack degree
 	if (crackFlag && mainMap.mapData[blockMouseY][blockMouseX])
 	{
 		switch (crackFlag)
@@ -317,6 +336,7 @@ Uint32 callback(Uint32 interval, void* param)
 		}
 	}
 
+	//Render the 10 boxes of pocket
 	for (int w = 0; w < 10; w++)
 	{
 		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*w, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE,2);
@@ -326,6 +346,7 @@ Uint32 callback(Uint32 interval, void* param)
 		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*(pocketNumber - 1), SCREEN_HEIGHT - 60, highLightPocketClip, 0, NULL, SDL_FLIP_NONE,2);
 	}
 	
+	//Render blocks in pockets fetched straightly from map
 	for (int p = 0; p < 10; p++)
 	{
 		if (mainPocket.pocketData[1][p])
@@ -334,6 +355,8 @@ Uint32 callback(Uint32 interval, void* param)
 			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 		}
 	}
+
+	//Render the number of blocks in pockets, along with its shadow effect
 	for (int m = 0; m < 10; m++)
 	{
 		if (mainPocket.pocketData[1][m])
@@ -343,14 +366,14 @@ Uint32 callback(Uint32 interval, void* param)
 		}
 	}
 	
-
+	//Crawling effect of Reimu-Rubo
 	player.moveAction(deltaX,deltaY);
 
-	// Render the dropped items
+	//Render the dropped items
 	for (int i = 0; i < 200; i++)
 		droppedItemList[i].render(deltaX, deltaY);
 
-	//Render the collision box
+	//Render the collision box(intended for testing)
 	SDL_Rect tempRect[16];
 	for (int i = 0; i < 16; i++) 
 	{
@@ -359,10 +382,15 @@ Uint32 callback(Uint32 interval, void* param)
 		tempRect[i].y += deltaY;
 	}
 	SDL_RenderDrawRects(gRenderer, tempRect, 16);
-	//������Ⱦ������Ⱦ��ǰ����
+
+	//Render all
 	SDL_RenderPresent(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
+	//Clear the render for next use
 	SDL_RenderClear(gRenderer);
+
+	//Timer set
 	SDL_TimerID timerID1 = SDL_AddTimer(20, callback, (void*)"ad");
 	return 0;
 }
@@ -372,11 +400,16 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 	static int prevMouseState;
 	static int prevBlockMouseX, prevBlockMouseY;
 	static int flag = 0;
+
+	//Get mouse state
 	mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+
+	//Translate mouse position into block position
 	absMouseX = mouseX - cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	absMouseY = mouseY - cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 	blockMouseX = absMouseX / 50;
 	blockMouseY = absMouseY / 50;
+
 	//If the same button is still being pressed
 	if (mouseState == prevMouseState)
 	{
@@ -389,50 +422,63 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 				//Break the block if time is enough
 				if (flag == 40)
 				{
+					//Break a block in the map
 					mainMap.breakBlock(blockMouseX, blockMouseY);
+					//Update the CollisionBox of the block
 					player.updateCollisionBox();
+					//Add the block into pocket
 					mainPocket.pocketUpdate();
+
 					//update dropped item's collision box
 					for (int i = 0; i < 200; i++)
 						droppedItemList[i].updateCollisionBox();
+					
+					//Reset flags to 0
 					flag = 0;
 					crackFlag = 0;
+					
+					//Timer set
 					SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 					return 0;
 				}
-				// If time is not enough
+				
+				// block is not broken if time is not enough
 				crackFlag = flag / 10;
 				flag++;
 				
+				//Timer set
 				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 				return 0;
 			}
+			
 			//If the mouse moved to another block
 			flag = 0;
 			crackFlag = 0;
 			prevBlockMouseX = blockMouseX;
 			prevBlockMouseY = blockMouseY;
+
+			//Timer set
 			SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 			return 0;
 		}
+		//If press the right button
 		else if (mouseState == 4)
-		//keep putting things on the floor
+			//keep putting things on the floor
 
 			if (mainPocket.pocketData[1][pocketNumber - 1])
 			{
-			//mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
-			mainMap.putBlock(blockMouseX, blockMouseY, mainPocket.pocketData[0][pocketNumber-1]);
-			
-			player.updateCollisionBox();
-			prevBlockMouseX = blockMouseX;
-			prevBlockMouseY = blockMouseY;
-			SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
-			return 0;
+				//mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
+				mainMap.putBlock(blockMouseX, blockMouseY, mainPocket.pocketData[0][pocketNumber-1]);
+				//Update the CollisionBox of the block
+				player.updateCollisionBox();
+
+				//TImer set
+				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
+				return 0;
 			}
 			else
 			{
-				prevBlockMouseX = blockMouseX;
-				prevBlockMouseY = blockMouseY;
+				//TImer set
 				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 				return 0;
 			}
@@ -462,7 +508,6 @@ int main(int argc, char* args[])
 	}
 	else
 	{
-		//����ý��
 		if (!loadMedia())
 		{
 			printf("Failed to load media!\n");
@@ -471,8 +516,10 @@ int main(int argc, char* args[])
 		{
 			bool quit = false;
 			SDL_Event e;
-			//��ʼ����Ⱦʱ��
+
+			//Timer set
 			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
+
 			while (!quit)
 			{
 				while (SDL_PollEvent(&e) != 0)
@@ -503,6 +550,7 @@ int main(int argc, char* args[])
 					}
 					if (e.type == SDL_MOUSEWHEEL)
 					{
+						//Mouse wheel to select blocks rightward
 						if (e.wheel.y == -1)
 						{
 							if (pocketNumber == 10)
@@ -514,6 +562,7 @@ int main(int argc, char* args[])
 								pocketNumber++;
 							}
 						}
+						//Mouse wheel to select blocks leftward
 						else if (e.wheel.y == 1)
 						{
 							if (pocketNumber == 1)

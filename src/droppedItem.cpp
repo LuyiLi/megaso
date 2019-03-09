@@ -54,7 +54,7 @@ void droppedItem::move()
 		//Move the droppedItem up or down
 		mCollider.y += mVelY;
 
-		//If the droppedItem collided
+		//Stop the dropped item If collided
 		if (checkCollision())
 		{
 			//Move back
@@ -66,6 +66,8 @@ void droppedItem::move()
 			if (abs(mVelY) < 25)
 				mVelY += g;
 		}
+
+		//Translate collider position into block position
 		if (blockPosY != mCollider.y / 50 || blockPosX != mCollider.x / 50)
 		{
 			blockPosX = mCollider.x / 50;
