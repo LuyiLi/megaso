@@ -196,7 +196,6 @@ bool loadMedia()
 		success = false;
 	}
 	
-	
 	if (very_behind_background_texture.loadFromFile("images/very_behind_bg.png"))
 	{
 		very_behind_background_clips[0].x = 0;
@@ -358,8 +357,6 @@ Uint32 callback(Uint32 interval, void* param)
 		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*(pocketNumber - 1), SCREEN_HEIGHT - 60, highLightPocketClip, 0, NULL, SDL_FLIP_NONE,2);
 	}
 	
-
-
 	for (int p = 0; p < 10; p++)
 	{
 		if (mainPocket.pocketData[1][p])
@@ -368,8 +365,6 @@ Uint32 callback(Uint32 interval, void* param)
 			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 		}
 	}
-
-
 
 	for (int m = 0; m < 10; m++)
 	{
@@ -445,8 +440,6 @@ Uint32 callback(Uint32 interval, void* param)
 		
 	}
 	
-	
-
 	player.moveAction(deltaX,deltaY);
 
 	// Render the dropped items
@@ -551,7 +544,6 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 	prevMouseState = mouseState;
 	SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 	return 0;
-	
 
 	//SDL_TimerID mouseTimer = SDL_AddTimer(10, mouseTimerCallback, (void*)mouseState);
 	return 0;
@@ -606,12 +598,10 @@ int main(int argc, char* args[])
 							if (mainPocket.isOpened == 0)
 							{
 								mainPocket.isOpened = 1;
-								printf("open\n");
 							}
 							else if(mainPocket.isOpened == 1)
 							{
 								mainPocket.isOpened = 0;
-								printf("close\n");
 							}
 						}
 					}
@@ -651,7 +641,6 @@ int main(int argc, char* args[])
 						int mouseX, mouseY, mouseState;
 						posInPocket = 0;
 						
-						
 						mouseState = SDL_GetMouseState(&mouseX, &mouseY);
 						if (mouseX > 20 && mouseX < 520&&mouseY>20&&mouseY<170)
 						{
@@ -665,7 +654,6 @@ int main(int argc, char* args[])
 								mainPocket.pocketData[0][posInPocket - 1] = 0;
 								mainPocket.pocketData[1][posInPocket - 1] = 0;
 
-								printf("take up at %d\n",posInPocket);
 							}
 							else if (isTakenUp && mainPocket.pocketData[1][posInPocket - 1])
 							{
@@ -685,7 +673,6 @@ int main(int argc, char* args[])
 									IDWithMouse = temp1;
 									numWithMouse = temp2;
 
-									printf("placed at %d and take up at the same time\n", posInPocket);
 									isTakenUp = 1;
 								}
 							}
@@ -693,13 +680,11 @@ int main(int argc, char* args[])
 							{
 								mainPocket.pocketData[0][posInPocket - 1] = IDWithMouse;
 								mainPocket.pocketData[1][posInPocket - 1] = numWithMouse;
-								printf("placed at %d\n", posInPocket);
 								isTakenUp = 0;
 							}
 						}
 						if (mouseX > 470 && mouseX < 520 && mouseY>170 && mouseY < 230&&isTakenUp)
 						{
-							printf("rubbish bin\n");
 							IDWithMouse = 0;
 							numWithMouse = 0;
 							isTakenUp = 0;
@@ -717,8 +702,6 @@ int main(int argc, char* args[])
 								mainPocket.pocketData[0][posInPocket - 1] = 0;
 								mainPocket.pocketData[1][posInPocket - 1] = 0;
 
-
-								printf("take up at %d\n", posInPocket);
 							}
 							else if (isTakenUp && mainPocket.pocketData[1][posInPocket - 1])
 							{
@@ -738,7 +721,6 @@ int main(int argc, char* args[])
 									IDWithMouse = temp1;
 									numWithMouse = temp2;
 
-									printf("placed at %d and take up at the same time\n", posInPocket);
 									isTakenUp = 1;
 								}
 							}
@@ -746,11 +728,9 @@ int main(int argc, char* args[])
 							{
 								mainPocket.pocketData[0][posInPocket - 1] = IDWithMouse;
 								mainPocket.pocketData[1][posInPocket - 1] = numWithMouse;
-								printf("placed at %d\n", posInPocket);
 								isTakenUp = 0;
 							}
-						}
-						
+						}	
 					}
 					player.handleEvent(e);
 				}
