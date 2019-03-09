@@ -350,43 +350,34 @@ Uint32 callback(Uint32 interval, void* param)
 		case 3:crack_texture.render(blockMouseX*50 + deltaX, blockMouseY*50 + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 2); break;
 		}
 	}
-
-	for (int w = 0; w < 10; w++)
-	{
-		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*w, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE,2);
-	}
-	if (pocketNumber > 0 && pocketNumber < 11)
-	{
-		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*(pocketNumber - 1), SCREEN_HEIGHT - 60, highLightPocketClip, 0, NULL, SDL_FLIP_NONE,2);
-	}
 	
 	for (int p = 0; p < 10; p++)
 	{
+		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
+
 		if (mainPocket.pocketData[1][p])
 		{
 			SDL_Rect* currentPocketClip = &mainMap.newMap_clips[mainPocket.pocketData[0][p]];
 			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 		}
-	}
-
-	for (int m = 0; m < 10; m++)
-	{
-		if (mainPocket.pocketData[1][m])
+		if (mainPocket.pocketData[1][p])
 		{
-			gTextTexture1[m].render(SCREEN_WIDTH / 2 - 250 + 26 + 50 * m, SCREEN_HEIGHT - 60 + 18, 0, 0, NULL, SDL_FLIP_NONE, 1);
-			gTextTexture2[m].render(SCREEN_WIDTH / 2 - 250 + 24 + 50 * m, SCREEN_HEIGHT - 60 + 16, 0, 0, NULL, SDL_FLIP_NONE, 1);
+			gTextTexture1[p].render(SCREEN_WIDTH / 2 - 250 + 26 + 50 * p, SCREEN_HEIGHT - 60 + 18, 0, 0, NULL, SDL_FLIP_NONE, 1);
+			gTextTexture2[p].render(SCREEN_WIDTH / 2 - 250 + 24 + 50 * p, SCREEN_HEIGHT - 60 + 16, 0, 0, NULL, SDL_FLIP_NONE, 1);
 		}
-	}
-	for (int p = 0; p < 10; p++)
-	{
 		for (int q = 0; q < 3; q++)
 		{
 			if (mainPocket.isOpened)
 			{
-				pocketUI_texture.render(20 + 50 * p, 20+50*q, backpackPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
+				pocketUI_texture.render(20 + 50 * p, 20 + 50 * q, backpackPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
 			}
 		}
 	}
+	if (pocketNumber > 0 && pocketNumber < 11)
+	{
+		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * (pocketNumber - 1), SCREEN_HEIGHT - 60, highLightPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
+	}
+
 	if (mainPocket.isOpened)
 	{
 		pocketUI_texture.render(20 + 50 * 9, 20 + 50 * 3, backpackPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
@@ -397,13 +388,10 @@ Uint32 callback(Uint32 interval, void* param)
 				SDL_Rect* currentPocketClip = &mainMap.newMap_clips[mainPocket.pocketData[0][p]];
 				mainMap.newMap_texture.render(20 + 50 * (p % 10) + 12, 20 + 50 * (p/10-1) + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 			}
-		}
-		for (int m = 10; m < 40; m++)
-		{
-			if (mainPocket.pocketData[1][m])
+			if (mainPocket.pocketData[1][p])
 			{
-				gTextTexture1[m].render(20 + 26 + 50 * (m%10), 20 + 18 + 50 * (m / 10 - 1), 0, 0, NULL, SDL_FLIP_NONE, 1);
-				gTextTexture2[m].render(20 + 24 + 50 * (m%10), 20 + 16 + 50 * (m / 10 - 1), 0, 0, NULL, SDL_FLIP_NONE, 1);
+				gTextTexture1[p].render(20 + 26 + 50 * (p % 10), 20 + 18 + 50 * (p / 10 - 1), 0, 0, NULL, SDL_FLIP_NONE, 1);
+				gTextTexture2[p].render(20 + 24 + 50 * (p % 10), 20 + 16 + 50 * (p / 10 - 1), 0, 0, NULL, SDL_FLIP_NONE, 1);
 			}
 		}
 		rubbish_texture.render(20 + 50 * 9+12, 20 + 50 * 3+12, rubbish_clips, 0, NULL, SDL_FLIP_NONE, 4);
