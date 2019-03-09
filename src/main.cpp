@@ -44,8 +44,10 @@ void close();
 TTF_Font *gFont = NULL;
 
 //Rendered texture
-LTexture gTextTexture1[10];
-LTexture gTextTexture2[10];
+LTexture gTextTexture1[40];
+LTexture gTextTexture2[40];
+LTexture gTextTextureOne;
+LTexture gTextTextureTwo;
 
 //��Ⱦ���趨
 SDL_Renderer* gRenderer = NULL;
@@ -57,6 +59,9 @@ SDL_Window* gWindow = NULL;
 SDL_Rect background_clips[1];
 LTexture background_texture;
 
+SDL_Rect rubbish_clips[1];
+LTexture rubbish_texture;
+
 SDL_Rect crack_clips[3];
 LTexture crack_texture;
 
@@ -64,8 +69,10 @@ LTexture crack_texture;
 SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
 
+SDL_Rect pocketBg_clips[1];
+LTexture pocketBg_texture;
 
-SDL_Rect pocketUI_clips[2];
+SDL_Rect pocketUI_clips[3];
 LTexture pocketUI_texture;
 
 /*��ײ�����*/
@@ -80,12 +87,14 @@ int pocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
 int target[3] = {0};
-
+int posInPocket = 0;
 int mouseX, mouseY, mouseState;
 int crackFlag;
 int blockMouseX, blockMouseY;
 int absMouseX;
 int absMouseY;//mouseState = 0/1/2/4  NULL/left/middle/right
+int isTakenUp = 0;
+int IDWithMouse = 0, numWithMouse = 0;
 
 bool init()
 {
@@ -195,6 +204,23 @@ bool loadMedia()
 		very_behind_background_clips[0].w = 1800;
 		very_behind_background_clips[0].h = 1196;
 	}
+
+	if (pocketBg_texture.loadFromFile("images/pocketBg.png"))
+	{
+		pocketBg_clips[0].x = 0;
+		pocketBg_clips[0].y = 0;
+		pocketBg_clips[0].w = 1020;
+		pocketBg_clips[0].h = 320;
+	}
+
+	if (rubbish_texture.loadFromFile("images/rubbish.png"))
+	{
+		rubbish_clips[0].x = 0;
+		rubbish_clips[0].y = 0;
+		rubbish_clips[0].w = 100;
+		rubbish_clips[0].h = 100;
+	}
+
 	if (pocketUI_texture.loadFromFile("images/pocket.png"))
 	{
 		pocketUI_clips[0].x = 0;
@@ -206,6 +232,11 @@ bool loadMedia()
 		pocketUI_clips[1].y = 0;
 		pocketUI_clips[1].w = 100;
 		pocketUI_clips[1].h = 100;
+
+		pocketUI_clips[2].x = 200;
+		pocketUI_clips[2].y = 0;
+		pocketUI_clips[2].w = 100;
+		pocketUI_clips[2].h = 100;
 	}
 
 	if (crack_texture.loadFromFile("images/crack.png"))
@@ -228,7 +259,7 @@ bool loadMedia()
 
 	else
 	{
-		printf("SDL,TQL,WSL");
+		printf("Failed to load media\n");
 	}
 	if (!player.loadTexture() || !mainMap.loadTexture())
 	{
@@ -273,8 +304,9 @@ Uint32 callback(Uint32 interval, void* param)
 
 	SDL_Rect* generalPocketClip = &pocketUI_clips[0];
 	SDL_Rect* highLightPocketClip = &pocketUI_clips[1];
+	SDL_Rect* backpackPocketClip = &pocketUI_clips[2];
 
-	for (int pocketPos = 0; pocketPos < 10; pocketPos++)
+	for (int pocketPos = 0; pocketPos < 40; pocketPos++)
 	{
 		char str1[23];
 
@@ -326,6 +358,8 @@ Uint32 callback(Uint32 interval, void* param)
 		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50*(pocketNumber - 1), SCREEN_HEIGHT - 60, highLightPocketClip, 0, NULL, SDL_FLIP_NONE,2);
 	}
 	
+
+
 	for (int p = 0; p < 10; p++)
 	{
 		if (mainPocket.pocketData[1][p])
@@ -334,6 +368,9 @@ Uint32 callback(Uint32 interval, void* param)
 			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 		}
 	}
+
+
+
 	for (int m = 0; m < 10; m++)
 	{
 		if (mainPocket.pocketData[1][m])
@@ -342,6 +379,72 @@ Uint32 callback(Uint32 interval, void* param)
 			gTextTexture2[m].render(SCREEN_WIDTH / 2 - 250 + 24 + 50 * m, SCREEN_HEIGHT - 60 + 16, 0, 0, NULL, SDL_FLIP_NONE, 1);
 		}
 	}
+	for (int p = 0; p < 10; p++)
+	{
+		for (int q = 0; q < 3; q++)
+		{
+			if (mainPocket.isOpened)
+			{
+				pocketUI_texture.render(20 + 50 * p, 20+50*q, backpackPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
+			}
+		}
+	}
+	if (mainPocket.isOpened)
+	{
+		pocketUI_texture.render(20 + 50 * 9, 20 + 50 * 3, backpackPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
+		for (int p = 10; p < 40; p++)
+		{
+			if (mainPocket.pocketData[1][p])
+			{
+				SDL_Rect* currentPocketClip = &mainMap.newMap_clips[mainPocket.pocketData[0][p]];
+				mainMap.newMap_texture.render(20 + 50 * (p % 10) + 12, 20 + 50 * (p/10-1) + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
+			}
+		}
+		for (int m = 10; m < 40; m++)
+		{
+			if (mainPocket.pocketData[1][m])
+			{
+				gTextTexture1[m].render(20 + 26 + 50 * (m%10), 20 + 18 + 50 * (m / 10 - 1), 0, 0, NULL, SDL_FLIP_NONE, 1);
+				gTextTexture2[m].render(20 + 24 + 50 * (m%10), 20 + 16 + 50 * (m / 10 - 1), 0, 0, NULL, SDL_FLIP_NONE, 1);
+			}
+		}
+		rubbish_texture.render(20 + 50 * 9+12, 20 + 50 * 3+12, rubbish_clips, 0, NULL, SDL_FLIP_NONE, 4);
+		if (isTakenUp)
+		{
+			int mouseX, mouseY, mouseState;
+			mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+			SDL_Rect* currentPocketClip = &mainMap.newMap_clips[IDWithMouse];
+			mainMap.newMap_texture.render(mouseX, mouseY, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
+
+			char str1[23];
+
+			SDL_Color textColorWhite = { 255, 255, 255 };
+			SDL_Color textColorBlack = { 0, 0, 0 };
+
+			if (numWithMouse < 10)
+			{
+				_itoa_s(numWithMouse, str1, 10);
+				char newStr1[23] = " ";
+				strcat_s(newStr1, str1);
+
+				gTextTextureOne.loadFromRenderedText(newStr1, textColorBlack);
+				gTextTextureTwo.loadFromRenderedText(newStr1, textColorWhite);
+			}
+			else
+			{
+				_itoa_s(numWithMouse, str1, 10);
+				//Render text
+				gTextTextureOne.loadFromRenderedText(str1, textColorBlack);
+				gTextTextureTwo.loadFromRenderedText(str1, textColorWhite);
+			}
+
+			gTextTextureOne.render(mouseX+2+7, mouseY+2+7, 0, 0, NULL, SDL_FLIP_NONE, 1);
+			gTextTextureTwo.render(mouseX+7, mouseY+7, 0, 0, NULL, SDL_FLIP_NONE, 1);
+
+		}
+		
+	}
+	
 	
 
 	player.moveAction(deltaX,deltaY);
@@ -358,7 +461,7 @@ Uint32 callback(Uint32 interval, void* param)
 		tempRect[i].x += deltaX;
 		tempRect[i].y += deltaY;
 	}
-	SDL_RenderDrawRects(gRenderer, tempRect, 16);
+	//SDL_RenderDrawRects(gRenderer, tempRect, 16);
 	//������Ⱦ������Ⱦ��ǰ����
 	SDL_RenderPresent(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -499,6 +602,17 @@ int main(int argc, char* args[])
 						case SDLK_8: pocketNumber = 8; break;
 						case SDLK_9: pocketNumber = 9; break;
 						case SDLK_0: pocketNumber = 10; break;
+						case SDLK_ESCAPE:
+							if (mainPocket.isOpened == 0)
+							{
+								mainPocket.isOpened = 1;
+								printf("open\n");
+							}
+							else if(mainPocket.isOpened == 1)
+							{
+								mainPocket.isOpened = 0;
+								printf("close\n");
+							}
 						}
 					}
 					if (e.type == SDL_MOUSEWHEEL)
@@ -526,10 +640,117 @@ int main(int argc, char* args[])
 							}
 						}
 					}
-					if (e.type == SDL_MOUSEBUTTONDOWN)
+					if (e.type == SDL_MOUSEBUTTONDOWN&&!mainPocket.isOpened)
 					{
 						//Get mouse position
 						mouseTimerCallback(0, &mouseState);
+					}
+					if (e.type == SDL_MOUSEBUTTONDOWN && mainPocket.isOpened)
+					{
+
+						int mouseX, mouseY, mouseState;
+						posInPocket = 0;
+						
+						
+						mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+						if (mouseX > 20 && mouseX < 520&&mouseY>20&&mouseY<170)
+						{
+							posInPocket = 10 + ((mouseY - 20) / 50) * 10 + (mouseX - 20) / 50 + 1;
+							if (mainPocket.pocketData[1][posInPocket - 1]&&!isTakenUp)
+							{
+								isTakenUp = 1;
+								IDWithMouse = mainPocket.pocketData[0][posInPocket - 1];
+								numWithMouse = mainPocket.pocketData[1][posInPocket - 1];
+
+								mainPocket.pocketData[0][posInPocket - 1] = 0;
+								mainPocket.pocketData[1][posInPocket - 1] = 0;
+
+								printf("take up at %d\n",posInPocket);
+							}
+							else if (isTakenUp && mainPocket.pocketData[1][posInPocket - 1])
+							{
+								if (mainPocket.pocketData[0][posInPocket - 1]==IDWithMouse)
+								{
+									mainPocket.pocketData[1][posInPocket - 1] += numWithMouse;
+									isTakenUp = 0;
+								}
+								else
+								{
+									int temp1 = mainPocket.pocketData[0][posInPocket - 1];
+									int temp2 = mainPocket.pocketData[1][posInPocket - 1];
+
+									mainPocket.pocketData[0][posInPocket - 1] = IDWithMouse;
+									mainPocket.pocketData[1][posInPocket - 1] = numWithMouse;
+
+									IDWithMouse = temp1;
+									numWithMouse = temp2;
+
+									printf("placed at %d and take up at the same time\n", posInPocket);
+									isTakenUp = 1;
+								}
+							}
+							else if (isTakenUp && !mainPocket.pocketData[1][posInPocket - 1])
+							{
+								mainPocket.pocketData[0][posInPocket - 1] = IDWithMouse;
+								mainPocket.pocketData[1][posInPocket - 1] = numWithMouse;
+								printf("placed at %d\n", posInPocket);
+								isTakenUp = 0;
+							}
+						}
+						if (mouseX > 470 && mouseX < 520 && mouseY>170 && mouseY < 230&&isTakenUp)
+						{
+							printf("rubbish bin\n");
+							IDWithMouse = 0;
+							numWithMouse = 0;
+							isTakenUp = 0;
+						}
+						if (mouseX > SCREEN_WIDTH / 2 - 250 && mouseX < SCREEN_WIDTH / 2 + 250&&mouseY>SCREEN_HEIGHT-60&&mouseY<SCREEN_HEIGHT-10)
+						{
+							posInPocket = (mouseX) / 50 - 4 + 1;
+							if (mainPocket.pocketData[1][posInPocket - 1]&&!isTakenUp)
+							{
+								isTakenUp = 1;
+								IDWithMouse = mainPocket.pocketData[0][posInPocket - 1];
+								numWithMouse = mainPocket.pocketData[1][posInPocket - 1];
+
+
+								mainPocket.pocketData[0][posInPocket - 1] = 0;
+								mainPocket.pocketData[1][posInPocket - 1] = 0;
+
+
+								printf("take up at %d\n", posInPocket);
+							}
+							else if (isTakenUp && mainPocket.pocketData[1][posInPocket - 1])
+							{
+								if (mainPocket.pocketData[0][posInPocket - 1] == IDWithMouse)
+								{
+									mainPocket.pocketData[1][posInPocket - 1] += numWithMouse;
+									isTakenUp = 0;
+								}
+								else
+								{
+									int temp1 = mainPocket.pocketData[0][posInPocket - 1];
+									int temp2 = mainPocket.pocketData[1][posInPocket - 1];
+
+									mainPocket.pocketData[0][posInPocket - 1] = IDWithMouse;
+									mainPocket.pocketData[1][posInPocket - 1] = numWithMouse;
+
+									IDWithMouse = temp1;
+									numWithMouse = temp2;
+
+									printf("placed at %d and take up at the same time\n", posInPocket);
+									isTakenUp = 1;
+								}
+							}
+							else if (isTakenUp && !mainPocket.pocketData[1][posInPocket - 1])
+							{
+								mainPocket.pocketData[0][posInPocket - 1] = IDWithMouse;
+								mainPocket.pocketData[1][posInPocket - 1] = numWithMouse;
+								printf("placed at %d\n", posInPocket);
+								isTakenUp = 0;
+							}
+						}
+						
 					}
 					player.handleEvent(e);
 				}
