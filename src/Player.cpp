@@ -40,11 +40,13 @@ void Player::handleEvent(SDL_Event& e)
 	//If a key was pressed
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
 	{
+		//if "w" or "SPACE" is pressed
 		if (e.key.keysym.sym == SDLK_w || e.key.keysym.sym == SDLK_SPACE)
 		{
 			if (canJump)
 			{
 				mVelY = -15;
+				//Prevent player from jumping twice
 				canJump = false;
 			}
 		}
@@ -88,7 +90,6 @@ void Player::move()
 	else if(abs(mVelX) <= Player_VEL)
 		mVelX += acceleration;
 
-	
 	//Move the Player up or down
 	mCollider.y += mVelY;
 	posY = mCollider.y;
@@ -109,6 +110,7 @@ void Player::move()
 		if (mVelY > 5)
 			canJump = false;
 	}
+	//Update collision box if moved out of current box
 	if (blockPosY != mCollider.y / 50 || blockPosX != mCollider.x / 50)
 	{
 		blockPosX = mCollider.x / 50;
@@ -303,24 +305,4 @@ bool Player::loadTexture()
 		slime_stand_clips[5].w = 416;
 		slime_stand_clips[5].h = 304;
 	}
-}
-
-int Player::getPosX()
-{
-	return posX;
-}
-
-int Player::getPosY()
-{
-	return posY;
-}
-
-int Player::getVelX()
-{
-	return mVelX;
-}
-
-int Player :: getVelY()
-{
-	return mVelY;
 }
