@@ -7,7 +7,7 @@ pocket::pocket()
 }
 void pocket::pocketGenerate()
 {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 40; i++)
 	{
 		for (int j = 0; j < 2; j++)
 		{
@@ -33,7 +33,7 @@ int pocket::checkIfExist()
 
 void pocket::pocketUpdate()
 {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 40; i++)
 	{
 	
 		if (pocketData[0][i] == 0 || pocketData[1][i] == 0)
@@ -44,13 +44,13 @@ void pocket::pocketUpdate()
 	}
 }
 
-void pocket::pocketWrite(int targrtPocket[2][10])
+void pocket::pocketWrite(int targrtPocket[2][40])
 {
 	FILE *fp;
 	fopen_s(&fp, "pocket.txt", "w");
 	int m = 0, n = 0;
 	int num = 0;
-	for (m; m < 10; m++)
+	for (m; m < 40; m++)
 	{
 		for (n; n < 2; n++)
 		{

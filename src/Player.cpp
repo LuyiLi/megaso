@@ -138,7 +138,7 @@ void Player::pickUpItem(droppedItem *droppeditem)
 			mainPocket.pocketUpdate();
 			//todo :put it inside the backpack
 			int existFlag = 0;
-			for (int i = 0; i < 10; i++)
+			for (int i = 0; i < 40; i++)
 			{
 				if (mainPocket.pocketData[0][i] == droppeditem->item.ID)
 				{
@@ -150,7 +150,7 @@ void Player::pickUpItem(droppedItem *droppeditem)
 			}
 			if (!existFlag)
 			{
-				for (int i = 0; i < 10; i++)
+				for (int i = 0; i < 40; i++)
 				{
 					if (mainPocket.pocketData[0][i] == 0)
 					{

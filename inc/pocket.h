@@ -4,12 +4,12 @@ class pocket
 public:
 	pocket();
 	~pocket();
-	static const int pocketLength = 10;
-	int pocketData[2][pocketLength];
+	int isOpened=0;
+	int pocketData[2][40];
 	void pocketGenerate();
 	void pocketRead();
 	void pocketUpdate();
-	void pocketWrite(int targrtPocket[2][10]);
+	void pocketWrite(int targrtPocket[2][40]);
 	int checkIfExist();
 };
 

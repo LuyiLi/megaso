@@ -114,16 +114,8 @@ void droppedItem::render(int deltaX, int deltaY)
 		//todo: change the texture
 		SDL_Rect* currentDroppedItemClip = &mainMap.newMap_clips[item.ID];
 		mainMap.newMap_texture.render(mCollider.x+deltaX,mCollider.y+deltaY, currentDroppedItemClip, 0, NULL, SDL_FLIP_NONE, 4);
+		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
 		SDL_RenderDrawRect(gRenderer, &tempRect);
-		SDL_RenderDrawRect(gRenderer, &tempRect2);
+		//SDL_RenderDrawRect(gRenderer, &tempRect2);
 	}
 }
-/*
-void droppedItem::render(int camX, int camY)
-{
-	//Show the dot relative to the camera
-	slime_standing_texture.render(posX - camX, posY - camY);
-	slime_walking_texture.render(posX - camX, posY - camY);
-}
-*/
-
