@@ -14,10 +14,13 @@
 #include "pocket.h"
 #include <SDL_ttf.h>
 #include <cmath>
+#include "Enemy.h"
 
 Item itemList[100];
 
 droppedItem droppedItemList[200];
+
+
 
 //�������
 Player player;
