@@ -34,7 +34,7 @@ Player::Player()
 		rectArray[i].h = 50;
 	}
 }
-
+//control the movement of reimu rubo through the keyboard
 void Player::handleEvent(SDL_Event& e)
 {
 	//If a key was pressed
@@ -74,9 +74,9 @@ void Player::handleEvent(SDL_Event& e)
 
 void Player::move()
 {
+	//prevent reimu rubo from moving when the 'a' and 'd' key pressed at the same time
 	if (!acceleration)
 		mVelX = 0;
-
 	mCollider.x += mVelX;
 	posX = mCollider.x - 10;
 
@@ -104,7 +104,8 @@ void Player::move()
 		canJump = true;
 	}
 	else
-	{
+	{ 
+		//block drops
 		if (abs(mVelY) < 25)
 			mVelY += g;
 		if (mVelY > 5)
@@ -135,6 +136,7 @@ bool Player::checkCollision()
 void Player::pickUpItem(droppedItem *droppeditem)
 {
 	if (droppeditem->item.itemType != ITEM_NULL)
+		//player touches the droppeditem
 		if (intersect(mCollider, droppeditem->mCollider))
 		{
 			mainPocket.pocketUpdate();
@@ -142,6 +144,7 @@ void Player::pickUpItem(droppedItem *droppeditem)
 			int existFlag = 0;
 			for (int i = 0; i < 10; i++)
 			{
+				//find the same type of the droppeditem
 				if (mainPocket.pocketData[0][i] == droppeditem->item.ID)
 				{
 					mainPocket.pocketData[1][i]++;
@@ -150,6 +153,7 @@ void Player::pickUpItem(droppedItem *droppeditem)
 					break;
 				}
 			}
+			//if the droppeditem is not exist , create a type
 			if (!existFlag)
 			{
 				for (int i = 0; i < 10; i++)
@@ -166,7 +170,7 @@ void Player::pickUpItem(droppedItem *droppeditem)
 		}
 
 }
-
+//update the player's surrounding collision box
 void Player::updateCollisionBox()
 {
 	int startBlockX, startBlockY;

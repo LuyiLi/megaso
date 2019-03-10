@@ -19,25 +19,25 @@ Item itemList[100];
 
 droppedItem droppedItemList[200];
 
-//�������
+//the type of player
 Player player;
 
-//�������
+//the class of camera;to present the picture into screen 
 Camera cam;
 
-//�浵����������
+//to save the target file for reading and writing
 SavingControl savingControler;
 
-//״̬Ϊδ�˳�
+//״̬a flag for quitting
 bool quit = false;
 
-//SDL��ʼ����������
+//a declaraiton of the initializing function
 bool init();
 
-//ý����غ�������
+//a declaraiton of the loading media function
 bool loadMedia();
 
-//�����˳���������
+//to free some memory and save some info
 void close();
 
 //Globally used font
@@ -47,20 +47,18 @@ TTF_Font *gFont = NULL;
 LTexture gTextTexture1[10];
 LTexture gTextTexture2[10];
 
-//��Ⱦ���趨
+//a structure presenting renderer state
 SDL_Renderer* gRenderer = NULL;
 
-//�����趨
+//a type used to identify a window
 SDL_Window* gWindow = NULL;
 
-/*����ͼ����Ƭ*/
-SDL_Rect background_clips[1];
-LTexture background_texture;
+//all the clips and their texture
 
 SDL_Rect crack_clips[3];
 LTexture crack_texture;
 
-/*����ͼ����Ƭ*/
+
 SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
 
@@ -68,10 +66,10 @@ LTexture very_behind_background_texture;
 SDL_Rect pocketUI_clips[2];
 LTexture pocketUI_texture;
 
-/*��ײ�����*/
+/**/
 LTexture gPlayerTexture;
 
-/*��������ͼ*/
+/**/
 Map mainMap;
 
 pocket mainPocket;
@@ -268,7 +266,7 @@ void close()
 
 Uint32 callback(Uint32 interval, void* param)
 {
-	//
+	
 	for (int i = 0; i < 200; i++)
 	{
 		player.pickUpItem(&droppedItemList[i]);

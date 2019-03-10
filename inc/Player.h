@@ -16,7 +16,7 @@ public:
 	//The position of the Player
 	int posX;
 	int posY;
-
+	//the position of the block's boundary of the player 
 	int blockPosX;
 	int blockPosY;
 
