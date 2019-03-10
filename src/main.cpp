@@ -20,7 +20,7 @@ Item itemList[100];
 
 droppedItem droppedItemList[200];
 
-
+Enemy testEnemy;
 
 //�������
 Player player;
@@ -263,7 +263,7 @@ bool loadMedia()
 	{
 		printf("Failed to load media\n");
 	}
-	if (!player.loadTexture() || !mainMap.loadTexture())
+	if (!player.loadTexture() || !mainMap.loadTexture() || !testEnemy.loadTexture())
 	{
 		success = false;
 	}
@@ -300,6 +300,7 @@ Uint32 callback(Uint32 interval, void* param)
 		droppedItemList[i].move();
 	}
 	player.move();
+	testEnemy.move();
 	
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
@@ -432,6 +433,7 @@ Uint32 callback(Uint32 interval, void* param)
 	}
 	
 	player.moveAction(deltaX,deltaY);
+	testEnemy.moveAction(deltaX, deltaY);
 
 	// Render the dropped items
 	for (int i = 0; i < 200; i++)

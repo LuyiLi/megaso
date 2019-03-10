@@ -4,15 +4,18 @@
 #include "Map.h"
 
 extern Map mainMap;
+extern Player player;
 
 Enemy::Enemy()
 {
 	//Initialize the offsets
 
 	//Set collision box dimension
+	Enemy_VEL = 3;
 	mCollider.w = Enemy_WIDTH / 2;
 	mCollider.h = Enemy_HEIGHT / 2;
-
+	mCollider.x = 2000;
+	mCollider.y = 2000;
 	//Initialize the velocity
 	mVelX = 0;
 	mVelY = 0;
@@ -29,9 +32,8 @@ Enemy::Enemy()
 
 void Enemy::move()
 {
-	if (!acceleration)
-		mVelX = 0;
-
+	acceleration = player.mCollider.x - mCollider.x < 0 ? -1 : 1;
+	
 	mCollider.x += mVelX;
 	posX = mCollider.x - 10;
 
@@ -42,15 +44,20 @@ void Enemy::move()
 		mVelX = 0;
 		posX = mCollider.x - 10;
 	}
-	else if (abs(mVelX) <= Enemy_VEL)
+	else if (abs(mVelX) <= Enemy_VEL || mVelX * acceleration < 0)
 		mVelX += acceleration;
 
-
-	//Move the Enemy up or down
+	if (canJump == true && !mVelX)
+	{
+		canJump = false;
+		mVelY = -15;
+	}
+	//Move the Player up or down
 	mCollider.y += mVelY;
 	posY = mCollider.y;
 
-	//If the Enemy collided
+
+	//If the Player collided
 	if (checkCollision())
 	{
 		//Move back
@@ -149,21 +156,11 @@ void Enemy::moveAction(int deltaX, int deltaY)
 			frame_walk = 0;
 		}
 	}
-	else
-	{
-		SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-		slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 4);
-		++frame_stand;
-		if (frame_stand / 6 >= 6)
-		{
-			frame_stand = 0;
-		}
-	}
 }
 
 bool Enemy::loadTexture()
 {
-	if (!slime_walking_texture.loadFromFile("images/slime_walk.png"))
+	if (!slime_walking_texture.loadFromFile("images/1.png"))
 	{
 		printf("Failed to load walking animation texture!\n");
 		return false;
@@ -190,46 +187,11 @@ bool Enemy::loadTexture()
 		slime_walk_clips[3].y = 0;
 		slime_walk_clips[3].w = 416;
 		slime_walk_clips[3].h = 304;
+		return true;
 	}
 	//Load sprite sheet texture
-	if (!slime_standing_texture.loadFromFile("images/slime_stand.png"))
-	{
-		printf("Failed to load walking animation texture!\n");
-		return false;
-	}
-	else
-	{
-		//Set sprite clips
-		slime_stand_clips[0].x = 0;
-		slime_stand_clips[0].y = 0;
-		slime_stand_clips[0].w = 416;
-		slime_stand_clips[0].h = 304;
-
-		slime_stand_clips[1].x = 416;
-		slime_stand_clips[1].y = 0;
-		slime_stand_clips[1].w = 416;
-		slime_stand_clips[1].h = 304;
-
-		slime_stand_clips[2].x = 832;
-		slime_stand_clips[2].y = 0;
-		slime_stand_clips[2].w = 416;
-		slime_stand_clips[2].h = 304;
-
-		slime_stand_clips[3].x = 1248;
-		slime_stand_clips[3].y = 0;
-		slime_stand_clips[3].w = 416;
-		slime_stand_clips[3].h = 304;
-
-		slime_stand_clips[4].x = 1664;
-		slime_stand_clips[4].y = 0;
-		slime_stand_clips[4].w = 416;
-		slime_stand_clips[4].h = 304;
-
-		slime_stand_clips[5].x = 2080;
-		slime_stand_clips[5].y = 0;
-		slime_stand_clips[5].w = 416;
-		slime_stand_clips[5].h = 304;
-	}
+	
+	
 }
 
 int Enemy::getPosX()

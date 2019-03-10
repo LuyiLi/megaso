@@ -25,7 +25,7 @@ public:
 	SDL_Rect rectArray[16];
 
 	//Maximum axis velocity of the Enemy
-	static const int Enemy_VEL = 5;
+	int Enemy_VEL = 5;
 
 	//Initializes the variables
 	Enemy();
