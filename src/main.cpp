@@ -15,7 +15,7 @@
 #include <SDL_ttf.h>
 #include <cmath>
 
-Item itemList[100];
+Item itemList[500];
 droppedItem droppedItemList[200];
 Player player;
 Camera cam;
@@ -50,6 +50,9 @@ LTexture pocketUI_texture;
 SDL_Rect tool_clips[1];
 LTexture tool_texture;
 
+SDL_Rect weapon_clips[1];
+LTexture weapon_texture;
+
 SDL_Rect hp_clips[2];
 LTexture hp_texture;
 
@@ -74,6 +77,7 @@ int isTakenUp = 0;
 int IDWithMouse = 0, numWithMouse = 0;
 int heartFrame = 0;
 double angle = 0;
+double angleForBlock = 0;
 
 bool init()
 {
@@ -215,12 +219,23 @@ bool loadMedia()
 
 	if (tool_texture.loadFromFile("images/tools.png"))
 	{
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < 1; i++)
 		{
 			tool_clips[i].x = 100 * i;
 			tool_clips[i].y = 0;
 			tool_clips[i].w = 100;
 			tool_clips[i].h = 100;
+		}
+	}
+
+	if (weapon_texture.loadFromFile("images/weapons.png"))
+	{
+		for (int i = 0; i < 1; i++)
+		{
+			weapon_clips[i].x = 100 * i;
+			weapon_clips[i].y = 0;
+			weapon_clips[i].w = 100;
+			weapon_clips[i].h = 100;
 		}
 	}
 
@@ -294,14 +309,12 @@ Uint32 callback(Uint32 interval, void* param)
 	SDL_Rect* generalPocketClip = &pocketUI_clips[0];
 	SDL_Rect* highLightPocketClip = &pocketUI_clips[1];
 	SDL_Rect* backpackPocketClip = &pocketUI_clips[2];
+	SDL_Color textColorWhite = { 255, 255, 255 };
+	SDL_Color textColorBlack = { 0, 0, 0 };
 
 	for (int pocketPos = 0; pocketPos < 40; pocketPos++)
 	{
 		char str1[23];
-
-		SDL_Color textColorWhite = { 255, 255, 255 };
-		SDL_Color textColorBlack = { 0, 0, 0 };
-
 		if (mainPocket.pocketData[1][pocketPos] < 10)
 		{
 			_itoa_s(mainPocket.pocketData[1][pocketPos], str1, 10);
@@ -345,16 +358,28 @@ Uint32 callback(Uint32 interval, void* param)
 	{
 		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
 
-		if (mainPocket.pocketData[1][p])
+		if (mainPocket.pocketData[1][p]&& mainPocket.pocketData[0][p]<=100)
 		{
 			SDL_Rect* currentPocketClip = &mainMap.newMap_clips[mainPocket.pocketData[0][p]];
 			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 		}
-		if (mainPocket.pocketData[1][p])
+		if (mainPocket.pocketData[1][p] && mainPocket.pocketData[0][p] <= 100)
 		{
 			gTextTexture1[p].render(SCREEN_WIDTH / 2 - 250 + 26 + 50 * p, SCREEN_HEIGHT - 60 + 18, 0, 0, NULL, SDL_FLIP_NONE, 1);
 			gTextTexture2[p].render(SCREEN_WIDTH / 2 - 250 + 24 + 50 * p, SCREEN_HEIGHT - 60 + 16, 0, 0, NULL, SDL_FLIP_NONE, 1);
 		}
+		if (mainPocket.pocketData[1][p] && mainPocket.pocketData[0][p] >= 300 && mainPocket.pocketData[0][p] < 400)
+		{
+			SDL_Rect* currentPocketClip = &tool_clips[mainPocket.pocketData[0][p]-300];
+			tool_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 9, SCREEN_HEIGHT - 60 + 9, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 3);
+		}
+
+		if (mainPocket.pocketData[1][p] && mainPocket.pocketData[0][p] >= 400 && mainPocket.pocketData[0][p] < 500)
+		{
+			SDL_Rect* currentPocketClip = &weapon_clips[mainPocket.pocketData[0][p] - 400];
+			weapon_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 9, SCREEN_HEIGHT - 60 + 9, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 3);
+		}
+
 		for (int q = 0; q < 3; q++)
 		{
 			if (mainPocket.isOpened)
@@ -373,50 +398,74 @@ Uint32 callback(Uint32 interval, void* param)
 		pocketUI_texture.render(20 + 50 * 9, 20 + 50 * 3, backpackPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
 		for (int p = 10; p < 40; p++)
 		{
-			if (mainPocket.pocketData[1][p])
+			if (mainPocket.pocketData[1][p] && mainPocket.pocketData[0][p] <= 100)
 			{
 				SDL_Rect* currentPocketClip = &mainMap.newMap_clips[mainPocket.pocketData[0][p]];
 				mainMap.newMap_texture.render(20 + 50 * (p % 10) + 12, 20 + 50 * (p/10-1) + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
-			}
-			if (mainPocket.pocketData[1][p])
-			{
 				gTextTexture1[p].render(20 + 26 + 50 * (p % 10), 20 + 18 + 50 * (p / 10 - 1), 0, 0, NULL, SDL_FLIP_NONE, 1);
 				gTextTexture2[p].render(20 + 24 + 50 * (p % 10), 20 + 16 + 50 * (p / 10 - 1), 0, 0, NULL, SDL_FLIP_NONE, 1);
 			}
+			if (mainPocket.pocketData[1][p] && mainPocket.pocketData[0][p] > 300 && mainPocket.pocketData[0][p] <= 400)
+			{
+				SDL_Rect* currentPocketClip = &tool_clips[mainPocket.pocketData[0][p]-300];
+				tool_texture.render(20 + 50 * (p % 10) + 9, 20 + 50 * (p / 10 - 1) + 9, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 3);
+			}
+			if (mainPocket.pocketData[1][p] && mainPocket.pocketData[0][p] > 400 && mainPocket.pocketData[0][p] <= 500)
+			{
+				SDL_Rect* currentPocketClip = &weapon_clips[mainPocket.pocketData[0][p] - 400];
+				weapon_texture.render(20 + 50 * (p % 10) + 9, 20 + 50 * (p / 10 - 1) + 9, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 3);
+			}
 		}
-		rubbish_texture.render(20 + 50 * 9+12, 20 + 50 * 3+12, rubbish_clips, 0, NULL, SDL_FLIP_NONE, 4);
+		rubbish_texture.render(20 + 50 * 9+9, 20 + 50 * 3+9, rubbish_clips, 0, NULL, SDL_FLIP_NONE, 3);
 		if (isTakenUp)
 		{
-			int mouseX, mouseY, mouseState;
-			mouseState = SDL_GetMouseState(&mouseX, &mouseY);
-			SDL_Rect* currentPocketClip = &mainMap.newMap_clips[IDWithMouse];
-			mainMap.newMap_texture.render(mouseX, mouseY, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
-
-			char str1[23];
-
-			SDL_Color textColorWhite = { 255, 255, 255 };
-			SDL_Color textColorBlack = { 0, 0, 0 };
-
-			if (numWithMouse < 10)
+			if (IDWithMouse <= 100)
 			{
-				_itoa_s(numWithMouse, str1, 10);
-				char newStr1[23] = " ";
-				strcat_s(newStr1, str1);
+				int mouseX, mouseY, mouseState;
+				mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+				SDL_Rect* currentPocketClip = &mainMap.newMap_clips[IDWithMouse];
+				mainMap.newMap_texture.render(mouseX, mouseY, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 
-				gTextTextureOne.loadFromRenderedText(newStr1, textColorBlack);
-				gTextTextureTwo.loadFromRenderedText(newStr1, textColorWhite);
+				char str1[23];
+
+				SDL_Color textColorWhite = { 255, 255, 255 };
+				SDL_Color textColorBlack = { 0, 0, 0 };
+
+				if (numWithMouse < 10)
+				{
+					_itoa_s(numWithMouse, str1, 10);
+					char newStr1[23] = " ";
+					strcat_s(newStr1, str1);
+
+					gTextTextureOne.loadFromRenderedText(newStr1, textColorBlack);
+					gTextTextureTwo.loadFromRenderedText(newStr1, textColorWhite);
+				}
+				else
+				{
+					_itoa_s(numWithMouse, str1, 10);
+					//Render text
+					gTextTextureOne.loadFromRenderedText(str1, textColorBlack);
+					gTextTextureTwo.loadFromRenderedText(str1, textColorWhite);
+				}
+
+				gTextTextureOne.render(mouseX + 2 + 7, mouseY + 2 + 7, 0, 0, NULL, SDL_FLIP_NONE, 1);
+				gTextTextureTwo.render(mouseX + 7, mouseY + 7, 0, 0, NULL, SDL_FLIP_NONE, 1);
+
 			}
-			else
+			else if (IDWithMouse > 300 && IDWithMouse <= 400)
 			{
-				_itoa_s(numWithMouse, str1, 10);
-				//Render text
-				gTextTextureOne.loadFromRenderedText(str1, textColorBlack);
-				gTextTextureTwo.loadFromRenderedText(str1, textColorWhite);
+				int mouseX, mouseY, mouseState;
+				mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+				SDL_Rect* currentPocketClip = &tool_clips[IDWithMouse-300];
+				tool_texture.render(mouseX, mouseY, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 3);
 			}
-
-			gTextTextureOne.render(mouseX+2+7, mouseY+2+7, 0, 0, NULL, SDL_FLIP_NONE, 1);
-			gTextTextureTwo.render(mouseX+7, mouseY+7, 0, 0, NULL, SDL_FLIP_NONE, 1);
-
+			else if (IDWithMouse > 400 && IDWithMouse <= 500)
+			{
+				int mouseX, mouseY, mouseState;
+				mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+				SDL_Rect* currentPocketClip = &weapon_clips[IDWithMouse - 400];
+				weapon_texture.render(mouseX, mouseY, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 3);
+			}
 		}
 	}
 	double percentage = (double)player.healthPoint / (double)player.healthLimit;
@@ -433,36 +482,107 @@ Uint32 callback(Uint32 interval, void* param)
 	}
 
 	SDL_Point centralPoint ;
-	
-	if (player.acceleration > 0)
+	if (mainPocket.pocketData[0][pocketNumber - 1] > 0 && mainPocket.pocketData[0][pocketNumber - 1] <= 100)
 	{
-		centralPoint.x = 25;
-		centralPoint.y = 75;
-		tool_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 60, &tool_clips[2], angle, &centralPoint, SDL_FLIP_NONE, 1);
-	}
-	else if (player.acceleration < 0)
-	{
-		centralPoint.x = 75;
-		centralPoint.y = 75;
-		tool_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 60, &tool_clips[2], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
-	}
-	else
-	{
-		int mouseX, mouseY, mouseState;
-		mouseState = SDL_GetMouseState(&mouseX, &mouseY);
-		
-		
-		if (mouseX > SCREEN_WIDTH / 2)
+		if (player.acceleration > 0)
 		{
 			centralPoint.x = 25;
 			centralPoint.y = 75;
-			tool_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 60, &tool_clips[2], angle, &centralPoint, SDL_FLIP_NONE, 1);
+			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock -20, &centralPoint, SDL_FLIP_NONE, 2);
+		}
+		else if (player.acceleration < 0)
+		{
+			centralPoint.x = 25;
+			centralPoint.y = 75;
+			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint, SDL_FLIP_HORIZONTAL, 2);
 		}
 		else
 		{
+			int mouseX, mouseY, mouseState;
+			mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+
+
+			if (mouseX > SCREEN_WIDTH / 2)
+			{
+				centralPoint.x = 25;
+				centralPoint.y = 75;
+				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock-20, &centralPoint, SDL_FLIP_NONE, 2);
+			}
+			else
+			{
+				centralPoint.x = 25;
+				centralPoint.y = 75;
+				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 65, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint, SDL_FLIP_HORIZONTAL, 2);
+			}
+		}
+	}
+
+	if (mainPocket.pocketData[0][pocketNumber - 1] > 300 && mainPocket.pocketData[0][pocketNumber - 1] <= 400)
+	{
+		if (player.acceleration > 0)
+		{
+			centralPoint.x = 25;
+			centralPoint.y = 75;
+			tool_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1]-300], angle, &centralPoint, SDL_FLIP_NONE, 1);
+		}
+		else if (player.acceleration < 0)
+		{
 			centralPoint.x = 75;
 			centralPoint.y = 75;
-			tool_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 60, &tool_clips[2], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+			tool_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+		}
+		else
+		{
+			int mouseX, mouseY, mouseState;
+			mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+
+
+			if (mouseX > SCREEN_WIDTH / 2)
+			{
+				centralPoint.x = 25;
+				centralPoint.y = 75;
+				tool_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], angle, &centralPoint, SDL_FLIP_NONE, 1);
+			}
+			else
+			{
+				centralPoint.x = 75;
+				centralPoint.y = 75;
+				tool_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+			}
+		}
+	}
+	else if (mainPocket.pocketData[0][pocketNumber - 1] > 400 && mainPocket.pocketData[0][pocketNumber - 1] <= 500)
+	{
+		if (player.acceleration > 0)
+		{
+			centralPoint.x = 25;
+			centralPoint.y = 75;
+			weapon_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 60, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], angle, &centralPoint, SDL_FLIP_NONE, 1);
+		}
+		else if (player.acceleration < 0)
+		{
+			centralPoint.x = 75;
+			centralPoint.y = 75;
+			weapon_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 60, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+		}
+		else
+		{
+			int mouseX, mouseY, mouseState;
+			mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+
+
+			if (mouseX > SCREEN_WIDTH / 2)
+			{
+				centralPoint.x = 25;
+				centralPoint.y = 75;
+				weapon_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 60, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], angle, &centralPoint, SDL_FLIP_NONE, 1);
+			}
+			else
+			{
+				centralPoint.x = 75;
+				centralPoint.y = 75;
+				weapon_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 60, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+			}
 		}
 	}
 	
@@ -517,7 +637,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 				angle = -30;
 			}
 			//If the mouse is on the same place
-			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY)
+			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY&&mainPocket.pocketData[0][pocketNumber-1]>300&& mainPocket.pocketData[0][pocketNumber - 1] <= 400)
 			{
 				//Break the block if time is enough
 				if (flag == 40)
@@ -548,19 +668,32 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 			SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 			return 0;
 		}
-		else if (mouseState == 4)
-		//keep putting things on the floor
-
+		else if (mouseState == 4 && mainPocket.pocketData[0][pocketNumber - 1] <= 300)
+		{
+			//keep putting things on the floor
+			if (mouseState != prevMouseState)
+			{
+				angleForBlock = 0;
+			}
 			if (mainPocket.pocketData[1][pocketNumber - 1])
 			{
-			//mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
-			mainMap.putBlock(blockMouseX, blockMouseY, mainPocket.pocketData[0][pocketNumber-1]);
-			
-			player.updateCollisionBox();
-			prevBlockMouseX = blockMouseX;
-			prevBlockMouseY = blockMouseY;
-			SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
-			return 0;
+				if (angleForBlock < 30)
+				{
+					angleForBlock += 5;
+				}
+				else
+				{
+					angleForBlock = 0;
+				}
+
+				//mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
+				mainMap.putBlock(blockMouseX, blockMouseY, mainPocket.pocketData[0][pocketNumber - 1]);
+
+				player.updateCollisionBox();
+				prevBlockMouseX = blockMouseX;
+				prevBlockMouseY = blockMouseY;
+				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
+				return 0;
 			}
 			else
 			{
@@ -569,6 +702,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 				return 0;
 			}
+		}
 		else if (!mouseState)
 		{
 			crackFlag = 0;
@@ -583,7 +717,6 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 	return 0;
 
 	//SDL_TimerID mouseTimer = SDL_AddTimer(10, mouseTimerCallback, (void*)mouseState);
-	return 0;
 }
 
 int main(int argc, char* args[])

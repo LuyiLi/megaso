@@ -4,7 +4,11 @@
 enum ItemType
 {
 	ITEM_NULL = 0,
-	ITEM_BLOCK = 1
+	ITEM_BLOCK = 1,
+	ITEM_WALL = 2,
+	ITEM_TOOL = 3,
+	ITEM_WEAPON = 4,
+
 };
 
 class Item

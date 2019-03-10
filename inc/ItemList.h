@@ -2,7 +2,7 @@
 #include "item.h"
 #include <string.h>
 
-extern Item itemList[100];
+extern Item itemList[500];
 
 /*
 This itemList start from one.
@@ -19,14 +19,23 @@ void initItemList()
 	itemList[0].maxStack = 0;
 	//ID = 1
 	
+	itemList[1].ID = 1;
+	itemList[1].itemType = ITEM_BLOCK;
 	strcpy_s(itemList[1].itemName,"Dirt");
 	strcpy_s(itemList[1].itemDescription, "A fundemental block for constructing");
 	itemList[1].maxStack = 99;
 	itemList[1].blockHardness = 2;
-	for (int i = 1; i < 100; i++)
+
+	for (int i = 2; i < 100; i++)
 	{
 		itemList[i].ID = i;
 		itemList[i].itemType = ITEM_BLOCK;
 	}
+
+	itemList[301].ID = 301;
+	itemList[301].itemType = ITEM_TOOL;
+
+	itemList[401].ID = 401;
+	itemList[401].itemType = ITEM_WEAPON;
 	
 }
