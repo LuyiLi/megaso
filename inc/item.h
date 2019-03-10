@@ -1,10 +1,15 @@
 #pragma once
 #include "LTexture.h"
-
+int i;
 enum ItemType
 {
+	for (i = 0; i <= 500; i++) 
+	{
+
+	}
 	ITEM_NULL = 0,
-	ITEM_BLOCK = 1
+	ITEM_BLOCK = 1,
+	
 };
 
 class Item
@@ -23,6 +28,9 @@ public:
 	//The folling contents are for Blocks only
 	char blockTexturePath[40];
 	int blockHardness;
-	int block;
+	
+
+	//The following contents are for materials only
+	int materialDegree;
 
 };
