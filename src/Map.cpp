@@ -22,46 +22,13 @@ bool Map::loadTexture()
 {
 	if (newMap_texture.loadFromFile("images/newMapTexture.png"))
 	{
-		newMap_clips[0].x = 0;
-		newMap_clips[0].y = 0;
-		newMap_clips[0].w = 100;
-		newMap_clips[0].h = 100;
-
-		newMap_clips[1].x = 100;
-		newMap_clips[1].y = 0;
-		newMap_clips[1].w = 100;
-		newMap_clips[1].h = 100;
-
-		newMap_clips[2].x = 200;
-		newMap_clips[2].y = 0;
-		newMap_clips[2].w = 100;
-		newMap_clips[2].h = 100;
-
-		newMap_clips[3].x = 300;
-		newMap_clips[3].y = 0;
-		newMap_clips[3].w = 100;
-		newMap_clips[3].h = 100;
-
-		newMap_clips[4].x = 400;
-		newMap_clips[4].y = 0;
-		newMap_clips[4].w = 100;
-		newMap_clips[4].h = 100;
-
-		newMap_clips[5].x = 500;
-		newMap_clips[5].y = 0;
-		newMap_clips[5].w = 100;
-		newMap_clips[5].h = 100;
-
-		newMap_clips[6].x = 600;
-		newMap_clips[6].y = 0;
-		newMap_clips[6].w = 100;
-		newMap_clips[6].h = 100;
-
-		newMap_clips[7].x = 700;
-		newMap_clips[7].y = 0;
-		newMap_clips[7].w = 100;
-		newMap_clips[7].h = 100;
-
+		for (int i = 0; i < 8; i++)
+		{
+			newMap_clips[i].x = i*100;
+			newMap_clips[i].y = 0;
+			newMap_clips[i].w = 100;
+			newMap_clips[i].h = 100;
+		}
 		return true;
 	}
 	else 

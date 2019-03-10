@@ -20,6 +20,9 @@ public:
 	int blockPosX;
 	int blockPosY;
 
+	int healthLimit;
+	int healthPoint;
+
 	bool canJump;
 
 	int acceleration;

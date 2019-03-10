@@ -139,8 +139,24 @@ void LTexture::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* cen
 	//Set clip rendering dimensions
 	if (clip != NULL)
 	{
-		renderQuad.w = clip->w / scale;
-		renderQuad.h = clip->h / scale;
+		renderQuad.w = (int)(clip->w / scale);
+		renderQuad.h = (int)(clip->h / scale);
+	}
+
+	//Render to screen
+	SDL_RenderCopyEx(gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
+}
+
+void LTexture::renderWithScale(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip, double scaleX,double scaleY,double percentage)
+{
+	//Set rendering space and render to screen
+	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
+
+	//Set clip rendering dimensions
+	if (clip != NULL)
+	{
+		renderQuad.w = (int)((clip->w / scaleX)*percentage);
+		renderQuad.h = (int)(clip->h / scaleY);
 	}
 
 	//Render to screen

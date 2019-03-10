@@ -16,48 +16,24 @@
 #include <cmath>
 
 Item itemList[100];
-
 droppedItem droppedItemList[200];
-
-//�������
 Player player;
-
-//�������
 Camera cam;
-
-//�浵����������
 SavingControl savingControler;
-
-//״̬Ϊδ�˳�
-bool quit = false;
-
-//SDL��ʼ����������
-bool init();
-
-//ý����غ�������
-bool loadMedia();
-
-//�����˳���������
-void close();
-
-//Globally used font
 TTF_Font *gFont = NULL;
+Map mainMap;
+pocket mainPocket;
 
 //Rendered texture
 LTexture gTextTexture1[40];
 LTexture gTextTexture2[40];
 LTexture gTextTextureOne;
 LTexture gTextTextureTwo;
-
-//��Ⱦ���趨
 SDL_Renderer* gRenderer = NULL;
-
-//�����趨
 SDL_Window* gWindow = NULL;
 
-/*����ͼ����Ƭ*/
-SDL_Rect background_clips[1];
-LTexture background_texture;
+SDL_Rect heart_clips[8];
+LTexture heart_texture;
 
 SDL_Rect rubbish_clips[1];
 LTexture rubbish_texture;
@@ -65,23 +41,24 @@ LTexture rubbish_texture;
 SDL_Rect crack_clips[3];
 LTexture crack_texture;
 
-/*����ͼ����Ƭ*/
 SDL_Rect very_behind_background_clips[1];
 LTexture very_behind_background_texture;
-
-SDL_Rect pocketBg_clips[1];
-LTexture pocketBg_texture;
 
 SDL_Rect pocketUI_clips[3];
 LTexture pocketUI_texture;
 
-/*��ײ�����*/
+SDL_Rect tool_clips[1];
+LTexture tool_texture;
+
+SDL_Rect hp_clips[2];
+LTexture hp_texture;
+
 LTexture gPlayerTexture;
 
-/*��������ͼ*/
-Map mainMap;
-
-pocket mainPocket;
+bool quit = false;
+bool init();
+bool loadMedia();
+void close();
 
 int pocketNumber = 1;
 int breakTime = 2000;
@@ -95,10 +72,11 @@ int absMouseX;
 int absMouseY;//mouseState = 0/1/2/4  NULL/left/middle/right
 int isTakenUp = 0;
 int IDWithMouse = 0, numWithMouse = 0;
+int heartFrame = 0;
+double angle = 0;
 
 bool init()
 {
-	//���ɳ�ʼ��ͼ
 	if (mainMap.checkIfExist())
 	{
 		mainMap.mapRead();
@@ -204,12 +182,16 @@ bool loadMedia()
 		very_behind_background_clips[0].h = 1196;
 	}
 
-	if (pocketBg_texture.loadFromFile("images/pocketBg.png"))
+	if (heart_texture.loadFromFile("images/heart.png"))
 	{
-		pocketBg_clips[0].x = 0;
-		pocketBg_clips[0].y = 0;
-		pocketBg_clips[0].w = 1020;
-		pocketBg_clips[0].h = 320;
+		for (int i = 0; i < 8; i++)
+		{
+			heart_clips[i].x = i * 100;
+			heart_clips[i].y = 0;
+			heart_clips[i].w = 100;
+			heart_clips[i].h = 100;
+		}
+		
 	}
 
 	if (rubbish_texture.loadFromFile("images/rubbish.png"))
@@ -219,41 +201,49 @@ bool loadMedia()
 		rubbish_clips[0].w = 100;
 		rubbish_clips[0].h = 100;
 	}
-
+	
 	if (pocketUI_texture.loadFromFile("images/pocket.png"))
 	{
-		pocketUI_clips[0].x = 0;
-		pocketUI_clips[0].y = 0;
-		pocketUI_clips[0].w = 100;
-		pocketUI_clips[0].h = 100;
+		for (int i = 0; i < 3; i++)
+		{
+			pocketUI_clips[i].x = 100 * i;
+			pocketUI_clips[i].y = 0;
+			pocketUI_clips[i].w = 100;
+			pocketUI_clips[i].h = 100;
+		}
+	}
 
-		pocketUI_clips[1].x = 100;
-		pocketUI_clips[1].y = 0;
-		pocketUI_clips[1].w = 100;
-		pocketUI_clips[1].h = 100;
-
-		pocketUI_clips[2].x = 200;
-		pocketUI_clips[2].y = 0;
-		pocketUI_clips[2].w = 100;
-		pocketUI_clips[2].h = 100;
+	if (tool_texture.loadFromFile("images/tools.png"))
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			tool_clips[i].x = 100 * i;
+			tool_clips[i].y = 0;
+			tool_clips[i].w = 100;
+			tool_clips[i].h = 100;
+		}
 	}
 
 	if (crack_texture.loadFromFile("images/crack.png"))
 	{
-		crack_clips[0].x = 0;
-		crack_clips[0].y = 0;
-		crack_clips[0].w = 100;
-		crack_clips[0].h = 100;
+		for (int i = 0; i < 3; i++)
+		{
+			crack_clips[i].x = i*100;
+			crack_clips[i].y = 0;
+			crack_clips[i].w = 100;
+			crack_clips[i].h = 100;
+		}
+	}
 
-		crack_clips[1].x = 100;
-		crack_clips[1].y = 0;
-		crack_clips[1].w = 100;
-		crack_clips[1].h = 100;
-
-		crack_clips[2].x = 200;
-		crack_clips[2].y = 0;
-		crack_clips[2].w = 100;
-		crack_clips[2].h = 100;
+	if (hp_texture.loadFromFile("images/healthPoint.png"))
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			hp_clips[i].x = i * 100;
+			hp_clips[i].y = 0;
+			hp_clips[i].w = 100;
+			hp_clips[i].h = 100;
+		}
 	}
 
 	else
@@ -347,7 +337,10 @@ Uint32 callback(Uint32 interval, void* param)
 		case 3:crack_texture.render(blockMouseX*50 + deltaX, blockMouseY*50 + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 2); break;
 		}
 	}
-	
+
+	for (int i = 0; i < 200; i++)
+		droppedItemList[i].render(deltaX, deltaY);
+
 	for (int p = 0; p < 10; p++)
 	{
 		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
@@ -425,14 +418,58 @@ Uint32 callback(Uint32 interval, void* param)
 			gTextTextureTwo.render(mouseX+7, mouseY+7, 0, 0, NULL, SDL_FLIP_NONE, 1);
 
 		}
+	}
+	double percentage = (double)player.healthPoint / (double)player.healthLimit;
+	hp_texture.renderWithScale(SCREEN_WIDTH / 2 + 130 + 30, 25, &heart_clips[0], 0, NULL, SDL_FLIP_NONE,0.4,2,percentage);
+
+	hp_texture.render(int(SCREEN_WIDTH / 2 + 130+30+(250*percentage)), 25, &heart_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
+
+	SDL_Rect* currentHeartClip = &heart_clips[heartFrame / 8];
+	heart_texture.render(SCREEN_WIDTH/2+130, 25, currentHeartClip, 0, NULL, SDL_FLIP_NONE, 2);
+	++heartFrame;
+	if (heartFrame / 8 >= 8)
+	{
+		heartFrame = 0;
+	}
+
+	SDL_Point centralPoint ;
+	
+	if (player.acceleration > 0)
+	{
+		centralPoint.x = 25;
+		centralPoint.y = 75;
+		tool_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 60, &tool_clips[2], angle, &centralPoint, SDL_FLIP_NONE, 1);
+	}
+	else if (player.acceleration < 0)
+	{
+		centralPoint.x = 75;
+		centralPoint.y = 75;
+		tool_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 60, &tool_clips[2], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+	}
+	else
+	{
+		int mouseX, mouseY, mouseState;
+		mouseState = SDL_GetMouseState(&mouseX, &mouseY);
 		
+		
+		if (mouseX > SCREEN_WIDTH / 2)
+		{
+			centralPoint.x = 25;
+			centralPoint.y = 75;
+			tool_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 60, &tool_clips[2], angle, &centralPoint, SDL_FLIP_NONE, 1);
+		}
+		else
+		{
+			centralPoint.x = 75;
+			centralPoint.y = 75;
+			tool_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 60, &tool_clips[2], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+		}
 	}
 	
 	player.moveAction(deltaX,deltaY);
-
+	
 	// Render the dropped items
-	for (int i = 0; i < 200; i++)
-		droppedItemList[i].render(deltaX, deltaY);
+	
 
 	//Render the collision box
 	SDL_Rect tempRect[16];
@@ -462,11 +499,23 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 	blockMouseX = absMouseX / 50;
 	blockMouseY = absMouseY / 50;
 	//If the same button is still being pressed
+	if (mouseState != prevMouseState)
+	{
+		angle = 0;
+	}
 	if (mouseState == prevMouseState)
 	{
 		//If pressed the left buttom
 		if (mouseState == 1)
 		{
+			if (angle < 50)
+			{
+				angle += 2;
+			}
+			else
+			{
+				angle = -30;
+			}
 			//If the mouse is on the same place
 			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY)
 			{
@@ -591,6 +640,19 @@ int main(int argc, char* args[])
 							{
 								mainPocket.isOpened = 0;
 							}
+							break;
+						case SDLK_x: 
+							int damagePoint = 5;
+							if (player.healthPoint > damagePoint)
+							{
+								player.healthPoint -= 5;
+								printf("5 points DAMAGE!\n");
+							}
+							else
+							{
+								player.healthPoint =0;
+								printf("PLAYER DIED!\n");
+							}
 						}
 					}
 					if (e.type == SDL_MOUSEWHEEL)
@@ -623,9 +685,9 @@ int main(int argc, char* args[])
 						//Get mouse position
 						mouseTimerCallback(0, &mouseState);
 					}
+					
 					if (e.type == SDL_MOUSEBUTTONDOWN && mainPocket.isOpened)
 					{
-
 						int mouseX, mouseY, mouseState;
 						posInPocket = 0;
 						
@@ -645,7 +707,7 @@ int main(int argc, char* args[])
 							}
 							else if (isTakenUp && mainPocket.pocketData[1][posInPocket - 1])
 							{
-								if (mainPocket.pocketData[0][posInPocket - 1]==IDWithMouse)
+								if (mainPocket.pocketData[0][posInPocket - 1]==IDWithMouse&& mainPocket.pocketData[1][posInPocket - 1] + numWithMouse<=99)
 								{
 									mainPocket.pocketData[1][posInPocket - 1] += numWithMouse;
 									isTakenUp = 0;
@@ -693,7 +755,7 @@ int main(int argc, char* args[])
 							}
 							else if (isTakenUp && mainPocket.pocketData[1][posInPocket - 1])
 							{
-								if (mainPocket.pocketData[0][posInPocket - 1] == IDWithMouse)
+								if (mainPocket.pocketData[0][posInPocket - 1] == IDWithMouse&& mainPocket.pocketData[1][posInPocket - 1] + numWithMouse<=99)
 								{
 									mainPocket.pocketData[1][posInPocket - 1] += numWithMouse;
 									isTakenUp = 0;
@@ -721,6 +783,7 @@ int main(int argc, char* args[])
 						}	
 					}
 					player.handleEvent(e);
+					
 				}
 				//SDL_Delay(10);
 			}

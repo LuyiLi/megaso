@@ -20,7 +20,8 @@ Player::Player()
 	//Set collision box dimension
 	mCollider.w = Player_WIDTH/2;
 	mCollider.h = Player_HEIGHT/2;
-
+	healthPoint = 100;
+	healthLimit = 100;
 	//Initialize the velocity
 	mVelX = 0;
 	mVelY = 0;
@@ -140,7 +141,7 @@ void Player::pickUpItem(droppedItem *droppeditem)
 			int existFlag = 0;
 			for (int i = 0; i < 40; i++)
 			{
-				if (mainPocket.pocketData[0][i] == droppeditem->item.ID)
+				if (mainPocket.pocketData[0][i] == droppeditem->item.ID&&mainPocket.pocketData[1][i]<=98)
 				{
 					mainPocket.pocketData[1][i]++;
 					existFlag = 1;
