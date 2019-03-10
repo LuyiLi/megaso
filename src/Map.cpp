@@ -20,6 +20,7 @@ Map::Map()
 
 bool Map::loadTexture()
 {
+	//create the texture of new map
 	if (newMap_texture.loadFromFile("images/newMapTexture.png"))
 	{
 		newMap_clips[0].x = 0;
@@ -79,7 +80,7 @@ int Map::updateCollisionBox()
 {
 	return 0;
 }
-
+//render all the map 
 void Map::render(int deltaX, int deltaY)
 {
 	int absX = 0, absY = 0;
@@ -99,6 +100,8 @@ void Map::render(int deltaX, int deltaY)
 		absX += 50;
 	}
 }
+
+//check if the file exists
 int Map::checkIfExist()
 {
 	FILE *fp;
@@ -115,7 +118,7 @@ int Map::checkIfExist()
 }
 
 extern int pocketNumber;
-
+//
 void Map::generateMap()
 {
 	for (int i = 0; i < xBlockNumber; i++)
@@ -139,7 +142,7 @@ void Map::generateMap()
 }
 
 
-
+//read info from the map.txt
 void Map::mapRead()
 {
 	FILE *fp;
@@ -150,9 +153,12 @@ void Map::mapRead()
 	if (fp != NULL)
 	{
 		int m = 0, n = 0;
+
+		//do not have a negative number in the text
 		int negativeFlag = 0;
 		while ((presentChar = fgetc(fp)) != EOF)
 		{
+			//'E'is the symbol of the end of file
 			if (presentChar == 'E')
 			{
 				fclose(fp);
@@ -162,7 +168,6 @@ void Map::mapRead()
 			{
 				if (presentChar != ',')
 				{
-
 					if (presentChar == '-')
 					{
 						negativeFlag = 1;
@@ -171,6 +176,7 @@ void Map::mapRead()
 					{
 						targetNum = targetNum * 10 + (int)presentChar - 48;
 					}
+					//create a new line
 					if (presentChar == 'R')
 					{
 						fgetc(fp);
@@ -178,6 +184,7 @@ void Map::mapRead()
 						m++;
 					}
 				}
+				//create a space between two numbers
 				else if (presentChar == ',')
 				{
 					if (negativeFlag)
@@ -199,7 +206,7 @@ void Map::mapRead()
 @brief break a block on the map
 @param The BLOCK position of the map
 */
-
+//break a block and create a dropped item
 void Map::breakBlock(int x, int y)
 {
 	for (int i = 0; i < 200; i++)
@@ -211,7 +218,7 @@ void Map::breakBlock(int x, int y)
 	mapData[y][x] = 0;
 	
 }
-
+//put block into the map, reduce one from your pocket
 void Map::putBlock(int x, int y, int ID)
 {
 	SDL_Rect tempRect;
@@ -230,7 +237,7 @@ void Map::putBlock(int x, int y, int ID)
 			}
 	}
 }
-
+//write the info into the map.txt
 void Map::mapWrite(int targetMap[100][100])
 {
 	FILE *fp;

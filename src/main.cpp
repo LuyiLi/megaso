@@ -268,7 +268,7 @@ void close()
 
 Uint32 callback(Uint32 interval, void* param)
 {
-	//
+	
 	for (int i = 0; i < 200; i++)
 	{
 		player.pickUpItem(&droppedItemList[i]);

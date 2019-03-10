@@ -67,7 +67,7 @@ void droppedItem::move()
 				mVelY += g;
 		}
 
-		//Translate collider position into block position
+		//uodate the position of the droppeditem
 		if (blockPosY != mCollider.y / 50 || blockPosX != mCollider.x / 50)
 		{
 			blockPosX = mCollider.x / 50;
@@ -85,7 +85,7 @@ bool droppedItem::checkCollision()
 
 	return false;
 }
-
+//update the collision block of the droppeditem
 void droppedItem::updateCollisionBox()
 {
 	if (mainMap.mapData[blockPosY + 1][blockPosX]) 
@@ -99,7 +99,7 @@ void droppedItem::updateCollisionBox()
 		collisionRect.y = 0;
 	}
 }
-
+//render the droppeditem picture
 void droppedItem::render(int deltaX, int deltaY)
 {
 	if (item.itemType != ITEM_NULL) 
