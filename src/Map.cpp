@@ -12,10 +12,12 @@ extern bool intersect(SDL_Rect, SDL_Rect);
 extern droppedItem droppedItemList[200];
 extern Item itemList[100];
 extern pocket mainPocket;
+//todo: add enemy collisonbox when breaking
 
 Map::Map()
 {
-	int mapData[xBlockNumber][yBlockNumber] = {0};
+	int mapData[xBlockNumber][yBlockNumber] =
+	{0};
 }
 
 bool Map::loadTexture()
