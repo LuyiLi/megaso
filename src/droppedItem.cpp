@@ -67,7 +67,7 @@ void droppedItem::move()
 				mVelY += g;
 		}
 
-		//uodate the position of the droppeditem
+		//update the position of the droppeditem
 		if (blockPosY != mCollider.y / 50 || blockPosX != mCollider.x / 50)
 		{
 			blockPosX = mCollider.x / 50;

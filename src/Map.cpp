@@ -154,7 +154,7 @@ void Map::mapRead()
 	{
 		int m = 0, n = 0;
 
-		//do not have a negative number in the text
+		//avoid having a negative number in the text
 		int negativeFlag = 0;
 		while ((presentChar = fgetc(fp)) != EOF)
 		{
