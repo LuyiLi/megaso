@@ -1,16 +1,16 @@
 #pragma once
 #include "LTexture.h"
-int i;
+
 enum ItemType
 {
-	for (i = 0; i <= 500; i++) 
-	{
-
-	}
 	ITEM_NULL = 0,
 	ITEM_BLOCK = 1,
-	
+	ITEM_WALL = 2,
+	ITEM_MATERIAL=3,
+	ITEM_TOOL=4,
+	ITEM_WEAPON=5
 };
+
 
 class Item
 {
@@ -31,6 +31,6 @@ public:
 	
 
 	//The following contents are for materials only
-	int materialDegree;
+	
 
 };

@@ -2,7 +2,7 @@
 #include "item.h"
 #include <string.h>
 
-extern Item itemList[100];
+extern Item itemList[500];
 
 /*
 This itemList start from one.
@@ -80,10 +80,10 @@ void initItemList()
 
 	
 
-//ID 101-200 is the wall
-
-//ID 201-300 is material
-
+////ID 101-200 is the wall
+//
+////ID 201-300 is material
+//
 	//ID=201
 	strcpy_s(itemList[201].itemName, "fire-stone");
 	strcpy_s(itemList[201].itemDescription, "A stone for making fire and a certain arrow.");
@@ -174,6 +174,6 @@ void initItemList()
 	strcpy_s(itemList[304].itemDescription, "The hardest sword.");
 	itemList[304].maxStack = 1;
 
-
+	
 //ID 401-500 is weapons
 }

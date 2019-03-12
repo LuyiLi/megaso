@@ -15,7 +15,7 @@
 #include <SDL_ttf.h>
 #include <cmath>
 
-Item itemList[100];
+Item itemList[500];
 
 droppedItem droppedItemList[200];
 
