@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "Map.h"
 #include "settings.h"
-#include "Player.h"
+#include "Entity.h"
 
 pocket::pocket()
 {
