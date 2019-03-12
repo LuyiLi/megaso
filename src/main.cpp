@@ -3,7 +3,7 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include <string>
-#include "Player.h"
+#include "Entity.h"
 #include "Camera.h"
 #include "settings.h"
 #include "SavingControl.h"
@@ -14,7 +14,6 @@
 #include "pocket.h"
 #include <SDL_ttf.h>
 #include <cmath>
-#include "Enemy.h"
 
 Item itemList[500];
 droppedItem droppedItemList[200];
@@ -308,7 +307,7 @@ Uint32 callback(Uint32 interval, void* param)
 	}
 	player.move();
 	testEnemy.move();
-	
+	player.getHit(testEnemy);
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
@@ -561,15 +560,15 @@ Uint32 callback(Uint32 interval, void* param)
 	{
 		if (player.acceleration > 0)
 		{
-			centralPoint.x = 25;
-			centralPoint.y = 75;
-			weapon_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 60, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], angle, &centralPoint, SDL_FLIP_NONE, 1);
+			centralPoint.x = 0;
+			centralPoint.y = 100;
+			weapon_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], angle, &centralPoint, SDL_FLIP_NONE, 1);
 		}
 		else if (player.acceleration < 0)
 		{
-			centralPoint.x = 75;
-			centralPoint.y = 75;
-			weapon_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 60, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+			centralPoint.x = 100;
+			centralPoint.y = 100;
+			weapon_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
 		}
 		else
 		{
@@ -579,15 +578,15 @@ Uint32 callback(Uint32 interval, void* param)
 
 			if (mouseX > SCREEN_WIDTH / 2)
 			{
-				centralPoint.x = 25;
-				centralPoint.y = 75;
-				weapon_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 60, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], angle, &centralPoint, SDL_FLIP_NONE, 1);
+				centralPoint.x = 0;
+				centralPoint.y = 100;
+				weapon_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], angle, &centralPoint, SDL_FLIP_NONE, 1);
 			}
 			else
 			{
-				centralPoint.x = 75;
-				centralPoint.y = 75;
-				weapon_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 60, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+				centralPoint.x = 100;
+				centralPoint.y = 100;
+				weapon_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 90, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
 			}
 		}
 	}
@@ -635,13 +634,13 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 		//If pressed the left buttom
 		if (mouseState == 1)
 		{
-			if (angle < 50)
+			if (angle < 60)
 			{
-				angle += 2;
+				angle += 6;
 			}
 			else
 			{
-				angle = -30;
+				angle = -60;
 			}
 			//If the mouse is on the same place
 			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY&&mainPocket.pocketData[0][pocketNumber-1]>300&& mainPocket.pocketData[0][pocketNumber - 1] <= 400)
@@ -678,15 +677,11 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 		else if (mouseState == 4 && mainPocket.pocketData[0][pocketNumber - 1] <= 300)
 		{
 			//keep putting things on the floor
-			if (mouseState != prevMouseState)
-			{
-				angleForBlock = 0;
-			}
 			if (mainPocket.pocketData[1][pocketNumber - 1])
 			{
-				if (angleForBlock < 30)
+				if (angleForBlock < 70)
 				{
-					angleForBlock += 5;
+					angleForBlock += 4;
 				}
 				else
 				{
@@ -712,6 +707,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 		}
 		else if (!mouseState)
 		{
+			angleForBlock = 0;
 			crackFlag = 0;
 			return 0;
 		}

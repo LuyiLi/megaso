@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Enemy.h"
+#include "Entity.h"
 #include "global.h"
 #include "Map.h"
 
@@ -81,10 +81,6 @@ void Enemy::move()
 	}
 }
 
-void Enemy::dealDamage(Player *player)
-{
-
-}
 
 bool Enemy::checkCollision()
 {

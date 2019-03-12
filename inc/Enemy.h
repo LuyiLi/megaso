@@ -1,3 +1,4 @@
+/*
 #pragma once
 #include <SDL.h>
 #include "LTexture.h"
@@ -42,8 +43,6 @@ public:
 
 	void updateCollisionBox();
 
-	void dealDamage(Player *player);
-
 	//Shows the Enemy on the screen
 	void render(int camX, int camY);
 
@@ -59,12 +58,13 @@ public:
 	//Enemy's collision box
 	SDL_Rect mCollider;
 
-	/*Õ¾Á¢×´Ì¬Í¼ÏñÇÐÆ¬*/
+	/*Õ¾Á¢×´Ì¬Í¼ÏñÇÐÆ¬
 	//const int standing_frames = 6;
 	SDL_Rect slime_stand_clips[6];
 	LTexture slime_standing_texture;
-	/*ÐÐ×ß×´Ì¬Í¼ÏñÇÐÆ¬*/
+	/*ÐÐ×ß×´Ì¬Í¼ÏñÇÐÆ¬
 	//const int walking_frames = 4;
 	SDL_Rect slime_walk_clips[4];
 	LTexture slime_walking_texture;
 };
+*/

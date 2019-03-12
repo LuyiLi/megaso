@@ -170,6 +170,7 @@
     <ClInclude Include="inc\Enemy.h" />
     <ClInclude Include="inc\droppedItem.h" />
     <ClInclude Include="inc\Camera.h" />
+    <ClInclude Include="inc\Entity.h" />
     <ClInclude Include="inc\ItemList.h" />
     <ClInclude Include="inc\Map.h" />
     <ClInclude Include="inc\Player.h" />

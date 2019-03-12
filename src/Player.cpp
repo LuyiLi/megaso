@@ -4,11 +4,12 @@
 #include <stdio.h>
 #include <string>
 #include "Player.h"
-#include "global.h"
 #include "Camera.h"
 #include "SavingControl.h"
 #include "Map.h"
 #include "pocket.h"
+#include "global.h"
+#include "Entity.h"
 
 extern Map mainMap;
 extern pocket mainPocket;
@@ -73,8 +74,8 @@ void Player::handleEvent(SDL_Event& e)
 
 void Player::move()
 {
-	if (!acceleration)
-		mVelX = 0;
+	if (!acceleration && mVelX != 0)
+		mVelX = mVelX > 0 ? mVelX - 1 : mVelX + 1;
 
 	mCollider.x += mVelX;
 	posX = mCollider.x - 10;
@@ -86,7 +87,7 @@ void Player::move()
 		mVelX = 0;
 		posX = mCollider.x - 10;
 	}
-	else if(abs(mVelX) <= Player_VEL)
+	else if((mVelX <= Player_VEL && mVelX >= 0) || (mVelX >= -Player_VEL && mVelX <= 0))
 		mVelX += acceleration;
 
 	
@@ -115,6 +116,14 @@ void Player::move()
 		blockPosX = mCollider.x / 50;
 		blockPosY = mCollider.y / 50;
 		updateCollisionBox();
+	}
+}
+
+void Player::getHit(Enemy enemy)
+{
+	if (intersect(enemy.mCollider, mCollider))
+	{
+		mVelX = enemy.mCollider.x < mCollider.x ? 10 : -10;
 	}
 }
 

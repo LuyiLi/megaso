@@ -2,7 +2,7 @@
 #include "Map.h"
 #include <stdio.h>
 #include <io.h>
-#include "Player.h"
+#include "Entity.h"
 #include "Camera.h"
 #include "item.h"
 #include "pocket.h"
