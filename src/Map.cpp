@@ -24,7 +24,7 @@ bool Map::loadTexture()
 {
 	if (newMap_texture.loadFromFile("images/newMapTexture.png"))
 	{
-		for (int i = 0; i < 8; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			newMap_clips[i].x = i*100;
 			newMap_clips[i].y = 0;
@@ -57,7 +57,7 @@ void Map::render(int deltaX, int deltaY)
 		for (int j = 0; j < 100; j++)
 		{
 
-			if (mapData[i][j])
+			if (mapData[i][j]&& absY + deltaX>-50&& absY + deltaX<SCREEN_WIDTH&&absX + deltaY>-50&& absX + deltaY<SCREEN_HEIGHT)
 			{
 				SDL_Rect* currentClip = &newMap_clips[mapData[i][j]];
 				newMap_texture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE,2);

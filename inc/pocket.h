@@ -1,4 +1,5 @@
 #pragma once
+#include <SDL.h>
 class pocket
 {
 public:
@@ -9,6 +10,8 @@ public:
 	void pocketGenerate();
 	void pocketRead();
 	void pocketUpdate();
+	void mainPocketRender();
+	void handlePocketEvents(SDL_Event e);
 	void pocketWrite(int targrtPocket[2][40]);
 	int checkIfExist();
 };
