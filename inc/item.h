@@ -4,8 +4,13 @@
 enum ItemType
 {
 	ITEM_NULL = 0,
-	ITEM_BLOCK = 1
+	ITEM_BLOCK = 1,
+	ITEM_WALL = 2,
+	ITEM_MATERIAL=3,
+	ITEM_TOOL=4,
+	ITEM_WEAPON=5
 };
+
 
 class Item
 {
@@ -23,6 +28,9 @@ public:
 	//The folling contents are for Blocks only
 	char blockTexturePath[40];
 	int blockHardness;
-	int block;
+	
+
+	//The following contents are for materials only
+	
 
 };
