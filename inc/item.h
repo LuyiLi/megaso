@@ -32,5 +32,6 @@ public:
 
 	//The following contents are for materials only
 	
-
+	//The following contents are for weapons only
+	int weaponDamage;
 };
