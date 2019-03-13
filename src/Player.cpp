@@ -119,7 +119,7 @@ void Player::move()
 	}
 }
 
-void Player::getHit(pangolin enemy)
+void Player::getHit(Enemy enemy)
 {
 	if (intersect(enemy.mCollider, mCollider))
 	{

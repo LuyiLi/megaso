@@ -181,10 +181,8 @@
     <ClInclude Include="inc\settings.h" />
     <ClInclude Include="inc\SavingControl.h" />
     <ClInclude Include="inc\pocket.h" />
-    <ClInclude Include="inc\pangolin.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\pangolin.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\droppedItem.cpp" />
     <ClCompile Include="src\pocket.cpp" />
