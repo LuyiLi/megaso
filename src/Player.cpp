@@ -119,11 +119,16 @@ void Player::move()
 	}
 }
 
-void Player::getHit(Enemy enemy)
+void Player::getHit(pangolin enemy)
 {
 	if (intersect(enemy.mCollider, mCollider))
 	{
 		mVelX = enemy.mCollider.x < mCollider.x ? 10 : -10;
+		mVelY = 10;
+		if (healthPoint > 0)
+		{
+			healthPoint -= 1;
+		}
 	}
 }
 

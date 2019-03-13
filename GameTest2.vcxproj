@@ -102,7 +102,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)/inc;$(ProjectDir)/3rd/include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -181,8 +181,10 @@
     <ClInclude Include="inc\settings.h" />
     <ClInclude Include="inc\SavingControl.h" />
     <ClInclude Include="inc\pocket.h" />
+    <ClInclude Include="inc\pangolin.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\pangolin.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\droppedItem.cpp" />
     <ClCompile Include="src\pocket.cpp" />
