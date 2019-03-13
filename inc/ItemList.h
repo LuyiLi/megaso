@@ -80,10 +80,10 @@ void initItemList()
 
 	
 
-////ID 101-200 is the wall
-//
-////ID 201-300 is material
-//
+  //ID 101-200 is the wall
+
+  //ID 201-300 is material
+
 	//ID=201
 	strcpy_s(itemList[201].itemName, "fire-stone");
 	strcpy_s(itemList[201].itemDescription, "A stone for making fire and a certain arrow.");
@@ -284,41 +284,41 @@ void initItemList()
 	strcpy_s(itemList[416].itemName, "Bronze helmet");
 	strcpy_s(itemList[416].itemDescription, "A normal defender.");
 	itemList[416].maxStack = 1;
-	itemList[416].weaponDamage = -2;
+	itemList[416].weaponDamage = 2;
 
 	//ID=417
 	strcpy_s(itemList[417].itemName, "Iron helmet");
 	strcpy_s(itemList[417].itemDescription, "A harder defender.");
 	itemList[417].maxStack = 1;
-	itemList[417].weaponDamage = -6;
+	itemList[417].weaponDamage = 6;
 
 	//ID=418
 	strcpy_s(itemList[418].itemName, "Gold helmet");
 	strcpy_s(itemList[418].itemDescription, "The hardest defender.");
 	itemList[418].maxStack = 1;
-	itemList[418].weaponDamage = -15;
+	itemList[418].weaponDamage = 15;
 
 	//ID=419
 	strcpy_s(itemList[419].itemName, "Wooden shield");
 	strcpy_s(itemList[419].itemDescription, "A basic defender.");
 	itemList[419].maxStack = 1;
-	itemList[419].weaponDamage = -1;
+	itemList[419].weaponDamage = 1;
 
 	//ID=420
 	strcpy_s(itemList[420].itemName, "Bronze shield");
 	strcpy_s(itemList[420].itemDescription, "An improved defender.");
 	itemList[420].maxStack = 1;
-	itemList[420].weaponDamage = -2;
+	itemList[420].weaponDamage = 2;
 
 	//ID=421
 	strcpy_s(itemList[421].itemName, "Iron shield");
 	strcpy_s(itemList[421].itemDescription, "Better than Bronze shield.");
 	itemList[421].maxStack = 1;
-	itemList[421].weaponDamage = -6;
+	itemList[421].weaponDamage = 6;
 
 	//ID=422
 	strcpy_s(itemList[422].itemName, "Gold shield");
 	strcpy_s(itemList[422].itemDescription, "The hardest shield.");
 	itemList[422].maxStack = 1;
-	itemList[422].weaponDamage = -15;
+	itemList[422].weaponDamage = 15;
 }
