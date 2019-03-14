@@ -311,7 +311,6 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		}
 		
 	}
-	printf("%d\n", frame);
 }
 
 bool Enemy::loadTexture()
