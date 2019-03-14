@@ -16,8 +16,7 @@ extern pocket mainPocket;
 
 Map::Map()
 {
-	int mapData[xBlockNumber][yBlockNumber] =
-	{0};
+	int mapData[xBlockNumber][yBlockNumber] = {0};
 }
 
 bool Map::loadTexture()
@@ -31,8 +30,20 @@ bool Map::loadTexture()
 			newMap_clips[i].w = 100;
 			newMap_clips[i].h = 100;
 		}
+	}
+
+	if (wall_texture.loadFromFile("images/wall.png"))
+	{
+		for (int i = 0; i < 1; i++)
+		{
+			wall_clips[i].x = i * 100;
+			wall_clips[i].y = 0;
+			wall_clips[i].w = 100;
+			wall_clips[i].h = 100;
+		}
 		return true;
 	}
+
 	else 
 	{
 		return false;
@@ -59,8 +70,16 @@ void Map::render(int deltaX, int deltaY)
 
 			if (mapData[i][j]&& absY + deltaX>-50&& absY + deltaX<SCREEN_WIDTH&&absX + deltaY>-50&& absX + deltaY<SCREEN_HEIGHT)
 			{
-				SDL_Rect* currentClip = &newMap_clips[mapData[i][j]];
-				newMap_texture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE,2);
+				if (mapData[i][j] <= 100)
+				{
+					SDL_Rect* currentClip = &newMap_clips[mapData[i][j]];
+					newMap_texture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 2);
+				}
+				else if (mapData[i][j] > 100 && mapData[i][j] <= 200)
+				{
+					SDL_Rect* currentClip = &wall_clips[mapData[i][j]-100];
+					wall_texture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 2);
+				}
 			}
 			absY += 50;
 		}

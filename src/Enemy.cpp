@@ -5,8 +5,8 @@
 
 extern Map mainMap;
 extern Player player;
-SDL_Rect enemy_walk_clips[4];
-LTexture enemy_walking_texture;
+SDL_Rect enemy_walk_clips[50][50];
+LTexture enemy_walking_texture[50];
 
 Enemy::Enemy()
 {
@@ -25,6 +25,8 @@ Enemy::Enemy()
 	mVelY = 0;
 	canJump = true;
 	damage = 5;
+	attackMode = ATTACKMODE_NONE;
+
 	for (int i = 0; i < 16; i++)
 	{
 		rectArray[i].x = 0;
@@ -151,41 +153,199 @@ void Enemy::moveAction(int deltaX, int deltaY)
 {
 
 	static int angle = 0;
+	static int modeFlag = 0;
+	static int frame = 0;
+	static int frameFlag = 0;
+	static int frame_walk = 0;
 	SDL_Point enemyCenter;
-	enemyCenter.x = 41;
-	enemyCenter.y = 41;
-	if (acceleration > 0)
+
+	if (acceleration > 0 && attackMode == ATTACKMODE_PREPARE)
 	{
-		SDL_Rect* currentClip = &enemy_walk_clips[0];
-		enemy_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_NONE, 1.2);
-		angle += 15;
+		frameFlag++;
+		if (frameFlag == 2)
+		{
+			frame++;
+			frameFlag = 0;
+
+		}
+		if (frame == 5)
+		{
+			frame = 0;
+			attackMode = ATTACKMODE_ATTACKING;
+		}
+		else
+		{
+			SDL_Rect* currentClip = &enemy_walk_clips[0][frame];
+			enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
+			
+		}
+	}
+
+	if (acceleration < 0 && attackMode == ATTACKMODE_PREPARE)
+	{
+		frameFlag++;
+		if (frameFlag == 2)
+		{
+			frame++;
+			frameFlag = 0;
+
+		}
+		if (frame == 5)
+		{
+			frame = 0;
+			attackMode = ATTACKMODE_ATTACKING;
+		}
+		else
+		{
+			SDL_Rect* currentClip = &enemy_walk_clips[0][frame];
+			enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
+
+		}
+	}
+
+	if (acceleration < 0 && attackMode == ATTACKMODE_FINISH)
+	{
+		frameFlag++;
+		if (frameFlag == 2)
+		{
+			frame++;
+			frameFlag = 0;
+
+		}
+		if (frame == 5)
+		{
+			frame = 0;
+			attackMode = ATTACKMODE_NONE;
+		}
+		else
+		{
+			SDL_Rect* currentClip = &enemy_walk_clips[0][abs(frame-4)];
+			enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
+			
+		}
+	}
+
+	if (acceleration > 0 && attackMode == ATTACKMODE_FINISH)
+	{
+		frameFlag++;
+		if (frameFlag == 2)
+		{
+			frame++;
+			frameFlag = 0;
+
+		}
+		if (frame == 5)
+		{
+			frame = 0;
+			attackMode = ATTACKMODE_NONE;
+		}
+		else
+		{
+			SDL_Rect* currentClip = &enemy_walk_clips[0][abs(frame-4)];
+			enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
+
+		}
+	}
+
+	if (acceleration > 0 && attackMode==ATTACKMODE_NONE)
+	{
+		SDL_Rect* currentClip = &enemy_walk_clips[0][frame_walk/10+5];
+		enemy_walking_texture[0].render((posX + deltaX), (-33+posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
+		if (frame_walk / 10 >= 3)
+		{
+			frame_walk = 0;
+		}
+		else
+		{
+			frame_walk++;
+		}
+	}
+	if (acceleration < 0 && attackMode == ATTACKMODE_NONE)
+	{
+		SDL_Rect* currentClip = &enemy_walk_clips[0][frame_walk / 10 + 5];
+		enemy_walking_texture[0].render((posX + deltaX), (-33+posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
+		if (frame_walk / 10 >= 3)
+		{
+			frame_walk = 0;
+		}
+		else
+		{
+			frame_walk++;
+		}
+	}
+
+	if (acceleration > 0&&attackMode==ATTACKMODE_ATTACKING)
+	{
+		enemyCenter.x = 42;
+		enemyCenter.y = 42;
+		SDL_Rect* currentClip = &enemy_walk_clips[0][0];
+		enemy_walking_texture[1].render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_NONE, 1.2);
+		angle += 30;
 
 	}
-	else if(acceleration < 0)
+	else if(acceleration < 0 && attackMode == ATTACKMODE_ATTACKING)
 	{
-		SDL_Rect* currentClip = &enemy_walk_clips[0];
-		enemy_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_HORIZONTAL, 1.2);
-		angle -= 15;
+		enemyCenter.x = 42;
+		enemyCenter.y = 42;
+		SDL_Rect* currentClip = &enemy_walk_clips[0][0];
+		enemy_walking_texture[1].render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_HORIZONTAL, 1.2);
+		angle -= 30;
 	}
+	if (modeFlag < 200)
+	{
+		modeFlag++;
+	}
+	else 
+	{
+		if (attackMode == ATTACKMODE_NONE)
+		{
+			attackMode = ATTACKMODE_PREPARE;
+			Enemy_VEL = 8;
+			modeFlag = 0;
+		}
+		else if (attackMode == ATTACKMODE_ATTACKING)
+		{
+			attackMode = ATTACKMODE_FINISH;
+			Enemy_VEL = 1;
+			modeFlag = 0;
+		}
+		
+	}
+	printf("%d\n", frame);
 }
 
 bool Enemy::loadTexture()
 {
-	if (!enemy_walking_texture.loadFromFile("images/pangolin_1.png"))
+	if (!enemy_walking_texture[0].loadFromFile("images/pangolin.png"))
+	{
+		printf("Failed to load walking animation texture!\n");
+		return false;
+	}
+	if (!enemy_walking_texture[1].loadFromFile("images/pangolin_1.png"))
 	{
 		printf("Failed to load walking animation texture!\n");
 		return false;
 	}
 	else
 	{
+		for (int i = 0; i < 20; i++)
+		{
+			enemy_walk_clips[0][i].x = i*100;
+			enemy_walk_clips[0][i].y = 0;
+			enemy_walk_clips[0][i].w = 100;
+			enemy_walk_clips[0][i].h = 100;
+
+			enemy_walk_clips[1][i].x = i * 100;
+			enemy_walk_clips[1][i].y = 0;
+			enemy_walk_clips[1][i].w = 100;
+			enemy_walk_clips[1][i].h = 100;
+		}
 		//Set sprite clips
-		enemy_walk_clips[0].x = 0;
-		enemy_walk_clips[0].y = 0;
-		enemy_walk_clips[0].w = 100;
-		enemy_walk_clips[0].h = 100;
+		
 		return true;
 	}
 	//Load sprite sheet texture
+
 }
 
 void Enemy::changeEnemyBehavior()

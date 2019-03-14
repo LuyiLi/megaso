@@ -7,6 +7,13 @@
 class Enemy;
 class Player;
 
+enum AttackMode
+{
+	ATTACKMODE_NONE=0,
+	ATTACKMODE_PREPARE,
+	ATTACKMODE_ATTACKING,
+	ATTACKMODE_FINISH
+};
 
 extern const int g;
 extern const int SCREEN_WIDTH;
@@ -41,6 +48,8 @@ public:
 	bool canBeKnockedBack;
 	int damage;
 	int acceleration;
+
+	AttackMode attackMode;
 
 	SDL_Rect rectArray[16];
 
@@ -80,11 +89,11 @@ public:
 	//Enemy's collision box
 	SDL_Rect mCollider;
 
-	/*Õ¾Á¢×´Ì¬Í¼ÏñÇÐÆ¬*/
+	/*Õ¾ï¿½ï¿½×´Ì¬Í¼ï¿½ï¿½ï¿½ï¿½Æ¬*/
 	//const int standing_frames = 6;
 	SDL_Rect slime_stand_clips[6];
 	LTexture slime_standing_texture;
-	/*ÐÐ×ß×´Ì¬Í¼ÏñÇÐÆ¬*/
+	/*ï¿½ï¿½ï¿½ï¿½×´Ì¬Í¼ï¿½ï¿½ï¿½ï¿½Æ¬*/
 	//const int walking_frames = 4;
 	SDL_Rect slime_walk_clips[4];
 	LTexture slime_walking_texture;
@@ -148,18 +157,18 @@ public:
 	int getVelX();
 	int getVelY();
 
-	void getHit(Enemy);
+	void getHit(Enemy*);
 	//The velocity of the Player
 	int mVelX, mVelY;
 
 	//Player's collision box
 	SDL_Rect mCollider;
 
-	/*Õ¾Á¢×´Ì¬Í¼ÏñÇÐÆ¬*/
+	/*Õ¾ï¿½ï¿½×´Ì¬Í¼ï¿½ï¿½ï¿½ï¿½Æ¬*/
 	//const int standing_frames = 6;
 	SDL_Rect slime_stand_clips[6];
 	LTexture slime_standing_texture;
-	/*ÐÐ×ß×´Ì¬Í¼ÏñÇÐÆ¬*/
+	/*ï¿½ï¿½ï¿½ï¿½×´Ì¬Í¼ï¿½ï¿½ï¿½ï¿½Æ¬*/
 	//const int walking_frames = 4;
 	SDL_Rect slime_walk_clips[4];
 	LTexture slime_walking_texture;
