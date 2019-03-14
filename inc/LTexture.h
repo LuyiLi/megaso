@@ -33,7 +33,7 @@ public:
 	bool loadFromRenderedText(std::string textureText, SDL_Color textColor);
 
 	//Renders texture at given point
-	void render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip, int scale);
+	void render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip, double scale);
 	void renderWithScale(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip, double scaleX, double scaleY, double percentage);
 
 	//Gets image dimensions

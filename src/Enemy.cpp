@@ -5,6 +5,10 @@
 
 extern Map mainMap;
 extern Player player;
+SDL_Rect enemy_walk_clips[4];
+LTexture enemy_walking_texture;
+
+
 
 Enemy::Enemy()
 {
@@ -129,34 +133,28 @@ void Enemy::render(int camX, int camY)
 void Enemy::moveAction(int deltaX, int deltaY)
 {
 
-	static int frame_walk = 0;
-	static int frame_stand = 0;
+	static int angle = 0;
+	SDL_Point enemyCenter;
+	enemyCenter.x = 41;
+	enemyCenter.y = 41;
 	if (acceleration > 0)
 	{
-		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 4);
-		++frame_walk;
-		if (frame_walk / 4 >= 4)
-		{
-			frame_walk = 0;
-		}
+		SDL_Rect* currentClip = &enemy_walk_clips[0];
+		enemy_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_NONE, 1.2);
+		angle += 15;
 
 	}
-	else if (acceleration < 0)
+	else if(acceleration < 0)
 	{
-		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 4);
-		++frame_walk;
-		if (frame_walk / 4 >= 4)
-		{
-			frame_walk = 0;
-		}
+		SDL_Rect* currentClip = &enemy_walk_clips[0];
+		enemy_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_HORIZONTAL, 1.2);
+		angle -= 15;
 	}
 }
 
 bool Enemy::loadTexture()
 {
-	if (!slime_walking_texture.loadFromFile("images/1.png"))
+	if (!enemy_walking_texture.loadFromFile("images/pangolin_1.png"))
 	{
 		printf("Failed to load walking animation texture!\n");
 		return false;
@@ -164,30 +162,13 @@ bool Enemy::loadTexture()
 	else
 	{
 		//Set sprite clips
-		slime_walk_clips[0].x = 0;
-		slime_walk_clips[0].y = 0;
-		slime_walk_clips[0].w = 416;
-		slime_walk_clips[0].h = 304;
-
-		slime_walk_clips[1].x = 416;
-		slime_walk_clips[1].y = 0;
-		slime_walk_clips[1].w = 416;
-		slime_walk_clips[1].h = 304;
-
-		slime_walk_clips[2].x = 832;
-		slime_walk_clips[2].y = 0;
-		slime_walk_clips[2].w = 416;
-		slime_walk_clips[2].h = 304;
-
-		slime_walk_clips[3].x = 1248;
-		slime_walk_clips[3].y = 0;
-		slime_walk_clips[3].w = 416;
-		slime_walk_clips[3].h = 304;
+		enemy_walk_clips[0].x = 0;
+		enemy_walk_clips[0].y = 0;
+		enemy_walk_clips[0].w = 100;
+		enemy_walk_clips[0].h = 100;
 		return true;
 	}
 	//Load sprite sheet texture
-	
-	
 }
 
 int Enemy::getPosX()
