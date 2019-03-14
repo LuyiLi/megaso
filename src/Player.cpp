@@ -10,6 +10,7 @@
 #include "pocket.h"
 #include "global.h"
 #include "Entity.h"
+#include <math.h>
 
 extern Map mainMap;
 extern pocket mainPocket;
@@ -88,8 +89,15 @@ void Player::move()
 		mVelX = 0;
 		posX = mCollider.x - 10;
 	}
-	else if(((mVelX <= Player_VEL || acceleration < 0) && mVelX >= 0 ) || ((mVelX >= -Player_VEL || acceleration > 0) && mVelX <= 0))
+	else if (((mVelX <= Player_VEL || acceleration < 0) && mVelX >= 0) || ((mVelX >= -Player_VEL || acceleration > 0) && mVelX <= 0))
+	{
 		mVelX += acceleration;
+	}
+	else
+	{
+		mVelX -= acceleration;
+	}
+	
 	
 	//Move the Player up or down
 	mCollider.y += mVelY;
@@ -123,6 +131,25 @@ void Player::move()
 		if (hitFlag > 10)
 			canBeHit = true;
 	}
+
+	//move the weapon in hand
+	if (isUsing && currentItem.itemType == ITEM_WEAPON)
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			weaponCollisionPoints[i].x = mCollider.x + 10*i;
+			weaponCollisionPoints[i].y = mCollider.y + 30;
+			//todo: add stuff
+		}
+	}
+	else
+	{
+		if(weaponCollisionPoints[0].y != 0)
+			for (int i = 0; i < 5; i++)
+			{
+				weaponCollisionPoints[i].y = 0;
+			}
+	}
 }
 
 void Player::getHit(Enemy enemy)
@@ -131,9 +158,9 @@ void Player::getHit(Enemy enemy)
 	{
 		if (intersect(enemy.mCollider, mCollider))
 		{
-			mVelX = enemy.mCollider.x < mCollider.x ? 10 : -10;
-			if (mVelY > 0)
-				mVelY -= 5;
+			mVelX = enemy.mCollider.x < mCollider.x ? 20 : -20;
+			if (mVelY > -2)
+				mVelY -= 9;
 			canBeHit = false;
 			hitFlag = 0;
 		}
@@ -255,6 +282,7 @@ void Player::moveAction(int deltaX, int deltaY)
 			frame_stand = 0;
 		}
 	}
+	
 }
 
 bool Player::loadTexture()

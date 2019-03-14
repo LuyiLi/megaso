@@ -59,6 +59,7 @@ bool loadMedia();
 void close();
 
 int pocketNumber = 1;
+int prevPocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
 int target[3] = {0};
@@ -71,7 +72,6 @@ int absMouseY;//mouseState = 0/1/2/4  NULL/left/middle/right
 int isTakenUp = 0;
 int IDWithMouse = 0, numWithMouse = 0;
 int heartFrame = 0;
-double angle = 0;
 double angleForBlock = 0;
 
 bool init()
@@ -105,6 +105,8 @@ bool init()
 	savingControler.fileRead(target);
 	player.mCollider.x = target[0];
 	player.mCollider.y = target[1];
+	//Initialize currentItem
+	player.currentItem = itemList[mainPocket.pocketData[pocketNumber - 1][0]];
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) < 0)
 	{
@@ -353,13 +355,13 @@ Uint32 callback(Uint32 interval, void* param)
 		{
 			centralPoint.x = 25;
 			centralPoint.y = 75;
-			tool_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1]-300], angle, &centralPoint, SDL_FLIP_NONE, 1);
+			tool_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1]-300], player.currentAngle, &centralPoint, SDL_FLIP_NONE, 1);
 		}
 		else if (player.acceleration < 0)
 		{
 			centralPoint.x = 75;
 			centralPoint.y = 75;
-			tool_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+			tool_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -player.currentAngle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
 		}
 		else
 		{
@@ -371,13 +373,13 @@ Uint32 callback(Uint32 interval, void* param)
 			{
 				centralPoint.x = 25;
 				centralPoint.y = 75;
-				tool_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], angle, &centralPoint, SDL_FLIP_NONE, 1);
+				tool_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], player.currentAngle, &centralPoint, SDL_FLIP_NONE, 1);
 			}
 			else
 			{
 				centralPoint.x = 75;
 				centralPoint.y = 75;
-				tool_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+				tool_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -player.currentAngle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
 			}
 		}
 	}
@@ -387,13 +389,13 @@ Uint32 callback(Uint32 interval, void* param)
 		{
 			centralPoint.x = 0;
 			centralPoint.y = 100;
-			weapon_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], angle, &centralPoint, SDL_FLIP_NONE, 1);
+			weapon_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], player.currentAngle, &centralPoint, SDL_FLIP_NONE, 1);
 		}
 		else if (player.acceleration < 0)
 		{
 			centralPoint.x = 100;
 			centralPoint.y = 100;
-			weapon_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+			weapon_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -player.currentAngle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
 		}
 		else
 		{
@@ -405,33 +407,34 @@ Uint32 callback(Uint32 interval, void* param)
 			{
 				centralPoint.x = 0;
 				centralPoint.y = 100;
-				weapon_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], angle, &centralPoint, SDL_FLIP_NONE, 1);
+				weapon_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], player.currentAngle, &centralPoint, SDL_FLIP_NONE, 1);
 			}
 			else
 			{
 				centralPoint.x = 100;
 				centralPoint.y = 100;
-				weapon_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 90, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+				weapon_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 90, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -player.currentAngle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
 			}
 		}
 	}
 	
 	player.moveAction(deltaX,deltaY);
+	testEnemy.getHit(&player);
 	testEnemy.moveAction(deltaX, deltaY);
 
 	// Render the dropped items
 	
 
 	//Render the collision box
-	SDL_Rect tempRect[16];
-	for (int i = 0; i < 16; i++) 
-	{
-		tempRect[i] = player.rectArray[i];
-		tempRect[i].x += deltaX;
-		tempRect[i].y += deltaY;
-	}
+	//SDL_Rect tempRect[16];
+	//for (int i = 0; i < 16; i++) 
+	//{
+	//	tempRect[i] = player.rectArray[i];
+	//	tempRect[i].x += deltaX;
+	//	tempRect[i].y += deltaY;
+	//}
 	//SDL_RenderDrawRects(gRenderer, tempRect, 16);
-
+	SDL_RenderDrawPoints(gRenderer, player.weaponCollisionPoints, 5);
 	SDL_RenderPresent(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
@@ -452,20 +455,21 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 	//If the same button is still being pressed
 	if (mouseState != prevMouseState)
 	{
-		angle = 0;
+		player.currentAngle = 0;
 	}
 	if (mouseState == prevMouseState)
 	{
 		//If pressed the left buttom
 		if (mouseState == 1)
 		{
-			if (angle < 60)
+			player.isUsing = true;
+			if (player.currentAngle < 60)
 			{
-				angle += 6;
+				player.currentAngle += 6;
 			}
 			else
 			{
-				angle = -60;
+				player.currentAngle = -60;
 			}
 			//If the mouse is on the same place
 			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY&&mainPocket.pocketData[0][pocketNumber-1]>300&& mainPocket.pocketData[0][pocketNumber - 1] <= 400)
@@ -534,6 +538,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 		{
 			angleForBlock = 0;
 			crackFlag = 0;
+			player.isUsing = false;
 			return 0;
 		}
 		
@@ -574,6 +579,11 @@ int main(int argc, char* args[])
 						mouseTimerCallback(0, &mouseState);
 					}
 					mainPocket.handlePocketEvents(e);
+					if (pocketNumber != prevPocketNumber)
+					{
+						prevPocketNumber = pocketNumber;
+						player.currentItem = itemList[mainPocket.pocketData[pocketNumber - 1][0]];
+					}
 					player.handleEvent(e);
 				}
 				//SDL_Delay(10);

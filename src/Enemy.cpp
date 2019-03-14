@@ -20,6 +20,8 @@ Enemy::Enemy()
 	mCollider.h = Enemy_HEIGHT / 2;
 	mCollider.x = 2000;
 	mCollider.y = 2000;
+	canBeHit = true;
+	canBeKnockedBack = true;
 	//Initialize the velocity
 	mVelX = 0;
 	mVelY = 0;
@@ -83,9 +85,35 @@ void Enemy::move()
 		blockPosY = mCollider.y / 50;
 		updateCollisionBox();
 	}
+	if (!canBeHit)
+	{
+		hitFlag++;
+		if (hitFlag > 7)
+			canBeHit = true;
+	}
 }
 
-
+void Enemy::getHit(Player *player)
+{
+	if (canBeHit)
+	{
+		for (int i = 0; i < 5; i++)
+			if (inRect(player->weaponCollisionPoints[i], mCollider))
+			{
+				healthPoint -= 1;
+				//todo: Change the damage
+				if (canBeKnockedBack)
+				{
+					mVelX = player->mCollider.x < mCollider.x ? 10 : -10;
+					if (mVelY > -2)
+						mVelY -= 9;
+					canBeHit = false;
+					hitFlag = 0;
+				}
+				return;
+			}
+	}
+}
 bool Enemy::checkCollision()
 {
 	for (int i = 0; i < 16; i++)

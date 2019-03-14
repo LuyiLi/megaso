@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include "LTexture.h"
 #include "droppedItem.h"
+#include "item.h"
 
 class Enemy;
 class Player;
@@ -26,7 +27,12 @@ public:
 	int blockPosX;
 	int blockPosY;
 
+	int healthLimit;
+	int healthPoint;
+	int hitFlag;
+	bool canBeHit;
 	bool canJump;
+	bool canBeKnockedBack;
 
 	int acceleration;
 
@@ -42,7 +48,7 @@ public:
 
 	//Moves the Enemy and checks collision
 	void move();
-
+	void getHit(Player *);
 	void moveAction(int, int);
 	bool loadTexture();
 
@@ -86,6 +92,8 @@ public:
 	int posX;
 	int posY;
 
+	SDL_Point weaponCollisionPoints[5];
+
 	int blockPosX;
 	int blockPosY;
 
@@ -94,6 +102,9 @@ public:
 	int hitFlag;
 	bool canBeHit;
 	bool canJump;
+	Item currentItem;
+	double currentAngle;
+	bool isUsing;
 
 	int acceleration;
 

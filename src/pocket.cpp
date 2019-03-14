@@ -7,6 +7,7 @@
 
 pocket::pocket()
 {
+
 }
 void pocket::pocketGenerate()
 {
