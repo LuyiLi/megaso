@@ -12,6 +12,12 @@ extern const int g;
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
 
+enum EnemyAI
+{
+	AI_WARRIOR,
+	AI_PANGOLIN
+};
+
 class Enemy
 {
 
@@ -26,14 +32,14 @@ public:
 
 	int blockPosX;
 	int blockPosY;
-
+	
 	int healthLimit;
 	int healthPoint;
 	int hitFlag;
 	bool canBeHit;
 	bool canJump;
 	bool canBeKnockedBack;
-
+	int damage;
 	int acceleration;
 
 	SDL_Rect rectArray[16];
@@ -57,6 +63,8 @@ public:
 	void updateCollisionBox();
 
 	//Shows the Enemy on the screen
+	void changeEnemyBehavior();
+
 	void render(int camX, int camY);
 
 	int getPosX();
@@ -65,6 +73,7 @@ public:
 	int getVelX();
 	int getVelY();
 
+	EnemyAI AI;
 	//The velocity of the Enemy
 	int mVelX, mVelY;
 
@@ -99,6 +108,7 @@ public:
 
 	int healthLimit;
 	int healthPoint;
+
 	int hitFlag;
 	bool canBeHit;
 	bool canJump;

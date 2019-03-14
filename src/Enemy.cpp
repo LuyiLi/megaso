@@ -8,8 +8,6 @@ extern Player player;
 SDL_Rect enemy_walk_clips[4];
 LTexture enemy_walking_texture;
 
-
-
 Enemy::Enemy()
 {
 	//Initialize the offsets
@@ -26,7 +24,7 @@ Enemy::Enemy()
 	mVelX = 0;
 	mVelY = 0;
 	canJump = true;
-
+	damage = 5;
 	for (int i = 0; i < 16; i++)
 	{
 		rectArray[i].x = 0;
@@ -38,8 +36,7 @@ Enemy::Enemy()
 
 void Enemy::move()
 {
-	acceleration = player.mCollider.x - mCollider.x < 0 ? -1 : 1;
-	
+	changeEnemyBehavior();
 	mCollider.x += mVelX;
 	posX = mCollider.x - 10;
 
@@ -50,14 +47,15 @@ void Enemy::move()
 		mVelX = 0;
 		posX = mCollider.x - 10;
 	}
-	else if (abs(mVelX) <= Enemy_VEL || mVelX * acceleration < 0)
-		mVelX += acceleration;
-
-	if (canJump == true && !mVelX)
+	else if (((mVelX <= Enemy_VEL || acceleration < 0) && mVelX >= 0) || ((mVelX >= -Enemy_VEL || acceleration > 0) && mVelX <= 0))
 	{
-		canJump = false;
-		mVelY = -15;
+		mVelX += acceleration;
 	}
+	else
+	{
+		mVelX -= acceleration;
+	}
+
 	//Move the Player up or down
 	mCollider.y += mVelY;
 	posY = mCollider.y;
@@ -149,15 +147,6 @@ void Enemy::updateCollisionBox()
 		}
 }
 
-/*
-void Enemy::render(int camX, int camY)
-{
-	//Show the dot relative to the camera
-	enemy_standing_texture.render(posX - camX, posY - camY);
-	enemy_walking_texture.render(posX - camX, posY - camY);
-}
-*/
-
 void Enemy::moveAction(int deltaX, int deltaY)
 {
 
@@ -197,6 +186,25 @@ bool Enemy::loadTexture()
 		return true;
 	}
 	//Load sprite sheet texture
+}
+
+void Enemy::changeEnemyBehavior()
+{
+	switch (AI)
+	{
+	case AI_WARRIOR:
+		acceleration = player.mCollider.x - mCollider.x < 0 ? -1 : 1;
+		if (canJump == true && !mVelX)
+		{
+			canJump = false;
+			mVelY = -15;
+		}
+		break;
+	case AI_PANGOLIN:
+		break;
+	default:
+		break;
+	}
 }
 
 int Enemy::getPosX()

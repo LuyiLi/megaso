@@ -160,9 +160,10 @@ void Player::getHit(Enemy enemy)
 		{
 			mVelX = enemy.mCollider.x < mCollider.x ? 20 : -20;
 			if (mVelY > -2)
-				mVelY -= 9;
+				mVelY -= 6;
 			canBeHit = false;
 			hitFlag = 0;
+			healthPoint -= enemy.damage;
 		}
 	}
 }
