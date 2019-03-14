@@ -11,6 +11,8 @@ public:
 	const int blockSize = 50;
 	SDL_Rect newMap_clips[233];
 	LTexture newMap_texture;
+	SDL_Rect wall_clips[233];
+	LTexture wall_texture;
 	static const int xBlockNumber = 100;
 	static const int yBlockNumber = 100;
 	int mapData[xBlockNumber][yBlockNumber];

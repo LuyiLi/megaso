@@ -125,13 +125,13 @@ void Player::move()
 	}
 }
 
-void Player::getHit(Enemy enemy)
+void Player::getHit(Enemy *enemy)
 {
 	if (canBeHit)
 	{
-		if (intersect(enemy.mCollider, mCollider))
+		if (intersect(enemy->mCollider, mCollider))
 		{
-			mVelX = enemy.mCollider.x < mCollider.x ? 10 : -10;
+			mVelX = enemy->mCollider.x < mCollider.x ? 10 : -10;
 			if (mVelY > 0)
 				mVelY -= 5;
 			canBeHit = false;

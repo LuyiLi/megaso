@@ -6,10 +6,18 @@
 class Enemy;
 class Player;
 
+enum AttackMode
+{
+	ATTACKMODE_NONE=0,
+	ATTACKMODE_PREPARE,
+	ATTACKMODE_ATTACKING,
+	ATTACKMODE_FINISH
+};
 
 extern const int g;
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
+
 
 class Enemy
 {
@@ -29,6 +37,8 @@ public:
 	bool canJump;
 
 	int acceleration;
+
+	AttackMode attackMode;
 
 	SDL_Rect rectArray[16];
 
@@ -127,7 +137,7 @@ public:
 	int getVelX();
 	int getVelY();
 
-	void getHit(Enemy);
+	void getHit(Enemy*);
 	//The velocity of the Player
 	int mVelX, mVelY;
 

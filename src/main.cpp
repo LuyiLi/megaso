@@ -272,7 +272,7 @@ Uint32 callback(Uint32 interval, void* param)
 	}
 	player.move();
 	testEnemy.move();
-	player.getHit(testEnemy);
+	player.getHit(&testEnemy);
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
