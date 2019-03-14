@@ -13,9 +13,9 @@ public:
 	LTexture newMap_texture;
 	SDL_Rect wall_clips[233];
 	LTexture wall_texture;
-	static const int xBlockNumber = 100;
-	static const int yBlockNumber = 100;
-	int mapData[xBlockNumber][yBlockNumber];
+	static const int xBlockNumber = 5000;
+	static const int yBlockNumber = 1000;
+	int mapData[yBlockNumber][xBlockNumber];
 	int updateCollisionBox();
 	void render(int deltaX, int deltaY);
 	bool loadTexture();
@@ -23,7 +23,7 @@ public:
 	void breakBlock(int x, int y);
 	void putBlock(int x, int y, int ID);
 	void mapRead();
-	void mapWrite(int targetMap[100][100]);
+	void mapWrite();
 	int checkIfExist();
 };
 

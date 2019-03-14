@@ -16,7 +16,7 @@ extern pocket mainPocket;
 
 Map::Map()
 {
-	int mapData[xBlockNumber][yBlockNumber] = {0};
+	int mapData[yBlockNumber][xBlockNumber] = {0};
 }
 
 bool Map::loadTexture()
@@ -53,11 +53,6 @@ bool Map::loadTexture()
 
 Map::~Map()
 {
-}
-
-int Map::updateCollisionBox()
-{
-	return 0;
 }
 
 void Map::render(int deltaX, int deltaY)
@@ -225,17 +220,17 @@ void Map::putBlock(int x, int y, int ID)
 	}
 }
 
-void Map::mapWrite(int targetMap[100][100])
+void Map::mapWrite()
 {
 	FILE *fp;
 	fopen_s(&fp, "map.txt", "w");
 	int m = 0, n = 0;
 	int num = 0;
-	for (m; m < 100; m++)
+	for (m; m < yBlockNumber; m++)
 	{
-		for (n; n <100; n++)
+		for (n; n <xBlockNumber; n++)
 		{
-			num = targetMap[m][n];
+			num = mapData[m][n];
 			fprintf(fp, "%d,", num);
 		}
 		fprintf(fp,"R,");

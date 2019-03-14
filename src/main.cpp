@@ -83,7 +83,7 @@ bool init()
 	else
 	{
 		mainMap.generateMap();
-		mainMap.mapWrite(mainMap.mapData);
+		mainMap.mapWrite();
 		mainMap.mapRead();
 	}
 	//init the itemList
@@ -256,7 +256,7 @@ void close()
 	data[1] = player.mCollider.y;
 	savingControler.fileWrite(data);
 
-	mainMap.mapWrite(mainMap.mapData);
+	mainMap.mapWrite();
 	mainPocket.pocketWrite(mainPocket.pocketData);
 	very_behind_background_texture.free();
 
