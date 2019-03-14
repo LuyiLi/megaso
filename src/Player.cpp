@@ -257,6 +257,7 @@ void Player::moveAction(int deltaX, int deltaY)
 	}
 }
 
+
 bool Player::loadTexture()
 {
 	if (!slime_walking_texture.loadFromFile("images/slime_walk.png"))

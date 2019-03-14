@@ -311,20 +311,25 @@ Uint32 callback(Uint32 interval, void* param)
 		heartFrame = 0;
 	}
 
-	SDL_Point centralPoint ;
+	SDL_Point centralPoint[4] ;
+	centralPoint[0].x = 25;
+	centralPoint[0].y = 75;
+	centralPoint[1].x = 75;
+	centralPoint[1].y = 75;
+	centralPoint[2].x = 0;
+	centralPoint[2].y = 100;
+	centralPoint[3].x = 100;
+	centralPoint[3].y = 100;
+	
 	if (mainPocket.pocketData[0][pocketNumber - 1] > 0 && mainPocket.pocketData[0][pocketNumber - 1] <= 100)
 	{
 		if (player.acceleration > 0)
 		{
-			centralPoint.x = 25;
-			centralPoint.y = 75;
-			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock -20, &centralPoint, SDL_FLIP_NONE, 2);
+			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock -20, &centralPoint[0], SDL_FLIP_NONE, 2);
 		}
 		else if (player.acceleration < 0)
 		{
-			centralPoint.x = 25;
-			centralPoint.y = 75;
-			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint, SDL_FLIP_HORIZONTAL, 2);
+			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint[0], SDL_FLIP_HORIZONTAL, 2);
 		}
 		else
 		{
@@ -334,15 +339,11 @@ Uint32 callback(Uint32 interval, void* param)
 
 			if (mouseX > SCREEN_WIDTH / 2)
 			{
-				centralPoint.x = 25;
-				centralPoint.y = 75;
-				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock-20, &centralPoint, SDL_FLIP_NONE, 2);
+				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock-20, &centralPoint[0], SDL_FLIP_NONE, 2);
 			}
 			else
 			{
-				centralPoint.x = 25;
-				centralPoint.y = 75;
-				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 65, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint, SDL_FLIP_HORIZONTAL, 2);
+				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 65, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint[0], SDL_FLIP_HORIZONTAL, 2);
 			}
 		}
 	}
@@ -351,15 +352,11 @@ Uint32 callback(Uint32 interval, void* param)
 	{
 		if (player.acceleration > 0)
 		{
-			centralPoint.x = 25;
-			centralPoint.y = 75;
-			tool_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1]-300], angle, &centralPoint, SDL_FLIP_NONE, 1);
+			tool_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1]-300], angle, &centralPoint[0], SDL_FLIP_NONE, 1);
 		}
 		else if (player.acceleration < 0)
 		{
-			centralPoint.x = 75;
-			centralPoint.y = 75;
-			tool_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+			tool_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -angle, &centralPoint[1], SDL_FLIP_HORIZONTAL, 1);
 		}
 		else
 		{
@@ -369,15 +366,11 @@ Uint32 callback(Uint32 interval, void* param)
 
 			if (mouseX > SCREEN_WIDTH / 2)
 			{
-				centralPoint.x = 25;
-				centralPoint.y = 75;
-				tool_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], angle, &centralPoint, SDL_FLIP_NONE, 1);
+				tool_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], angle, &centralPoint[0], SDL_FLIP_NONE, 1);
 			}
 			else
 			{
-				centralPoint.x = 75;
-				centralPoint.y = 75;
-				tool_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+				tool_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -angle, &centralPoint[1], SDL_FLIP_HORIZONTAL, 1);
 			}
 		}
 	}
@@ -385,15 +378,11 @@ Uint32 callback(Uint32 interval, void* param)
 	{
 		if (player.acceleration > 0)
 		{
-			centralPoint.x = 0;
-			centralPoint.y = 100;
-			weapon_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], angle, &centralPoint, SDL_FLIP_NONE, 1);
+			weapon_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], angle, &centralPoint[2], SDL_FLIP_NONE, 1);
 		}
 		else if (player.acceleration < 0)
 		{
-			centralPoint.x = 100;
-			centralPoint.y = 100;
-			weapon_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+			weapon_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -angle, &centralPoint[3], SDL_FLIP_HORIZONTAL, 1);
 		}
 		else
 		{
@@ -403,15 +392,11 @@ Uint32 callback(Uint32 interval, void* param)
 
 			if (mouseX > SCREEN_WIDTH / 2)
 			{
-				centralPoint.x = 0;
-				centralPoint.y = 100;
-				weapon_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], angle, &centralPoint, SDL_FLIP_NONE, 1);
+				weapon_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], angle, &centralPoint[2], SDL_FLIP_NONE, 1);
 			}
 			else
 			{
-				centralPoint.x = 100;
-				centralPoint.y = 100;
-				weapon_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 90, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -angle, &centralPoint, SDL_FLIP_HORIZONTAL, 1);
+				weapon_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 90, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -angle, &centralPoint[3], SDL_FLIP_HORIZONTAL, 1);
 			}
 		}
 	}
