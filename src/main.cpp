@@ -35,7 +35,8 @@
 ======`-.____`-.___\_____/___.-`____.-'======
 				   `=---='
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-			佛祖保佑       永无BUG
+			Should there be no BUG in the program
+			In the blessing of the Budda
 */
 
 Item itemList[500];
