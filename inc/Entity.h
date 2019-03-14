@@ -91,7 +91,8 @@ public:
 
 	int healthLimit;
 	int healthPoint;
-
+	int hitFlag;
+	bool canBeHit;
 	bool canJump;
 
 	int acceleration;

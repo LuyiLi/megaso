@@ -27,6 +27,7 @@ Player::Player()
 	mVelX = 0;
 	mVelY = 0;
 	canJump = true;
+	hitFlag = 0;
 
 	for (int i = 0; i < 16; i++)
 	{
@@ -87,9 +88,8 @@ void Player::move()
 		mVelX = 0;
 		posX = mCollider.x - 10;
 	}
-	else if((mVelX <= Player_VEL && mVelX >= 0) || (mVelX >= -Player_VEL && mVelX <= 0))
+	else if(((mVelX <= Player_VEL || acceleration < 0) && mVelX >= 0 ) || ((mVelX >= -Player_VEL || acceleration > 0) && mVelX <= 0))
 		mVelX += acceleration;
-
 	
 	//Move the Player up or down
 	mCollider.y += mVelY;
@@ -117,13 +117,26 @@ void Player::move()
 		blockPosY = mCollider.y / 50;
 		updateCollisionBox();
 	}
+	if (!canBeHit)
+	{
+		hitFlag++;
+		if (hitFlag > 10)
+			canBeHit = true;
+	}
 }
 
 void Player::getHit(Enemy enemy)
 {
-	if (intersect(enemy.mCollider, mCollider))
+	if (canBeHit)
 	{
-		mVelX = enemy.mCollider.x < mCollider.x ? 10 : -10;
+		if (intersect(enemy.mCollider, mCollider))
+		{
+			mVelX = enemy.mCollider.x < mCollider.x ? 10 : -10;
+			if (mVelY > 0)
+				mVelY -= 5;
+			canBeHit = false;
+			hitFlag = 0;
+		}
 	}
 }
 
