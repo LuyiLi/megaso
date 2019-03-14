@@ -64,14 +64,14 @@ void Map::render(int deltaX, int deltaY)
 {
 	//Do not touch the value below
 	int absX = 0, absY = 0;
-	int beginX = player.blockPosX * 50;
-	int beginY = player.blockPosY * 50;
-	int endX = (player.blockPosX+1) * 50;
-	int endY = (player.blockPosY+1) * 50;
+	int beginX = (player.blockPosX-6) * 50;
+	int beginY = (player.blockPosY-4) * 50;
+	int endX = (player.blockPosX) * 50;
+	int endY = (player.blockPosY) * 50;
 
-	for (int i = player.blockPosY; i < 100; i++)
+	for (int i = player.blockPosY-4; i < player.blockPosY+6; i++)
 	{
-		for (int j = player.blockPosX; j < 100; j++)
+		for (int j = player.blockPosX-6; j < player.blockPosX+9; j++)
 		{
 
 			if (mapData[i][j])
@@ -84,12 +84,12 @@ void Map::render(int deltaX, int deltaY)
 				else if (mapData[i][j] > 100 && mapData[i][j] <= 200)
 				{
 					SDL_Rect* currentClip = &wall_clips[mapData[i][j]-100];
-					wall_texture.render(absX + beginX, absY + beginY, currentClip, 0, NULL, SDL_FLIP_NONE, 2);
+					wall_texture.render(beginX + deltaX, beginY + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 2);
 				}
 			}
 			beginX += 50;
 		}
-		beginX = player.blockPosX * 50;
+		beginX = (player.blockPosX-6) * 50;
 		beginY += 50;
 	}
 }
