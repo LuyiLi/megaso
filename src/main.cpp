@@ -53,6 +53,9 @@ LTexture hp_texture;
 
 LTexture gPlayerTexture;
 
+SDL_Point centralPoint[4];
+int direction = 0;
+
 bool quit = false;
 bool init();
 bool loadMedia();
@@ -313,7 +316,7 @@ Uint32 callback(Uint32 interval, void* param)
 		heartFrame = 0;
 	}
 
-	SDL_Point centralPoint[4] ;
+	
 	centralPoint[0].x = 25;
 	centralPoint[0].y = 75;
 	centralPoint[1].x = 75;
@@ -322,7 +325,7 @@ Uint32 callback(Uint32 interval, void* param)
 	centralPoint[2].y = 100;
 	centralPoint[3].x = 100;
 	centralPoint[3].y = 100;
-	int direction = 0;
+	
 	
 	if (mainPocket.pocketData[0][pocketNumber - 1] > 0 && mainPocket.pocketData[0][pocketNumber - 1] <= 100)
 	{
@@ -418,14 +421,17 @@ Uint32 callback(Uint32 interval, void* param)
 	
 
 	//Render the collision box
-	//SDL_Rect tempRect[16];
-	//for (int i = 0; i < 16; i++) 
-	//{
-	//	tempRect[i] = player.rectArray[i];
-	//	tempRect[i].x += deltaX;
-	//	tempRect[i].y += deltaY;
-	//}
-	//SDL_RenderDrawRects(gRenderer, tempRect, 16);
+	SDL_Rect tempRect[5];
+	for (int i = 0; i < 5; i++) 
+	{
+		tempRect[i].x = player.weaponCollisionPoints[i].x;
+		tempRect[i].y = player.weaponCollisionPoints[i].y;
+		tempRect[i].w = 10;
+		tempRect[i].h = 10;
+		tempRect[i].x += deltaX;
+		tempRect[i].y += deltaY;
+	}
+	SDL_RenderDrawRects(gRenderer, tempRect, 16);
 	SDL_RenderDrawPoints(gRenderer, player.weaponCollisionPoints, 5);
 	SDL_RenderPresent(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);

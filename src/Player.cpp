@@ -14,6 +14,8 @@
 
 extern Map mainMap;
 extern pocket mainPocket;
+extern SDL_Point centralPoint[4];
+extern int direction;
 
 Player::Player()
 {
@@ -135,11 +137,12 @@ void Player::move()
 	//move the weapon in hand
 	if (isUsing && currentItem.itemType == ITEM_WEAPON)
 	{
+		double angleY = sin(0.017453 * (currentAngle - 45));
+		double angleX = direction ? cos(0.017453 * (currentAngle - 45)) : -cos(0.017453 * (currentAngle - 45));
 		for (int i = 0; i < 5; i++)
 		{
-			weaponCollisionPoints[i].x = mCollider.x + 10*i;
-			weaponCollisionPoints[i].y = mCollider.y + 30;
-			//todo: add stuff
+			weaponCollisionPoints[i].x = posX + centralPoint[direction].x + 30*i*angleX;
+			weaponCollisionPoints[i].y = posY - 20 + centralPoint[direction].y + 30*i*angleY;
 		}
 	}
 	else
