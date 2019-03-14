@@ -62,29 +62,35 @@ int Map::updateCollisionBox()
 
 void Map::render(int deltaX, int deltaY)
 {
+	//Do not touch the value below
 	int absX = 0, absY = 0;
-	for (int i = 0; i < 100; i++)
+	int beginX = player.blockPosX * 50;
+	int beginY = player.blockPosY * 50;
+	int endX = (player.blockPosX+1) * 50;
+	int endY = (player.blockPosY+1) * 50;
+
+	for (int i = player.blockPosY; i < 100; i++)
 	{
-		for (int j = 0; j < 100; j++)
+		for (int j = player.blockPosX; j < 100; j++)
 		{
 
-			if (mapData[i][j]&& absY + deltaX>-50&& absY + deltaX<SCREEN_WIDTH&&absX + deltaY>-50&& absX + deltaY<SCREEN_HEIGHT)
+			if (mapData[i][j])
 			{
 				if (mapData[i][j] <= 100)
 				{
 					SDL_Rect* currentClip = &newMap_clips[mapData[i][j]];
-					newMap_texture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 2);
+					newMap_texture.render(beginX + deltaX, beginY + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 2);
 				}
 				else if (mapData[i][j] > 100 && mapData[i][j] <= 200)
 				{
 					SDL_Rect* currentClip = &wall_clips[mapData[i][j]-100];
-					wall_texture.render(absY + deltaX, absX + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 2);
+					wall_texture.render(absX + beginX, absY + beginY, currentClip, 0, NULL, SDL_FLIP_NONE, 2);
 				}
 			}
-			absY += 50;
+			beginX += 50;
 		}
-		absY = 0;
-		absX += 50;
+		beginX = player.blockPosX * 50;
+		beginY += 50;
 	}
 }
 int Map::checkIfExist()
