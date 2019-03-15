@@ -89,7 +89,7 @@ int pocketNumber = 1;
 int prevPocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
-int target[3] = {0};
+int target[3] = {2500,0,0};
 int posInPocket = 0;
 int mouseX, mouseY, mouseState;
 int crackFlag;
