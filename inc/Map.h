@@ -16,7 +16,6 @@ public:
 	static const int xBlockNumber = 5000;
 	static const int yBlockNumber = 1000;
 	int mapData[yBlockNumber][xBlockNumber];
-	int updateCollisionBox();
 	void render(int deltaX, int deltaY);
 	bool loadTexture();
 	void generateMap();

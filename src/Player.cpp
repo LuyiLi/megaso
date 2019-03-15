@@ -258,7 +258,7 @@ void Player::moveAction(int deltaX, int deltaY)
 	if (acceleration > 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE,4);
+		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE,6);
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -269,7 +269,7 @@ void Player::moveAction(int deltaX, int deltaY)
 	else if (acceleration < 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL,4);
+		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL,6);
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -279,7 +279,7 @@ void Player::moveAction(int deltaX, int deltaY)
 	else
 	{
 		SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-		slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE,4);
+		slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE,6);
 		++frame_stand;
 		if (frame_stand / 6 >= 6)
 		{
