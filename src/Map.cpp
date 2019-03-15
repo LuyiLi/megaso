@@ -6,6 +6,9 @@
 #include "Camera.h"
 #include "item.h"
 #include "pocket.h"
+#include <time.h>
+#include <stdlib.h>
+#include "global.h"
 
 extern Player player;
 extern bool intersect(SDL_Rect, SDL_Rect);
@@ -107,6 +110,13 @@ extern int pocketNumber;
 
 void Map::generateMap()
 {
+	srand(time(NULL));
+	generateBiome();
+	generateGroundSurface();
+	mapWrite();
+}
+/*
+{
 	for (int i = 0; i < xBlockNumber; i++)
 	{
 		for (int j = 0; j < yBlockNumber; j++)
@@ -126,8 +136,104 @@ void Map::generateMap()
 		}
 	}
 }
+*/
+void Map::generateBiome()
+{
+	int currentBlockNumber = 1;
+	int temp;
+	int i = 0;
+	while (currentBlockNumber < xBlockNumber)
+	{
+		temp = 200 + 800 * random01();
+		groundBiomes[i].biomeRange.x = currentBlockNumber;
+		groundBiomes[i].biomeRange.y = 0;
+		groundBiomes[i].biomeRange.h = 200;
+		groundBiomes[i].biomeRange.w = currentBlockNumber + temp < xBlockNumber ? temp : xBlockNumber - currentBlockNumber;
+		switch ((int)(random01() * 6))
+		{
+		case 0:
+			groundBiomes[i].biomeType = GROUND_BIOME_PLAIN;
+			break;
+		case 1:
+			groundBiomes[i].biomeType = GROUND_BIOME_FOREST;
+			break;
+		case 2:
+			groundBiomes[i].biomeType = GROUND_BIOME_DESERT;
+			break;
+		case 3:
+			groundBiomes[i].biomeType = GROUND_BIOME_SNOWLAND;
+			break;
+		case 4:
+			groundBiomes[i].biomeType = GROUND_BIOME_VOCANIC;
+			break;
+		case 5: 
+			groundBiomes[i].biomeType = GROUND_BIOME_MOUNTAIN;
+			break;
+		}
+		currentBlockNumber += temp;
+		i++;
+	}
+	for (; i < 25; i++)
+	{
+		groundBiomes[i].biomeType = GROUND_BIOME_NULL;
+	}
+}
 
-
+void Map::generateGroundSurface()
+{
+	float a = 0, v = 0, y = 150;
+	int x = 1, i = 0;
+	while (x < xBlockNumber)
+	{	
+		if (groundBiomes[i].biomeType == GROUND_BIOME_NULL)
+			break;
+		else
+		{
+			while (x >= groundBiomes[i].biomeRange.x && x <= groundBiomes[i].biomeRange.x + groundBiomes[i].biomeRange.w)
+			{
+				switch (groundBiomes[i].biomeType)
+				{
+				default:
+					break;
+				case GROUND_BIOME_PLAIN:
+					a = random01() - 0.5;
+					if (y > 170)
+						v -= 0.1;
+					if (y < 120)
+						v += 0.1;
+					if (v > 0.5)
+						v = 0.5;
+					if (v < -0.5)
+						v = -0.5;
+					v = 8 * v / 10 + a;
+					y += v;
+					break;
+				case GROUND_BIOME_DESERT:case GROUND_BIOME_FOREST:case GROUND_BIOME_SNOWLAND:
+					a = random01() * 2 - 1;
+					if (y > 170)
+						v -= 0.5;
+					if (y < 80)
+						v += 0.5;
+					v = 8 * v / 10 + a;
+					y += v;
+					break;
+				case GROUND_BIOME_VOCANIC:case GROUND_BIOME_MOUNTAIN:
+					a = random01() * 5 - 2.5;
+					if (y > 170)
+						v -= 1;
+					if (y < 90)
+						v += 1;
+					v = 8 * v/10 + a;
+					y += v;
+					break;
+				}
+				mapData[(int)y][x] = 1;
+				x++;
+			}
+		}
+		i++;
+	}
+}
 
 void Map::mapRead()
 {

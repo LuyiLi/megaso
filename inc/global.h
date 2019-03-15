@@ -23,4 +23,6 @@ bool intersect(SDL_Rect a, SDL_Rect b);
 bool inRect(SDL_Point, SDL_Rect);
 SDL_Texture* loadTexture(std::string path);
 
+float random01();
+
 #endif // !GLOBAL_H

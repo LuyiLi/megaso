@@ -61,3 +61,8 @@ bool inRect(SDL_Point p, SDL_Rect R)
 		return true;
 	return false;
 }
+
+float random01()
+{
+	return (float)(rand() % 1000) / 1000;
+}
