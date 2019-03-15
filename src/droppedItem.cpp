@@ -19,8 +19,8 @@ droppedItem::droppedItem()
 	//Set collision box dimension
 	mCollider.w = droppedItem_WIDTH;
 	mCollider.h = droppedItem_HEIGHT;
-	collisionRect.h = 50;
-	collisionRect.w = 50;
+	collisionRect.h = (33);
+	collisionRect.w = (33);
 	//Initialize the velocity
 	mVelY = 0;
 
@@ -66,10 +66,10 @@ void droppedItem::move()
 			if (abs(mVelY) < 25)
 				mVelY += g;
 		}
-		if (blockPosY != mCollider.y / 50 || blockPosX != mCollider.x / 50)
+		if (blockPosY != mCollider.y / (33) || blockPosX != mCollider.x / (33))
 		{
-			blockPosX = mCollider.x / 50;
-			blockPosY = mCollider.y / 50;
+			blockPosX = mCollider.x / (33);
+			blockPosY = mCollider.y / (33);
 			updateCollisionBox();
 		}
 	}
@@ -88,8 +88,8 @@ void droppedItem::updateCollisionBox()
 {
 	if (mainMap.mapData[blockPosY + 1][blockPosX]) 
 	{
-		collisionRect.x = 50 * blockPosX;
-		collisionRect.y = 50 * (blockPosY + 1);
+		collisionRect.x = (33) * blockPosX;
+		collisionRect.y = (33) * (blockPosY + 1);
 	}
 	else
 	{
@@ -113,7 +113,7 @@ void droppedItem::render(int deltaX, int deltaY)
 		
 		//todo: change the texture
 		SDL_Rect* currentDroppedItemClip = &mainMap.newMap_clips[item.ID];
-		mainMap.newMap_texture.render(mCollider.x+deltaX,mCollider.y+deltaY, currentDroppedItemClip, 0, NULL, SDL_FLIP_NONE, 4);
+		mainMap.newMap_texture.render(mCollider.x+deltaX,mCollider.y+deltaY, currentDroppedItemClip, 0, NULL, SDL_FLIP_NONE, 6);
 		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
 		SDL_RenderDrawRect(gRenderer, &tempRect);
 		//SDL_RenderDrawRect(gRenderer, &tempRect2);

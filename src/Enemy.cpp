@@ -11,13 +11,12 @@ LTexture enemy_walking_texture[50];
 Enemy::Enemy()
 {
 	//Initialize the offsets
-
 	//Set collision box dimension
 	Enemy_VEL = 3;
-	mCollider.w = Enemy_WIDTH / 2;
+	mCollider.w = Enemy_WIDTH ;
 	mCollider.h = Enemy_HEIGHT / 2;
-	mCollider.x = 2000;
-	mCollider.y = 2000;
+	mCollider.x = 100;
+	mCollider.y = 500;
 	canBeHit = true;
 	canBeKnockedBack = true;
 	//Initialize the velocity
@@ -26,13 +25,14 @@ Enemy::Enemy()
 	canJump = true;
 	damage = 5;
 	attackMode = ATTACKMODE_NONE;
+	AI = AI_WARRIOR;
 
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < 36; i++)
 	{
 		rectArray[i].x = 0;
 		rectArray[i].y = 0;
-		rectArray[i].w = 50;
-		rectArray[i].h = 50;
+		rectArray[i].w = 33;
+		rectArray[i].h = 33;
 	}
 }
 
@@ -58,10 +58,10 @@ void Enemy::move()
 		mVelX -= acceleration;
 	}
 
-	//Move the Player up or down
+
+	//If the Player collided
 	mCollider.y += mVelY;
 	posY = mCollider.y;
-
 
 	//If the Player collided
 	if (checkCollision())
@@ -79,10 +79,10 @@ void Enemy::move()
 		if (mVelY > 5)
 			canJump = false;
 	}
-	if (blockPosY != mCollider.y / 50 || blockPosX != mCollider.x / 50)
+	if (blockPosY != mCollider.y / 33 || blockPosX != mCollider.x / 33)
 	{
-		blockPosX = mCollider.x / 50;
-		blockPosY = mCollider.y / 50;
+		blockPosX = mCollider.x / 33;
+		blockPosY = mCollider.y / 33;
 		updateCollisionBox();
 	}
 	if (!canBeHit)
@@ -114,14 +114,17 @@ void Enemy::getHit(Player *player)
 			}
 	}
 }
+
 bool Enemy::checkCollision()
 {
-	for (int i = 0; i < 16; i++)
+	
+	for (int i = 0; i < 36; i++)
 	{
 		if (rectArray[i].x == 0 && rectArray[i].y == 0)
 			continue;
 		if (intersect(mCollider, rectArray[i]))
 			return true;
+		
 	}
 
 	return false;
@@ -133,18 +136,18 @@ void Enemy::updateCollisionBox()
 	startBlockX = blockPosY - 1;
 	startBlockY = blockPosX - 1;
 
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
+	for (int i = 0; i < 6; i++)
+		for (int j = 0; j < 6; j++)
 		{
 			if (mainMap.mapData[startBlockX + i][startBlockY + j])
 			{
-				rectArray[i + 4 * j].x = 50 * (startBlockY + j);
-				rectArray[i + 4 * j].y = 50 * (startBlockX + i);
+				rectArray[i + 6 * j].x = 33 * (startBlockY + j);
+				rectArray[i + 6 * j].y = 33 * (startBlockX + i);
 			}
 			else
 			{
-				rectArray[i + 4 * j].x = 0;
-				rectArray[i + 4 * j].y = 0;
+				rectArray[i + 6 * j].x = 0;
+				rectArray[i + 6 * j].y = 0;
 			}
 		}
 }
@@ -249,6 +252,8 @@ void Enemy::moveAction(int deltaX, int deltaY)
 
 	if (acceleration > 0 && attackMode==ATTACKMODE_NONE)
 	{
+		mCollider.h = Enemy_HEIGHT / 2;
+		mCollider.w = Enemy_WIDTH ;
 		SDL_Rect* currentClip = &enemy_walk_clips[0][frame_walk/10+5];
 		enemy_walking_texture[0].render((posX + deltaX), (-33+posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
 		if (frame_walk / 10 >= 3)
@@ -262,6 +267,8 @@ void Enemy::moveAction(int deltaX, int deltaY)
 	}
 	if (acceleration < 0 && attackMode == ATTACKMODE_NONE)
 	{
+		mCollider.h = Enemy_HEIGHT / 2;
+		mCollider.w = Enemy_WIDTH;
 		SDL_Rect* currentClip = &enemy_walk_clips[0][frame_walk / 10 + 5];
 		enemy_walking_texture[0].render((posX + deltaX), (-33+posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
 		if (frame_walk / 10 >= 3)
@@ -276,6 +283,8 @@ void Enemy::moveAction(int deltaX, int deltaY)
 
 	if (acceleration > 0&&attackMode==ATTACKMODE_ATTACKING)
 	{
+		mCollider.h = Enemy_HEIGHT / 2;
+		mCollider.w = Enemy_WIDTH / 2;
 		enemyCenter.x = 42;
 		enemyCenter.y = 42;
 		SDL_Rect* currentClip = &enemy_walk_clips[0][0];
@@ -285,6 +294,8 @@ void Enemy::moveAction(int deltaX, int deltaY)
 	}
 	else if(acceleration < 0 && attackMode == ATTACKMODE_ATTACKING)
 	{
+		mCollider.h = Enemy_HEIGHT / 2;
+		mCollider.w = Enemy_WIDTH / 2;
 		enemyCenter.x = 42;
 		enemyCenter.y = 42;
 		SDL_Rect* currentClip = &enemy_walk_clips[0][0];
@@ -311,6 +322,24 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		}
 		
 	}
+	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+	SDL_Rect tempRect;
+	tempRect.x = mCollider.x + deltaX;
+	tempRect.y = mCollider.y + deltaY;
+	tempRect.w = mCollider.w;
+	tempRect.h = mCollider.h;
+	SDL_RenderDrawRect(gRenderer, &tempRect);
+	SDL_Rect temp[36];
+	for (int i = 0; i < 36; i++)
+	{
+		temp[i].h = rectArray[i].h;
+		temp[i].w = rectArray[i].w;
+		temp[i].x = rectArray[i].x + deltaX;
+		temp[i].y = rectArray[i].y + deltaY;
+		SDL_RenderDrawRect(gRenderer, &temp[i]);
+	}
+	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+	
 }
 
 bool Enemy::loadTexture()
