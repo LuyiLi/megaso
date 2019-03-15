@@ -9,8 +9,8 @@ public:
 
 	Item item;
 
-	const int droppedItem_HEIGHT = 25;
-	const int droppedItem_WIDTH = 25;
+	const int droppedItem_HEIGHT = 50/3;
+	const int droppedItem_WIDTH = 50/3;
 	//The position of the droppedItem
 	int blockPosX;
 	int blockPosY;

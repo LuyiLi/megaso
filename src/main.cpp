@@ -116,10 +116,24 @@ bool init()
 	//init the itemList
 	initItemList();
 	
+	if (mainMap.checkIfWallExist())
+	{
+		mainMap.wallRead();
+	}
+	else
+	{
+		mainMap.generateWall();
+		mainMap.wallWrite();
+		mainMap.wallRead();
+	}
+	//init the itemList
+	initItemList();
+
 	if (mainPocket.checkIfExist())
 	{
 		mainPocket.pocketRead();
 	}
+
 	else
 	{
 		mainPocket.pocketGenerate();
@@ -301,12 +315,14 @@ Uint32 callback(Uint32 interval, void* param)
 	}
 	player.move();
 	testEnemy.move();
-	//player.getHit(&testEnemy);
+	player.getHit(&testEnemy);
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
 	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
+	mainMap.renderWall(deltaX, deltaY);
 	mainMap.render(deltaX, deltaY);
+	
 
 	SDL_Rect* crackClip1 = &crack_clips[0];
 	SDL_Rect* crackClip2 = &crack_clips[1];
@@ -316,14 +332,16 @@ Uint32 callback(Uint32 interval, void* param)
 	{
 		switch (crackFlag)
 		{
-		case 1:crack_texture.render(blockMouseX*50 + deltaX, blockMouseY*50 + deltaY, crackClip1, 0, NULL, SDL_FLIP_NONE, 2); break;
-		case 2:crack_texture.render(blockMouseX*50 + deltaX, blockMouseY*50 + deltaY, crackClip2, 0, NULL, SDL_FLIP_NONE, 2); break;
-		case 3:crack_texture.render(blockMouseX*50 + deltaX, blockMouseY*50 + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 2); break;
+		case 1:crack_texture.render(blockMouseX*(33) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip1, 0, NULL, SDL_FLIP_NONE, 3); break;
+		case 2:crack_texture.render(blockMouseX*(100 / 3) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip2, 0, NULL, SDL_FLIP_NONE, 3); break;
+		case 3:crack_texture.render(blockMouseX*(100 / 3) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 3); break;
 		}
 	}
 
 	for (int i = 0; i < 200; i++)
 		droppedItemList[i].render(deltaX, deltaY);
+
+	testEnemy.moveAction(deltaX, deltaY);
 
 	mainPocket.mainPocketRender();
 
@@ -341,25 +359,25 @@ Uint32 callback(Uint32 interval, void* param)
 	}
 
 	
-	centralPoint[0].x = 25;
-	centralPoint[0].y = 75;
-	centralPoint[1].x = 75;
-	centralPoint[1].y = 75;
+	centralPoint[0].x = 25 * 2 / 3;
+	centralPoint[0].y = 75 * 2 / 3;
+	centralPoint[1].x = 75 * 2 / 3;
+	centralPoint[1].y = 75 * 2 / 3;
 	centralPoint[2].x = 0;
-	centralPoint[2].y = 100;
-	centralPoint[3].x = 100;
-	centralPoint[3].y = 100;
+	centralPoint[2].y = 100 * 2 / 3;
+	centralPoint[3].x = 100 * 2 / 3;
+	centralPoint[3].y = 100 * 2 / 3;
 	
 	
 	if (mainPocket.pocketData[0][pocketNumber - 1] > 0 && mainPocket.pocketData[0][pocketNumber - 1] <= 100)
 	{
 		if (player.acceleration > 0)
 		{
-			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock -20, &centralPoint[0], SDL_FLIP_NONE, 2);
+			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock -20, &centralPoint[0], SDL_FLIP_NONE, 4);
 		}
 		else if (player.acceleration < 0)
 		{
-			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint[0], SDL_FLIP_HORIZONTAL, 2);
+			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint[0], SDL_FLIP_HORIZONTAL, 4);
 		}
 		else
 		{
@@ -369,11 +387,11 @@ Uint32 callback(Uint32 interval, void* param)
 
 			if (mouseX > SCREEN_WIDTH / 2)
 			{
-				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock-20, &centralPoint[0], SDL_FLIP_NONE, 2);
+				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock-20, &centralPoint[0], SDL_FLIP_NONE, 4);
 			}
 			else
 			{
-				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 65, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint[0], SDL_FLIP_HORIZONTAL, 2);
+				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 65, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint[0], SDL_FLIP_HORIZONTAL, 4);
 			}
 		}
 	}
@@ -382,12 +400,12 @@ Uint32 callback(Uint32 interval, void* param)
 	{
 		if (player.acceleration > 0)
 		{
-			tool_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1]-300], player.currentAngle, &centralPoint[0], SDL_FLIP_NONE, 1);
+			tool_texture.render(SCREEN_WIDTH / 2 + 20, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1]-300], player.currentAngle, &centralPoint[0], SDL_FLIP_NONE, 1.5);
 			direction = 1;
 		}
 		else if (player.acceleration < 0)
 		{
-			tool_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -player.currentAngle, &centralPoint[1], SDL_FLIP_HORIZONTAL, 1);
+			tool_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -player.currentAngle, &centralPoint[1], SDL_FLIP_HORIZONTAL, 1.5);
 			direction = 0;
 		}
 		else
@@ -397,11 +415,11 @@ Uint32 callback(Uint32 interval, void* param)
 			if (mouseX > SCREEN_WIDTH / 2)
 			{
 				direction = 1;
-				tool_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], player.currentAngle, &centralPoint[0], SDL_FLIP_NONE, 1);
+				tool_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], player.currentAngle, &centralPoint[0], SDL_FLIP_NONE, 1.5);
 			}
 			else
 			{
-				tool_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 60, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -player.currentAngle, &centralPoint[1], SDL_FLIP_HORIZONTAL, 1);
+				tool_texture.render(SCREEN_WIDTH / 2 - 75, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -player.currentAngle, &centralPoint[1], SDL_FLIP_HORIZONTAL, 1.5);
 				direction = 0;
 			}
 		}
@@ -410,12 +428,12 @@ Uint32 callback(Uint32 interval, void* param)
 	{
 		if (player.acceleration > 0)
 		{
-			weapon_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], player.currentAngle, &centralPoint[2], SDL_FLIP_NONE, 1);
+			weapon_texture.render(SCREEN_WIDTH / 2 + 20, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], player.currentAngle, &centralPoint[2], SDL_FLIP_NONE, 1.5);
 			direction = 1;
 		}
 		else if (player.acceleration < 0)
 		{
-			weapon_texture.render(SCREEN_WIDTH / 2 - 130, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -player.currentAngle, &centralPoint[3], SDL_FLIP_HORIZONTAL, 1);
+			weapon_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -player.currentAngle, &centralPoint[3], SDL_FLIP_HORIZONTAL, 1.5);
 			direction = 0;
 		}
 		else
@@ -426,12 +444,12 @@ Uint32 callback(Uint32 interval, void* param)
 
 			if (mouseX > SCREEN_WIDTH / 2)
 			{
-				weapon_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 80, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], player.currentAngle, &centralPoint[2], SDL_FLIP_NONE, 1);
+				weapon_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], player.currentAngle, &centralPoint[2], SDL_FLIP_NONE, 1.5);
 				direction = 1;
 			}
 			else
 			{
-				weapon_texture.render(SCREEN_WIDTH / 2 - 115, SCREEN_HEIGHT / 2 - 90, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -player.currentAngle, &centralPoint[3], SDL_FLIP_HORIZONTAL, 1);
+				weapon_texture.render(SCREEN_WIDTH / 2 - 75, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -player.currentAngle, &centralPoint[3], SDL_FLIP_HORIZONTAL, 1.5);
 				direction = 0;
 			}
 		}
@@ -439,7 +457,7 @@ Uint32 callback(Uint32 interval, void* param)
 	
 	player.moveAction(deltaX,deltaY);
 	testEnemy.getHit(&player);
-	testEnemy.moveAction(deltaX, deltaY);
+	
 
 	// Render the dropped items
 	
@@ -472,8 +490,8 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 	mouseState = SDL_GetMouseState(&mouseX, &mouseY);
 	absMouseX = mouseX - cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	absMouseY = mouseY - cam.countCompensateY(SCREEN_HEIGHT, player.posY);
-	blockMouseX = absMouseX / 50;
-	blockMouseY = absMouseY / 50;
+	blockMouseX = absMouseX / (33);
+	blockMouseY = absMouseY / (33);
 	//If the same button is still being pressed
 	if (mouseState != prevMouseState)
 	{
@@ -604,7 +622,7 @@ int main(int argc, char* args[])
 					if (pocketNumber != prevPocketNumber)
 					{
 						prevPocketNumber = pocketNumber;
-						player.currentItem = itemList[mainPocket.pocketData[pocketNumber - 1][0]];
+						player.currentItem = itemList[mainPocket.pocketData[0][pocketNumber - 1]];
 					}
 					player.handleEvent(e);
 				}

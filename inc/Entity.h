@@ -51,7 +51,7 @@ public:
 
 	AttackMode attackMode;
 
-	SDL_Rect rectArray[16];
+	SDL_Rect rectArray[36];
 
 	//Maximum axis velocity of the Enemy
 	int Enemy_VEL = 5;
@@ -137,7 +137,7 @@ public:
 
 	//Takes key presses and adjusts the Player's velocity
 	void handleEvent(SDL_Event& e);
-
+	void getKilled();
 	//Moves the Player and checks collision
 	void move();
 
@@ -147,9 +147,6 @@ public:
 	bool checkCollision();
 	void pickUpItem(droppedItem *);
 	void updateCollisionBox();
-
-	//Shows the Player on the screen
-	void render(int camX, int camY);
 
 	int getPosX();
 	int getPosY();

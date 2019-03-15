@@ -22,8 +22,8 @@ Player::Player()
 	//Initialize the offsets
 
 	//Set collision box dimension
-	mCollider.w = Player_WIDTH/2;
-	mCollider.h = Player_HEIGHT/2;
+	mCollider.w = Player_WIDTH/3;
+	mCollider.h = Player_HEIGHT/3;
 	healthPoint = 100;
 	healthLimit = 100;
 	//Initialize the velocity
@@ -36,8 +36,8 @@ Player::Player()
 	{
 		rectArray[i].x = 0;
 		rectArray[i].y = 0;
-		rectArray[i].w = 50;
-		rectArray[i].h = 50;
+		rectArray[i].w = 33;
+		rectArray[i].h = 33;
 	}
 }
 
@@ -70,8 +70,16 @@ void Player::handleEvent(SDL_Event& e)
 		//Adjust the velocity
 		switch (e.key.keysym.sym)
 		{
-		case SDLK_a: mVelX = 0; acceleration++; break;
-		case SDLK_d: mVelX = 0; acceleration--;  break;
+		case SDLK_a: 
+				mVelX = 0; 
+				acceleration++; 
+				break;
+			
+		case SDLK_d: 
+				mVelX = 0; 
+				acceleration--;  
+				break;
+			
 		}
 	}
 }
@@ -121,10 +129,10 @@ void Player::move()
 		if (mVelY > 5)
 			canJump = false;
 	}
-	if (blockPosY != mCollider.y / 50 || blockPosX != mCollider.x / 50)
+	if (blockPosY != mCollider.y / (33) || blockPosX != mCollider.x / (33))
 	{
-		blockPosX = mCollider.x / 50;
-		blockPosY = mCollider.y / 50;
+		blockPosX = mCollider.x / (33);
+		blockPosY = mCollider.y / (33);
 		updateCollisionBox();
 	}
 	if (!canBeHit)
@@ -141,8 +149,8 @@ void Player::move()
 		double angleX = direction ? cos(0.017453 * (currentAngle - 45)) : -cos(0.017453 * (currentAngle - 45));
 		for (int i = 0; i < 5; i++)
 		{
-			weaponCollisionPoints[i].x = posX + centralPoint[direction].x + 30*i*angleX;
-			weaponCollisionPoints[i].y = posY - 20 + centralPoint[direction].y + 30*i*angleY;
+			weaponCollisionPoints[i].x = posX + centralPoint[direction].x + 18*i*angleX;
+			weaponCollisionPoints[i].y = posY - 20 + centralPoint[direction].y + 18*i*angleY;
 		}
 	}
 	else
@@ -166,7 +174,14 @@ void Player::getHit(Enemy *enemy)
 				mVelY -= 6;
 			canBeHit = false;
 			hitFlag = 0;
-			healthPoint -= enemy->damage;
+			if (healthPoint - enemy->damage >= 0)
+			{
+				healthPoint -= enemy->damage;
+			}
+			else
+			{
+				getKilled();
+			}
 		}
 	}
 }
@@ -180,8 +195,20 @@ bool Player::checkCollision()
 		if (intersect(mCollider, rectArray[i]))
 			return true;
 	}
-
+	if (mCollider.x <= 0 || mCollider.x >= 165000)
+	{
+		return true;
+	}
 	return false;
+}
+
+void Player::getKilled()
+{
+	printf("AWSL\n");
+	mCollider.x = 2500;
+	mCollider.y = 0;
+	SDL_Delay(10000);
+	healthPoint = healthLimit;
 }
 
 void Player::pickUpItem(droppedItem *droppeditem)
@@ -230,8 +257,8 @@ void Player::updateCollisionBox()
 		{
 			if (mainMap.mapData[startBlockX + i][startBlockY + j])
 			{
-				rectArray[i + 4 * j].x = 50 * (startBlockY + j);
-				rectArray[i + 4 * j].y = 50 * (startBlockX + i);
+				rectArray[i + 4 * j].x = (33) * (startBlockY + j);
+				rectArray[i + 4 * j].y = (33) * (startBlockX + i);
 			}
 			else
 			{
@@ -240,15 +267,6 @@ void Player::updateCollisionBox()
 			}
 		}
 }
-
-/*
-void Player::render(int camX, int camY)
-{
-	//Show the dot relative to the camera
-	slime_standing_texture.render(posX - camX, posY - camY);
-	slime_walking_texture.render(posX - camX, posY - camY);
-}
-*/
 
 void Player::moveAction(int deltaX, int deltaY)
 {
@@ -288,7 +306,6 @@ void Player::moveAction(int deltaX, int deltaY)
 	}
 	
 }
-
 
 bool Player::loadTexture()
 {
