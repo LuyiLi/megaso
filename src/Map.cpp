@@ -204,7 +204,7 @@ void Map::renderWall(int deltaX, int deltaY)
 			{
 				if (wallData[i][j] > 100 && wallData[i][j] <= 200)
 				{
-					SDL_Rect* currentClip = &newMap_clips[wallData[i][j] - 101];
+					SDL_Rect* currentClip = &newMap_clips[wallData[i][j] - 100];
 					wall_texture.render(beginX + deltaX, beginY + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 3);
 				}
 			}

@@ -332,7 +332,7 @@ Uint32 callback(Uint32 interval, void* param)
 
 	//very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
 	mainMap.renderBg(presentState, targetState);
-	//mainMap.renderWall(deltaX, deltaY);
+	mainMap.renderWall(deltaX, deltaY);
 	mainMap.render(deltaX, deltaY);
 	
 
