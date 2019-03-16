@@ -41,7 +41,7 @@ bool Map::loadTexture()
 
 	if (wall_texture.loadFromFile("images/wall.png"))
 	{
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 6; i++)
 		{
 			wall_clips[i].x = i * 100;
 			wall_clips[i].y = 0;
