@@ -157,12 +157,25 @@ int Map::checkIfWallExist()
 
 extern int pocketNumber;
 
+void Map::drawCircle(int x, int y, int r)
+{
+	if (x - r <= 0 || x + r >= xBlockNumber || y - r <= 0 || y + r >= yBlockNumber)
+		return;
+	for(int i = -r; i <= r; i++)
+		for (int j = -r; j <= r; j++)
+		{
+			if (i*i + j * j < r*r)
+				mapData[y + j][x + i] = 0;
+		}
+}
+
 void Map::generateMap()
 {
 	srand(time(NULL));
 	generateBiome();
 	generateGroundSurface();
 	generateRockSurface();
+	generateCave();
 }
 /*
 {
@@ -193,32 +206,34 @@ void Map::generateBiome()
 	int i = 0;
 	while (currentBlockNumber < xBlockNumber)
 	{
-		temp = 200 + 800 * random01();
+		temp = 200 + 400 * random01();
 		groundBiomes[i].biomeRange.x = currentBlockNumber;
 		groundBiomes[i].biomeRange.y = 0;
 		groundBiomes[i].biomeRange.h = 200;
 		groundBiomes[i].biomeRange.w = currentBlockNumber + temp < xBlockNumber ? temp : xBlockNumber - currentBlockNumber;
-		switch ((int)(random01() * 6))
+		switch ((int)(random01() * 14))
 		{
-		case 0:
+		case 0:case 1:case 10:case 11:case 12:
 			groundBiomes[i].biomeType = GROUND_BIOME_PLAIN;
 			break;
-		case 1:
+		case 2:case 3:case 13:
 			groundBiomes[i].biomeType = GROUND_BIOME_FOREST;
 			break;
-		case 2:
+		case 4:case 5:
 			groundBiomes[i].biomeType = GROUND_BIOME_DESERT;
 			break;
-		case 3:
+		case 6: case 7:
 			groundBiomes[i].biomeType = GROUND_BIOME_SNOWLAND;
 			break;
-		case 4:
+		case 8:
 			groundBiomes[i].biomeType = GROUND_BIOME_VOCANIC;
 			break;
-		case 5: 
+		case 9: 
 			groundBiomes[i].biomeType = GROUND_BIOME_MOUNTAIN;
 			break;
 		}
+		if (currentBlockNumber < 2500 && currentBlockNumber + temp >2500)
+			groundBiomes[i].biomeType = GROUND_BIOME_PLAIN;
 		currentBlockNumber += temp;
 		i++;
 	}
@@ -321,6 +336,11 @@ void Map::generateRockSurface()
 		for (int k = tempY + 1; k < yBlockNumber; k++)
 			mapData[k][i] = 7;
 	}
+	for (int i = 30; i < xBlockNumber - 30; i++)
+	{
+		if ((int)10 * random01() < 4)
+			plantTree(i, (int)tempSurfaceArray[i]);
+	}
 }
 
 void Map::generateWall()
@@ -347,7 +367,27 @@ void Map::generateWall()
 
 void Map::generateCave()
 {
-
+	for (int i = 0; i < 50; i++)
+	{
+		int x = 200 + random01() * (xBlockNumber - 400);
+		int y = 200 + random01() * (yBlockNumber - 300);
+		float ax, ay, vx = 0, vy = 0;
+		int rBase = random01() * 2 + 2;
+		for (int j = 0; j < 300; j++)
+		{
+			ax = random01() - 0.5;
+			ay = random01() - 0.5;
+			vx = ax + 0.99*vx;
+			vy = ay + 0.99*vy;
+			if (y < 100)
+				vy += 0.5;
+			if (y > yBlockNumber - 100)
+				vy -= 0.5;
+			y += vy;
+			x += vx;
+			drawCircle(x, y, rBase + random01() * 2 + abs(vx)/4 + abs(vy)/4);
+		}
+	}
 }
 
 void Map::mapRead()
@@ -464,6 +504,44 @@ void Map::wallRead()
 @brief break a block on the map
 @param The BLOCK position of the map
 */
+void Map::plantTree(int x, int y)
+{
+	int treeHeight = random01() * 6 + 7;
+	if (y < 30)
+		return;
+	//check if it is possible to plant trees
+	for (int i = x - 3; i <= x + 3; i++)
+		for (int j = y - treeHeight + 6; j > y - treeHeight - 4; j--)
+			if (mapData[j][i])
+				return;
+	switch ((int)(random01() * 2))
+	{
+	case 0:
+		mapData[y - treeHeight - 3][x] = 5;
+		for (int i = x - 1; i <= x+1; i++)
+			mapData[y - treeHeight - 2][i] = 5;
+		for (int i = x - 2; i <= x + 2; i++)
+			mapData[y - treeHeight - 1][i] = 5;
+		for (int i = x - 2; i <= x + 2; i++)
+			mapData[y - treeHeight][i] = 5;
+		for (int i = x - 1; i <= x + 1; i++)
+			mapData[y - treeHeight + 1][i] = 5;
+		for (int i = 1; i <= treeHeight; i++)
+			mapData[y - i][x] = 4;
+		break;
+	case 1:
+		mapData[y - treeHeight - 2][x] = 5;
+		for (int i = x - 1; i <= x + 1; i++)
+			mapData[y - treeHeight - 1][i] = 5;
+		mapData[y - treeHeight + 1][x - 1] = 5;
+		mapData[y - treeHeight + 2][x - 1] = 5;
+		mapData[y - treeHeight + 3][x + 1] = 5;
+		mapData[y - treeHeight + 4][x + 1] = 5;
+		for (int i = 1; i <= treeHeight; i++)
+			mapData[y - i][x] = 4;
+		break;
+	}
+}
 
 void Map::breakBlock(int x, int y)
 {

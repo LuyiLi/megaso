@@ -42,6 +42,7 @@ public:
 	static const int yBlockNumber = 1000;
 	int mapData[yBlockNumber][xBlockNumber];
 	int wallData[yBlockNumber][xBlockNumber];
+	void drawCircle(int x, int y, int r);
 	void render(int deltaX, int deltaY);
 	bool loadTexture();
 	void generateMap();
@@ -49,6 +50,8 @@ public:
 	void generateGroundSurface();
 	void generateRockSurface();
 	void generateCave();
+	void plantTree(int x, int y);
+	void generateTrees();
 	void breakBlock(int x, int y);
 	void putBlock(int x, int y, int ID);
 	void mapRead();
