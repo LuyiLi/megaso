@@ -32,11 +32,17 @@ extern LTexture weapon_texture;
 extern int posInPocket;
 extern Player player;
 
-SDL_Rect pocketUI_clips[3];
+SDL_Rect pocketUI_clips[8];
 LTexture pocketUI_texture;
 SDL_Rect* generalPocketClip = &pocketUI_clips[0];
 SDL_Rect* highLightPocketClip = &pocketUI_clips[1];
 SDL_Rect* backpackPocketClip = &pocketUI_clips[2];
+SDL_Rect* MaterialPocketClip = &pocketUI_clips[3];
+SDL_Rect* CraftPocketClip = &pocketUI_clips[4];
+SDL_Rect* CraftTableClip = &pocketUI_clips[5];
+SDL_Rect* AccessoriesClip = &pocketUI_clips[6];
+SDL_Rect* AccessoriesTitleClip = &pocketUI_clips[7];
+
 SDL_Color textColorWhite = { 255, 255, 255 };
 SDL_Color textColorBlack = { 0, 0, 0 };
 LTexture gTextTexture1[40];
@@ -51,13 +57,27 @@ void pocket::mainPocketRender()
 {
 	if (pocketUI_texture.loadFromFile("images/pocket.png"))
 	{
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			pocketUI_clips[i].x = 100 * i;
 			pocketUI_clips[i].y = 0;
 			pocketUI_clips[i].w = 100;
 			pocketUI_clips[i].h = 100;
 		}
+		pocketUI_clips[5].x = 500;
+		pocketUI_clips[5].y = 0;
+		pocketUI_clips[5].w = 300;
+		pocketUI_clips[5].h = 100;
+
+		pocketUI_clips[6].x = 800;
+		pocketUI_clips[6].y = 0;
+		pocketUI_clips[6].w = 100;
+		pocketUI_clips[6].h = 100;
+
+		pocketUI_clips[7].x = 900;
+		pocketUI_clips[7].y = 0;
+		pocketUI_clips[7].w = 300;
+		pocketUI_clips[7].h = 100;
 	}
 	if (rubbish_texture.loadFromFile("images/rubbish.png"))
 	{
@@ -121,6 +141,21 @@ void pocket::mainPocketRender()
 			{
 				pocketUI_texture.render(20 + 50 * p, 20 + 50 * q, backpackPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
 			}
+		}
+	}
+	for (int q = 0; q < 3; q++)
+	{
+		if (isOpened)
+		{
+			pocketUI_texture.render(20 + 50 * q, 220, MaterialPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
+			for (int i = 0; i < 6; i++)
+			{
+				pocketUI_texture.render(20 + 50 * i, 280, CraftPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
+				pocketUI_texture.render(20 + 50 * i, 330, CraftPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
+			}
+			pocketUI_texture.render(20, 180, CraftTableClip, 0, NULL, SDL_FLIP_NONE, 2);
+			pocketUI_texture.render(700+50*q, 160, AccessoriesClip, 0, NULL, SDL_FLIP_NONE, 2);
+			pocketUI_texture.render(700, 120, AccessoriesTitleClip, 0, NULL, SDL_FLIP_NONE, 2);
 		}
 	}
 	if (pocketNumber > 0 && pocketNumber < 11)

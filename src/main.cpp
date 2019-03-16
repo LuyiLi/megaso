@@ -330,9 +330,8 @@ Uint32 callback(Uint32 interval, void* param)
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
-	//very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
-	mainMap.renderBg(currentBiome, targetState);
-	//mainMap.renderWall(deltaX, deltaY);
+	mainMap.renderBg(presentState, targetState);
+	mainMap.renderWall(deltaX, deltaY);
 	mainMap.render(deltaX, deltaY);
 	
 
