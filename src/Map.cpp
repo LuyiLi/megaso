@@ -100,7 +100,6 @@ void Map::render(int deltaX, int deltaY)
 				
 				if (mapData[j][i])
 				{
-					printf("%d %d\n", i - player.blockPosX+20, j - 1- player.blockPosY + 20);
 					flag = 0;
 					lightPoint[num].x = i - player.blockPosX + 20;
 					lightPoint[num].y = j - 1 - player.blockPosY + 20+1;
@@ -150,8 +149,6 @@ void Map::render(int deltaX, int deltaY)
 		}
 	}
 }
-
-
 
 void Map::calculateLight(int x, int y)
 {
@@ -666,14 +663,16 @@ void Map::biomeRead()
 
 void Map::breakBlock(int x, int y)
 {
-	for (int i = 0; i < 200; i++)
-		if (droppedItemList[i].item.itemType == ITEM_NULL)
-		{
-			droppedItemList[i].create((33) * x + 15, (33) * y, itemList[mapData[y][x]]);
-			break;
-		}
-	mapData[y][x] = 0;
-	
+	if (abs(x - player.blockPosX) + abs(y - player.blockPosY) <= 4 && (!mapData[y+1][x] || !mapData[y][x+1] || !mapData[y-1][x] || !mapData[y][x-1]))
+	{
+		for (int i = 0; i < 200; i++)
+			if (droppedItemList[i].item.itemType == ITEM_NULL)
+			{
+				droppedItemList[i].create((33) * x + 15, (33) * y, itemList[mapData[y][x]]);
+				break;
+			}
+		mapData[y][x] = 0;
+	}
 }
 
 void Map::breakWall(int x, int y)
@@ -691,7 +690,7 @@ void Map::breakWall(int x, int y)
 void Map::putBlock(int x, int y, int ID)
 {
 	SDL_Rect tempRect;
-	if (!mapData[y][x])
+	if (!mapData[y][x]&& abs(x - player.blockPosX) + abs(y - player.blockPosY) <= 6)
 	{
 		tempRect.x = (33) * x;
 		tempRect.y = (33) * y;
