@@ -53,15 +53,15 @@ public:
 	void generateGroundSurface();
 	void generateRockSurface();
 	void generateCave();
-	void plantTree(int x, int y);
+	void plantTree(int x, int y, GroundBiomeTypes);
 	void generateTrees();
+	int calculateTreeGenerationRate(GroundBiomeTypes biomeType);
 	void breakBlock(int x, int y);
 	void putBlock(int x, int y, int ID);
 	void mapRead();
 	void mapWrite();
 	int checkIfExist();
 	void renderWall(int deltaX, int deltaY);
-	void generateWall();
 	void breakWall(int x, int y);
 	void putWall(int x, int y, int ID);
 	void wallRead();

@@ -121,7 +121,6 @@ bool init()
 	else
 	{
 		mainMap.generateMap();
-		mainMap.generateWall();
 		mainMap.mapWrite();
 		mainMap.wallWrite();
 		mainMap.biomeWrite();
@@ -330,7 +329,7 @@ Uint32 callback(Uint32 interval, void* param)
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
-	mainMap.renderBg(presentState, targetState);
+	mainMap.renderBg(currentBiome, targetState);
 	mainMap.renderWall(deltaX, deltaY);
 	mainMap.render(deltaX, deltaY);
 	
@@ -637,6 +636,7 @@ Uint32 mainMapUpdate(Uint32 interval, void* param)
 		time = 0;
 	time++;
 	SDL_TimerID mainTimer = SDL_AddTimer(1000, mainMapUpdate, (void*)"a");
+	return 0;
 }
 
 int main(int argc, char* args[])

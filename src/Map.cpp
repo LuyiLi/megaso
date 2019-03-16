@@ -720,7 +720,7 @@ void Map::plantTree(int x, int y, GroundBiomeTypes)
 	//check if it is possible to plant trees
 	for (int i = x - 3; i <= x + 3; i++)
 		for (int j = y - treeHeight + 6; j > y - treeHeight - 4; j--)
-			if (mapData[j][i])
+			if (wallData[j][i])
 				return;
 	switch ((int)(random01() * 2))
 	{
@@ -738,7 +738,7 @@ void Map::plantTree(int x, int y, GroundBiomeTypes)
 			wallData[y - i][x] = trunkID;
 		break;
 	case 1:
-		wallData[y - treeHeight - 2][x] = 5;
+		wallData[y - treeHeight - 2][x] = leafID;
 		for (int i = x - 1; i <= x + 1; i++)
 			wallData[y - treeHeight - 1][i] = leafID;
 		wallData[y - treeHeight + 1][x - 1] = leafID;
