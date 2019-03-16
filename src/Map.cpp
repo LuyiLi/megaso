@@ -19,6 +19,7 @@ extern pocket mainPocket;
 
 Map::Map()
 {
+	int scroll[3] = { 0 };
 	int mapData[yBlockNumber][xBlockNumber] = { 0 };
 	int wallData[yBlockNumber][xBlockNumber] = { 0 };
 }
@@ -45,12 +46,18 @@ bool Map::loadTexture()
 			wall_clips[i].w = 100;
 			wall_clips[i].h = 100;
 		}
-		return true;
 	}
 
+	if (bg_texture[GROUND_BIOME_PLAIN][0].loadFromFile("images/bg0.png") && bg_texture[GROUND_BIOME_PLAIN][1].loadFromFile("images/bg1.png") && bg_texture[GROUND_BIOME_PLAIN][2].loadFromFile("images/bg2.png"))
+	{
+		bg_clips[0].x = 0;
+		bg_clips[0].y = 0;
+		bg_clips[0].w = 1800;
+		bg_clips[0].h = 1200;
+		return true;
+	}
 	else 
 	{
-		printf("AAAAA");
 		return false;
 	}
 	
@@ -516,4 +523,27 @@ void Map::wallWrite()
 	m = 0;
 	fprintf(fp, "E");
 	fclose(fp);
+}
+
+void Map::renderBg(GroundBiomeTypes type)
+{
+	scroll[0] -= player.mVelX / 4;
+	scroll[1] -= player.mVelX / 3;
+	scroll[2] -= player.mVelX / 2;
+	for (int i = 0; i < 3; i++)
+	{
+		if (abs(scroll[i]) > 900)
+		{
+			scroll[i] = 0;
+		}
+	}
+	bg_texture[type][0].render(scroll[0], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	bg_texture[type][0].render(scroll[0] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	bg_texture[type][0].render(scroll[0] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	bg_texture[type][1].render(scroll[1], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	bg_texture[type][1].render(scroll[1] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	bg_texture[type][1].render(scroll[1] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	bg_texture[type][2].render(scroll[2], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	bg_texture[type][2].render(scroll[2] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	bg_texture[type][2].render(scroll[2] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
 }

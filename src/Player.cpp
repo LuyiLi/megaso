@@ -17,6 +17,7 @@ extern pocket mainPocket;
 extern SDL_Point centralPoint[4];
 extern int direction;
 
+
 Player::Player()
 {
 	//Initialize the offsets
@@ -26,12 +27,13 @@ Player::Player()
 	mCollider.h = Player_HEIGHT/3;
 	healthPoint = 100;
 	healthLimit = 100;
+
 	//Initialize the velocity
 	mVelX = 0;
 	mVelY = 0;
 	canJump = true;
 	hitFlag = 0;
-
+	weaponState = 0;
 	for (int i = 0; i < 16; i++)
 	{
 		rectArray[i].x = 0;
@@ -86,6 +88,7 @@ void Player::handleEvent(SDL_Event& e)
 
 void Player::move()
 {
+	
 	if (!acceleration && mVelX != 0)
 		mVelX = mVelX > 0 ? mVelX - 1 : mVelX + 1;
 
@@ -282,7 +285,6 @@ void Player::moveAction(int deltaX, int deltaY)
 		{
 			frame_walk = 0;
 		}
-
 	}
 	else if (acceleration < 0)
 	{
@@ -296,13 +298,37 @@ void Player::moveAction(int deltaX, int deltaY)
 	}
 	else
 	{
-		SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-		slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE,6);
-		++frame_stand;
-		if (frame_stand / 6 >= 6)
+		if (weaponState == 0)
 		{
-			frame_stand = 0;
+			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
+			slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+			++frame_stand;
+			if (frame_stand / 6 >= 6)
+			{
+				frame_stand = 0;
+			}
 		}
+		else if (weaponState == 1)
+		{
+			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
+			slime_standing_side_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+			++frame_stand;
+			if (frame_stand / 6 >= 6)
+			{
+				frame_stand = 0;
+			}
+		}
+		else if (weaponState == 2)
+		{
+			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
+			slime_standing_side_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 6);
+			++frame_stand;
+			if (frame_stand / 6 >= 6)
+			{
+				frame_stand = 0;
+			}
+		}
+		
 	}
 	
 }
@@ -339,6 +365,11 @@ bool Player::loadTexture()
 	}
 	//Load sprite sheet texture
 	if (!slime_standing_texture.loadFromFile("images/slime_stand.png"))
+	{
+		printf("Failed to load walking animation texture!\n");
+		return false;
+	}
+	if (!slime_standing_side_texture.loadFromFile("images/slime_stand_side.png"))
 	{
 		printf("Failed to load walking animation texture!\n");
 		return false;

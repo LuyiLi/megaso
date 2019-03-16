@@ -124,7 +124,7 @@ public:
 	Item currentItem;
 	double currentAngle;
 	bool isUsing;
-
+	int weaponState;
 	int acceleration;
 
 	SDL_Rect rectArray[16];
@@ -169,4 +169,7 @@ public:
 	//const int walking_frames = 4;
 	SDL_Rect slime_walk_clips[4];
 	LTexture slime_walking_texture;
+
+	SDL_Rect slime_stand_side_clips[6];
+	LTexture slime_standing_side_texture;
 };

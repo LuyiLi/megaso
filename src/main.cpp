@@ -89,7 +89,7 @@ int pocketNumber = 1;
 int prevPocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
-int target[3] = {2500,0,0};
+int target[3] = {2500,0,100};
 int posInPocket = 0;
 int mouseX, mouseY, mouseState;
 int crackFlag;
@@ -99,6 +99,7 @@ int absMouseY;//mouseState = 0/1/2/4  NULL/left/middle/right
 int isTakenUp = 0;
 int IDWithMouse = 0, numWithMouse = 0;
 int heartFrame = 0;
+
 double angleForBlock = 0;
 
 bool init()
@@ -146,6 +147,7 @@ bool init()
 	savingControler.fileRead(target);
 	player.mCollider.x = target[0];
 	player.mCollider.y = target[1];
+	player.healthPoint = target[2];
 	//Initialize currentItem
 	player.currentItem = itemList[mainPocket.pocketData[pocketNumber - 1][0]];
 	//Initialize SDL
@@ -223,6 +225,8 @@ bool loadMedia()
 		very_behind_background_clips[0].h = 1196;
 	}
 
+
+
 	if (heart_texture.loadFromFile("images/heart.png"))
 	{
 		for (int i = 0; i < 8; i++)
@@ -295,6 +299,7 @@ void close()
 	int data[3] = {0};
 	data[0] = player.mCollider.x;
 	data[1] = player.mCollider.y;
+	data[2] = player.healthPoint;
 	savingControler.fileWrite(data);
 
 	mainMap.mapWrite();
@@ -308,6 +313,7 @@ void close()
 
 Uint32 callback(Uint32 interval, void* param)
 {
+
 	for (int i = 0; i < 200; i++)
 	{
 		player.pickUpItem(&droppedItemList[i]);
@@ -319,7 +325,8 @@ Uint32 callback(Uint32 interval, void* param)
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
-	very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
+	//very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
+	mainMap.renderBg(GROUND_BIOME_PLAIN);
 	mainMap.renderWall(deltaX, deltaY);
 	mainMap.render(deltaX, deltaY);
 	
@@ -387,16 +394,18 @@ Uint32 callback(Uint32 interval, void* param)
 
 			if (mouseX > SCREEN_WIDTH / 2)
 			{
+				player.weaponState = 1;
 				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock-20, &centralPoint[0], SDL_FLIP_NONE, 4);
 			}
 			else
 			{
+				player.weaponState = 2;
 				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 65, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint[0], SDL_FLIP_HORIZONTAL, 4);
 			}
 		}
 	}
 
-	if (mainPocket.pocketData[0][pocketNumber - 1] > 300 && mainPocket.pocketData[0][pocketNumber - 1] <= 400)
+	else if (mainPocket.pocketData[0][pocketNumber - 1] > 300 && mainPocket.pocketData[0][pocketNumber - 1] <= 400)
 	{
 		if (player.acceleration > 0)
 		{
@@ -415,12 +424,14 @@ Uint32 callback(Uint32 interval, void* param)
 			if (mouseX > SCREEN_WIDTH / 2)
 			{
 				direction = 1;
+				player.weaponState = 1;
 				tool_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], player.currentAngle, &centralPoint[0], SDL_FLIP_NONE, 1.5);
 			}
 			else
 			{
 				tool_texture.render(SCREEN_WIDTH / 2 - 75, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -player.currentAngle, &centralPoint[1], SDL_FLIP_HORIZONTAL, 1.5);
 				direction = 0;
+				player.weaponState = 2;
 			}
 		}
 	}
@@ -446,15 +457,23 @@ Uint32 callback(Uint32 interval, void* param)
 			{
 				weapon_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], player.currentAngle, &centralPoint[2], SDL_FLIP_NONE, 1.5);
 				direction = 1;
+				player.weaponState = 1;
 			}
 			else
 			{
 				weapon_texture.render(SCREEN_WIDTH / 2 - 75, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -player.currentAngle, &centralPoint[3], SDL_FLIP_HORIZONTAL, 1.5);
 				direction = 0;
+				player.weaponState = 2;
 			}
 		}
-	}
 	
+	}
+	else
+	{
+		player.weaponState = 0;
+	}
+
+
 	player.moveAction(deltaX,deltaY);
 	testEnemy.getHit(&player);
 	
