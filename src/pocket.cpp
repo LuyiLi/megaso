@@ -258,18 +258,21 @@ void pocket::handlePocketEvents(SDL_Event e)
 			}
 			break;
 		case SDLK_x:
-			int damagePoint = 5;
-			if (player.healthPoint > damagePoint)
-			{
-				player.healthPoint -= 5;
-				printf("5 points DAMAGE!\n");
-			}
-			else
-			{
-				player.healthPoint = 0;
-				printf("PLAYER DIED!\n");
-			}
+			mainMap.targetAlpha -= 5;
+			mainMap.preAlpha += 5;
+			printf("1 %d %d\n", mainMap.targetAlpha, mainMap.preAlpha);
+			
+			break;
+
+		case SDLK_c:
+
+
+			mainMap.targetAlpha += 5;
+			mainMap.preAlpha -= 5;
+			printf("2 %d %d\n", mainMap.targetAlpha, mainMap.preAlpha);
+			break;
 		}
+		
 	}
 	if (e.type == SDL_MOUSEBUTTONDOWN && isOpened)
 	{
@@ -388,7 +391,6 @@ void pocket::pocketUpdate()
 {
 	for (int i = 0; i < 40; i++)
 	{
-	
 		if (pocketData[0][i] == 0 || pocketData[1][i] == 0)
 		{
 			pocketData[0][i] = 0;

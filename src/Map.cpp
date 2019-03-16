@@ -48,7 +48,8 @@ bool Map::loadTexture()
 		}
 	}
 
-	if (bg_texture[GROUND_BIOME_PLAIN][0].loadFromFile("images/bg0.png") && bg_texture[GROUND_BIOME_PLAIN][1].loadFromFile("images/bg1.png") && bg_texture[GROUND_BIOME_PLAIN][2].loadFromFile("images/bg2.png"))
+	if (bg_texture[GROUND_BIOME_PLAIN][0].loadFromFile("images/bg0.png") && bg_texture[GROUND_BIOME_PLAIN][1].loadFromFile("images/bg1.png") && bg_texture[GROUND_BIOME_PLAIN][2].loadFromFile("images/bg2.png")
+		&& bg_texture[GROUND_BIOME_VOCANIC][0].loadFromFile("images/bg0_test.png") && bg_texture[GROUND_BIOME_VOCANIC][1].loadFromFile("images/bg1_test.png") && bg_texture[GROUND_BIOME_VOCANIC][2].loadFromFile("images/bg2_test.png"))
 	{
 		bg_clips[0].x = 0;
 		bg_clips[0].y = 0;
@@ -282,6 +283,7 @@ void Map::generateGroundSurface()
 		i++;
 	}
 }
+
 void Map::generateWall()
 {
 	for (int i = 0; i < xBlockNumber; i++)
@@ -303,8 +305,6 @@ void Map::generateWall()
 		}
 	}
 }
-
-
 
 void Map::mapRead()
 {
@@ -525,7 +525,7 @@ void Map::wallWrite()
 	fclose(fp);
 }
 
-void Map::renderBg(GroundBiomeTypes type)
+void Map::renderBg()
 {
 	scroll[0] -= player.mVelX / 4;
 	scroll[1] -= player.mVelX / 3;
@@ -537,13 +537,16 @@ void Map::renderBg(GroundBiomeTypes type)
 			scroll[i] = 0;
 		}
 	}
-	bg_texture[type][0].render(scroll[0], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-	bg_texture[type][0].render(scroll[0] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-	bg_texture[type][0].render(scroll[0] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-	bg_texture[type][1].render(scroll[1], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-	bg_texture[type][1].render(scroll[1] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-	bg_texture[type][1].render(scroll[1] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-	bg_texture[type][2].render(scroll[2], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-	bg_texture[type][2].render(scroll[2] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-	bg_texture[type][2].render(scroll[2] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	for (int i = 0; i < 3; i++)
+	{
+		bg_texture[preType][i].setAlpha(preAlpha);
+		bg_texture[preType][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[preType][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[preType][i].render(scroll[i] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[targetType][i].setAlpha(targetAlpha);
+		bg_texture[targetType][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[targetType][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[targetType][i].render(scroll[i] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	}
+
 }

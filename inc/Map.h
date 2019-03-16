@@ -24,6 +24,10 @@ class Map
 public:
 	Map();
 	~Map();
+	GroundBiomeTypes preType;
+	GroundBiomeTypes targetType;
+	int preAlpha;
+	int targetAlpha;
 	int scroll[3] = { 0 };
 	const int blockSize = 33;
 	SDL_Rect newMap_clips[233];
@@ -54,7 +58,7 @@ public:
 	void putWall(int x, int y, int ID);
 	void wallRead();
 	void wallWrite();
-	void renderBg(GroundBiomeTypes);
+	void renderBg();
 	int checkIfWallExist();
 };
 

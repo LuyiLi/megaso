@@ -75,6 +75,8 @@ LTexture weapon_texture;
 SDL_Rect hp_clips[2];
 LTexture hp_texture;
 
+
+
 LTexture gPlayerTexture;
 
 SDL_Point centralPoint[4];
@@ -104,6 +106,10 @@ double angleForBlock = 0;
 
 bool init()
 {
+	mainMap.preAlpha = 0;
+	mainMap.targetAlpha = 255;
+	mainMap.targetType = GROUND_BIOME_PLAIN;
+	mainMap.preType = GROUND_BIOME_VOCANIC;
 	if (mainMap.checkIfExist())
 	{
 		mainMap.mapRead();
@@ -326,7 +332,7 @@ Uint32 callback(Uint32 interval, void* param)
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
 	//very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
-	mainMap.renderBg(GROUND_BIOME_PLAIN);
+	mainMap.renderBg();
 	mainMap.renderWall(deltaX, deltaY);
 	mainMap.render(deltaX, deltaY);
 	
