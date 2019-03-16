@@ -154,7 +154,7 @@ void Map::generateMap()
 	srand(time(NULL));
 	generateBiome();
 	generateGroundSurface();
-	mapWrite();
+	generateRockSurface();
 }
 /*
 {
@@ -246,11 +246,11 @@ void Map::generateGroundSurface()
 						v = 0.5;
 					if (v < -0.5)
 						v = -0.5;
-					v = 8 * v / 10 + a;
+					v = 4 * v / 8 + a;
 					y += v;
 					break;
 				case GROUND_BIOME_DESERT:case GROUND_BIOME_FOREST:case GROUND_BIOME_SNOWLAND:
-					a = random01() * 2 - 1;
+					a = random01() - 0.5;
 					if (y > 170)
 						v -= 0.5;
 					if (y < 80)
@@ -259,27 +259,67 @@ void Map::generateGroundSurface()
 					y += v;
 					break;
 				case GROUND_BIOME_VOCANIC:case GROUND_BIOME_MOUNTAIN:
-					a = random01() * 5 - 2.5;
+					a = random01() * 3 - 1.5;
 					if (y > 170)
-						v -= 1;
-					if (y < 90)
-						v += 1;
-					v = 8 * v/10 + a;
+						v -= 0.5;
+					if (y < 70)
+						v += 0.5;
+					v = 9 * v/10 + a;
 					y += v;
 					break;
 				}
 				mapData[(int)y][x] = 1;
+				//flatten the ground
+				if (mapData[(int)y][x - 3])
+				{
+					mapData[(int)y][x - 2] = 1;
+					mapData[(int)y + 1][x - 2] = 0;
+					mapData[(int)y + 2][x - 2] = 0;
+					mapData[(int)y - 1][x - 2] = 0;
+					mapData[(int)y - 2][x - 2] = 0;
+					tempSurfaceArray[x - 2] = y;
+				}
+				if (mapData[(int)y][x - 2])
+				{
+					mapData[(int)y][x - 1] = 1;
+					mapData[(int)y + 1][x - 1] = 0;
+					mapData[(int)y + 2][x - 1] = 0;
+					mapData[(int)y - 1][x - 1] = 0;
+					mapData[(int)y - 2][x - 1] = 0;
+					tempSurfaceArray[x - 1] = y;
+				}
+				tempSurfaceArray[x] = y;
 				x++;
 			}
 		}
 		i++;
 	}
 }
+
+void Map::generateRockSurface()
+{
+	float temp;
+	int tempY;
+	for (int i = 0; i < xBlockNumber; i++)
+	{
+		temp = 0;
+		for (int j = i-4; j < i+4; j++)
+		{
+			temp += j < 0 || j > xBlockNumber ? 150 : tempSurfaceArray[j];
+		}
+		tempY = (int)(temp / 9 + 40);
+		for (int k = tempY; !mapData[k][i]; k--)
+			mapData[k][i] = 2;
+		for (int k = tempY + 1; k < yBlockNumber; k++)
+			mapData[k][i] = 7;
+	}
+}
+
 void Map::generateWall()
 {
 	for (int i = 0; i < xBlockNumber; i++)
 	{
-		for (int j = 0; j < yBlockNumber; j++)
+		for (int j = 0; j < yBlockNumber - 1; j++)
 		{
 			if (j == 50)
 			{
@@ -297,7 +337,10 @@ void Map::generateWall()
 	}
 }
 
+void Map::generateCave()
+{
 
+}
 
 void Map::mapRead()
 {
