@@ -269,7 +269,7 @@ void Map::drawCircle(int x, int y, int r)
 	for(int i = -r; i <= r; i++)
 		for (int j = -r; j <= r; j++)
 		{
-			if (i*i + j * j < r*r)
+			if (i*i + j * j <= r*r)
 				mapData[y + j][x + i] = 0;
 		}
 }
@@ -281,6 +281,7 @@ void Map::generateMap()
 	generateGroundSurface();
 	generateRockSurface();
 	generateCave();
+	generateTrees();
 }
 /*
 {
@@ -441,11 +442,6 @@ void Map::generateRockSurface()
 		for (int k = tempY + 1; k < yBlockNumber; k++)
 			mapData[k][i] = 7;
 	}
-	for (int i = 30; i < xBlockNumber - 30; i++)
-	{
-		if ((int)10 * random01() < 4)
-			plantTree(i, (int)tempSurfaceArray[i]);
-	}
 }
 
 void Map::generateWall()
@@ -489,9 +485,26 @@ void Map::generateCave()
 			if (y > yBlockNumber - 100)
 				vy -= 0.5;
 			y += vy;
-			x += vx;
+			if (abs(vx) > 2)
+				x += vx;
+			else
+			{
+				if (vx > 0)
+					x += 2;
+				else
+					x -= 2;
+			}
 			drawCircle(x, y, rBase + random01() * 2 + abs(vx)/4 + abs(vy)/4);
 		}
+	}
+}
+
+void Map::generateTrees()
+{
+	for (int i = 30; i < xBlockNumber - 30; i++)
+	{
+		if ((int)10 * random01() < 4)
+			plantTree(i, (int)tempSurfaceArray[i]);
 	}
 }
 
@@ -932,9 +945,8 @@ int Map::renderBgChange(GroundBiomeTypes tar)
 	}
 }
 
-int Map::presentState()
+int Map::currentBiome(int presentPosX)
 {
-	int presentPosX = player.blockPosX;
 	for (int i = 0; i < 25; i++)
 	{
 		if (presentPosX >= groundBiomes[i].biomeRange.x && presentPosX < groundBiomes[i].biomeRange.w+ groundBiomes[i].biomeRange.x)

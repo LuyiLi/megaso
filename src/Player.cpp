@@ -140,11 +140,11 @@ void Player::move()
 		blockPosX = mCollider.x / (33);
 		blockPosY = mCollider.y / (33);
 		updateCollisionBox();
-		previousState = presentState;
-		presentState = mainMap.presentState();
-		if (presentState != previousState)
+		previousState = currentBiome;
+		currentBiome = mainMap.currentBiome(blockPosX);
+		if (currentBiome != previousState)
 		{
-			printf("%d\n", mainMap.presentState());
+			printf("%d\n", mainMap.currentBiome(blockPosX));
 			SDL_TimerID backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
 
 		}

@@ -101,7 +101,7 @@ int absMouseY;//mouseState = 0/1/2/4  NULL/left/middle/right
 int isTakenUp = 0;
 int IDWithMouse = 0, numWithMouse = 0;
 int heartFrame = 0;
-GroundBiomeTypes presentState = GROUND_BIOME_PLAIN;
+GroundBiomeTypes currentBiome = GROUND_BIOME_PLAIN;
 GroundBiomeTypes targetState = GROUND_BIOME_VOCANIC;
 
 double angleForBlock = 0;
@@ -331,7 +331,7 @@ Uint32 callback(Uint32 interval, void* param)
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
 	//very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
-	mainMap.renderBg(presentState, targetState);
+	mainMap.renderBg(currentBiome, targetState);
 	//mainMap.renderWall(deltaX, deltaY);
 	mainMap.render(deltaX, deltaY);
 	
@@ -626,8 +626,8 @@ Uint32 renderBgChangeCallback(Uint32 interval, void* param)
 	{
 		GroundBiomeTypes temp;
 		temp = targetState;
-		targetState = presentState;
-		presentState = temp;
+		targetState = currentBiome;
+		currentBiome = temp;
 	}
 	return 0;
 }

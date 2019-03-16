@@ -117,7 +117,7 @@ public:
 	int blockPosY;
 
 	int previousState;
-	int presentState;
+	int currentBiome;
 
 	int healthLimit;
 	int healthPoint;

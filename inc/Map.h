@@ -74,6 +74,6 @@ public:
 	void biomeRead();
 	void biomeWrite();
 	int checkIfBiomeExist();
-	int presentState();
+	int currentBiome(int);
 };
 
