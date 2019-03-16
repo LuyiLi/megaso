@@ -81,7 +81,7 @@ LTexture gPlayerTexture;
 
 SDL_Point centralPoint[4];
 int direction = 0;
-
+int time = 0;
 bool quit = false;
 bool init();
 bool loadMedia();
@@ -632,6 +632,14 @@ Uint32 renderBgChangeCallback(Uint32 interval, void* param)
 	return 0;
 }
 
+Uint32 mainMapUpdate(Uint32 interval, void* param)
+{
+	if (time >= 600)
+		time = 0;
+	time++;
+	SDL_TimerID mainTimer = SDL_AddTimer(1000, mainMapUpdate, (void*)"a");
+}
+
 int main(int argc, char* args[])
 {
 	if (!init());
@@ -643,6 +651,7 @@ int main(int argc, char* args[])
 			bool quit = false;
 			SDL_Event e;
 			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
+			SDL_TimerID mainTimer = SDL_AddTimer(1000, mainMapUpdate, (void*)"a");
 			while (!quit)
 			{
 				while (SDL_PollEvent(&e) != 0)
