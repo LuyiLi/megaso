@@ -19,6 +19,7 @@ extern const int g;
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
 
+
 enum EnemyAI
 {
 	AI_WARRIOR,
@@ -114,6 +115,9 @@ public:
 
 	int blockPosX;
 	int blockPosY;
+
+	int previousState;
+	int presentState;
 
 	int healthLimit;
 	int healthPoint;

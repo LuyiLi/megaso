@@ -75,7 +75,7 @@ LTexture weapon_texture;
 SDL_Rect hp_clips[2];
 LTexture hp_texture;
 
-
+SDL_TimerID backgroundTimer;
 
 LTexture gPlayerTexture;
 
@@ -101,6 +101,8 @@ int absMouseY;//mouseState = 0/1/2/4  NULL/left/middle/right
 int isTakenUp = 0;
 int IDWithMouse = 0, numWithMouse = 0;
 int heartFrame = 0;
+GroundBiomeTypes presentState = GROUND_BIOME_PLAIN;
+GroundBiomeTypes targetState = GROUND_BIOME_VOCANIC;
 
 double angleForBlock = 0;
 
@@ -110,29 +112,26 @@ bool init()
 	mainMap.targetAlpha = 255;
 	mainMap.targetType = GROUND_BIOME_PLAIN;
 	mainMap.preType = GROUND_BIOME_VOCANIC;
-	if (mainMap.checkIfExist())
+	if (mainMap.checkIfExist()&&mainMap.checkIfWallExist()&&mainMap.checkIfBiomeExist())
 	{
 		mainMap.mapRead();
+		mainMap.wallRead();
+		mainMap.biomeRead();
 	}
 	else
 	{
 		mainMap.generateMap();
+		mainMap.generateWall();
 		mainMap.mapWrite();
+		mainMap.wallWrite();
+		mainMap.biomeWrite();
 		mainMap.mapRead();
+		mainMap.wallRead();
+		mainMap.biomeRead();
 	}
 	//init the itemList
 	initItemList();
-	
-	if (mainMap.checkIfWallExist())
-	{
-		mainMap.wallRead();
-	}
-	else
-	{
-		mainMap.generateWall();
-		mainMap.wallWrite();
-		mainMap.wallRead();
-	}
+
 	//init the itemList
 	initItemList();
 
@@ -332,7 +331,7 @@ Uint32 callback(Uint32 interval, void* param)
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
 	//very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
-	mainMap.renderBg(GROUND_BIOME_PLAIN);
+	mainMap.renderBg(presentState, targetState);
 	//mainMap.renderWall(deltaX, deltaY);
 	mainMap.render(deltaX, deltaY);
 	
@@ -615,6 +614,22 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 	return 0;
 
 	//SDL_TimerID mouseTimer = SDL_AddTimer(10, mouseTimerCallback, (void*)mouseState);
+}
+
+Uint32 renderBgChangeCallback(Uint32 interval, void* param) 
+{
+	if (!mainMap.renderBgChange(targetState))
+	{
+		SDL_TimerID backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
+	}
+	else
+	{
+		GroundBiomeTypes temp;
+		temp = targetState;
+		targetState = presentState;
+		presentState = temp;
+	}
+	return 0;
 }
 
 int main(int argc, char* args[])

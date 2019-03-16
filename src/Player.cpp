@@ -16,6 +16,8 @@ extern Map mainMap;
 extern pocket mainPocket;
 extern SDL_Point centralPoint[4];
 extern int direction;
+extern Uint32 renderBgChangeCallback(Uint32 interval, void* param);
+extern int mouseState;
 
 
 Player::Player()
@@ -53,7 +55,7 @@ void Player::handleEvent(SDL_Event& e)
 			if (canJump)
 			{
 				mVelY = -15;
-				canJump = false;
+				//canJump = false;
 			}
 		}
 		else if (e.key.keysym.sym == SDLK_a)
@@ -129,14 +131,24 @@ void Player::move()
 	{
 		if (abs(mVelY) < 25)
 			mVelY += g;
-		if (mVelY > 5)
-			canJump = false;
+		//if (mVelY > 5)
+			//canJump = false;
 	}
+	
 	if (blockPosY != mCollider.y / (33) || blockPosX != mCollider.x / (33))
 	{
 		blockPosX = mCollider.x / (33);
 		blockPosY = mCollider.y / (33);
 		updateCollisionBox();
+		previousState = presentState;
+		presentState = mainMap.presentState();
+		if (presentState != previousState)
+		{
+			printf("%d\n", mainMap.presentState());
+			SDL_TimerID backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
+
+		}
+		
 	}
 	if (!canBeHit)
 	{

@@ -28,7 +28,7 @@ public:
 	GroundBiomeTypes targetType;
 	int preAlpha;
 	int targetAlpha;
-	int scroll[3] = { 0 };
+	int scroll[6] = { 0 };
 	const int blockSize = 33;
 	SDL_Rect newMap_clips[233];
 	LTexture newMap_texture;
@@ -37,7 +37,10 @@ public:
 	float tempSurfaceArray[5000];
 	LTexture wall_texture;
 	SDL_Rect bg_clips[1];
-	LTexture bg_texture[20][3];
+	LTexture bg_texture[20][6];
+	SDL_Point lightPoint[1600];
+	int decrease = 51;
+	int lightBlock[40][40];
 	static const int xBlockNumber = 5000;
 	static const int yBlockNumber = 1000;
 	int mapData[yBlockNumber][xBlockNumber];
@@ -45,7 +48,7 @@ public:
 	void render(int deltaX, int deltaY);
 	bool loadTexture();
 	void generateMap();
-	void generateBiome();
+
 	void generateGroundSurface();
 	void generateRockSurface();
 	void generateCave();
@@ -60,8 +63,14 @@ public:
 	void putWall(int x, int y, int ID);
 	void wallRead();
 	void wallWrite();
-	void renderBg(GroundBiomeTypes);
-	void renderBgTwo(GroundBiomeTypes, GroundBiomeTypes);
+	void renderBg(GroundBiomeTypes, GroundBiomeTypes);
+	int renderBgChange(GroundBiomeTypes tar);
 	int checkIfWallExist();
+	void calculateLight(int x, int y);
+	void generateBiome();
+	void biomeRead();
+	void biomeWrite();
+	int checkIfBiomeExist();
+	int presentState();
 };
 
