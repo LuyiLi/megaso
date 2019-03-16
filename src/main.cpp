@@ -91,7 +91,7 @@ int pocketNumber = 1;
 int prevPocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
-int target[3] = {2500,0,100};
+int target[4] = {2500,0,100};
 int posInPocket = 0;
 int mouseX, mouseY, mouseState;
 int crackFlag;
@@ -302,7 +302,7 @@ bool loadMedia()
 
 void close()
 {
-	int data[3] = {0};
+	int data[4] = {0};
 	data[0] = player.mCollider.x;
 	data[1] = player.mCollider.y;
 	data[2] = player.healthPoint;
@@ -332,8 +332,8 @@ Uint32 callback(Uint32 interval, void* param)
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
 	//very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
-	mainMap.renderBg();
-	mainMap.renderWall(deltaX, deltaY);
+	mainMap.renderBg(GROUND_BIOME_PLAIN);
+	//mainMap.renderWall(deltaX, deltaY);
 	mainMap.render(deltaX, deltaY);
 	
 

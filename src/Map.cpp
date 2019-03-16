@@ -569,7 +569,7 @@ void Map::wallWrite()
 	fclose(fp);
 }
 
-void Map::renderBg()
+void Map::renderBg(GroundBiomeTypes pre)
 {
 	scroll[0] -= player.mVelX / 4;
 	scroll[1] -= player.mVelX / 3;
@@ -583,14 +583,35 @@ void Map::renderBg()
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		bg_texture[preType][i].setAlpha(preAlpha);
-		bg_texture[preType][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-		bg_texture[preType][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-		bg_texture[preType][i].render(scroll[i] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-		bg_texture[targetType][i].setAlpha(targetAlpha);
-		bg_texture[targetType][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-		bg_texture[targetType][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-		bg_texture[targetType][i].render(scroll[i] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[pre][i].setAlpha(255);
+		bg_texture[pre][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[pre][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[pre][i].render(scroll[i] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	}
+}
+
+void Map::renderBgTwo(GroundBiomeTypes pre, GroundBiomeTypes tar)
+{
+	scroll[0] -= player.mVelX / 4;
+	scroll[1] -= player.mVelX / 3;
+	scroll[2] -= player.mVelX / 2;
+	for (int i = 0; i < 3; i++)
+	{
+		if (abs(scroll[i]) > 900)
+		{
+			scroll[i] = 0;
+		}
+	}
+	for (int i = 0; i < 3; i++)
+	{
+		bg_texture[pre][i].setAlpha(preAlpha);
+		bg_texture[pre][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[pre][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[pre][i].render(scroll[i] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[tar][i].setAlpha(targetAlpha);
+		bg_texture[tar][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[tar][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[tar][i].render(scroll[i] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
 	}
 
 }

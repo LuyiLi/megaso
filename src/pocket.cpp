@@ -257,20 +257,6 @@ void pocket::handlePocketEvents(SDL_Event e)
 				isOpened = 0;
 			}
 			break;
-		case SDLK_x:
-			mainMap.targetAlpha -= 5;
-			mainMap.preAlpha += 5;
-			printf("1 %d %d\n", mainMap.targetAlpha, mainMap.preAlpha);
-			
-			break;
-
-		case SDLK_c:
-
-
-			mainMap.targetAlpha += 5;
-			mainMap.preAlpha -= 5;
-			printf("2 %d %d\n", mainMap.targetAlpha, mainMap.preAlpha);
-			break;
 		}
 		
 	}

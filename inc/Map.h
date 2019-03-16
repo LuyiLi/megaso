@@ -60,7 +60,8 @@ public:
 	void putWall(int x, int y, int ID);
 	void wallRead();
 	void wallWrite();
-	void renderBg();
+	void renderBg(GroundBiomeTypes);
+	void renderBgTwo(GroundBiomeTypes, GroundBiomeTypes);
 	int checkIfWallExist();
 };
 
