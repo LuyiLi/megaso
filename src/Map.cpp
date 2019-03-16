@@ -15,11 +15,13 @@ extern bool intersect(SDL_Rect, SDL_Rect);
 extern droppedItem droppedItemList[200];
 extern Item itemList[100];
 extern pocket mainPocket;
+int preBgAlpha = 255;
+int tarBgAlpha = 0;
 //todo: add enemy collisonbox when breaking
 
 Map::Map()
 {
-	int scroll[3] = { 0 };
+	int scroll[6] = { 0 };
 	int mapData[yBlockNumber][xBlockNumber] = { 0 };
 	int wallData[yBlockNumber][xBlockNumber] = { 0 };
 }
@@ -48,7 +50,8 @@ bool Map::loadTexture()
 		}
 	}
 
-	if (bg_texture[GROUND_BIOME_PLAIN][0].loadFromFile("images/bg0.png") && bg_texture[GROUND_BIOME_PLAIN][1].loadFromFile("images/bg1.png") && bg_texture[GROUND_BIOME_PLAIN][2].loadFromFile("images/bg2.png")
+	if (bg_texture[GROUND_BIOME_PLAIN][5].loadFromFile("images/plain1.png") && bg_texture[GROUND_BIOME_PLAIN][4].loadFromFile("images/plain2.png") && bg_texture[GROUND_BIOME_PLAIN][3].loadFromFile("images/plain3.png")
+		&& bg_texture[GROUND_BIOME_PLAIN][2].loadFromFile("images/plain4.png") && bg_texture[GROUND_BIOME_PLAIN][1].loadFromFile("images/plain5.png") && bg_texture[GROUND_BIOME_PLAIN][0].loadFromFile("images/plain6.png")
 		&& bg_texture[GROUND_BIOME_VOCANIC][0].loadFromFile("images/bg0_test.png") && bg_texture[GROUND_BIOME_VOCANIC][1].loadFromFile("images/bg1_test.png") && bg_texture[GROUND_BIOME_VOCANIC][2].loadFromFile("images/bg2_test.png"))
 	{
 		bg_clips[0].x = 0;
@@ -72,29 +75,116 @@ void Map::render(int deltaX, int deltaY)
 {
 	//Do not touch the value below
 	int absX = 0, absY = 0;
-	int beginX = (player.blockPosX-15) * (33);
-	int beginY = (player.blockPosY-15) * (33);
+	int beginX = (player.blockPosX-20) * (33);
+	int beginY = (player.blockPosY-20) * (33);
 	int endX = (player.blockPosX) * (33);
 	int endY = (player.blockPosY) * (33);
-
-	for (int i = player.blockPosY-15; i < player.blockPosY+15; i++)
+	
+	int num=0;
+	
+	for (int i = player.blockPosX - 20; i < player.blockPosX + 20; i++)
 	{
-		for (int j = player.blockPosX-15; j < player.blockPosX+16; j++)
+		int isLight = 1;
+		for (int j = player.blockPosY - 20; j > 0; j--)
 		{
-
+			if (mapData[j][i])
+			{
+				isLight = 0;
+			}
+		}
+		if (isLight)
+		{
+			int flag = 1;
+			for (int j = player.blockPosY - 20; j < player.blockPosY + 20; j++)
+			{
+				
+				if (mapData[j][i])
+				{
+					flag = 0;
+					lightPoint[num].x = i - player.blockPosX + 20;
+					lightPoint[num].y = j - 1 - player.blockPosY + 20+1;
+					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
+					calculateLight(lightPoint[num].x, lightPoint[num].y);
+					num++;
+					break;
+				}
+			}
+			/*
+			if (flag)
+			{
+				printf("%d %d\n", i - player.blockPosX + 20, 0);
+				lightPoint[num].x = i - player.blockPosX + 20;
+				lightPoint[num].y = 0;
+				num++;
+			}
+			*/
+		}
+		
+		
+	}
+	num = 0;
+	for (int i = player.blockPosY-20; i < player.blockPosY+20; i++)
+	{
+		for (int j = player.blockPosX-20; j < player.blockPosX+20; j++)
+		{
 			if (mapData[i][j])
 			{
 				if (mapData[i][j] <= 100)
 				{
 					SDL_Rect* currentClip = &newMap_clips[mapData[i][j]];
+					newMap_texture.setColor(lightBlock[j- player.blockPosX + 20][i - player.blockPosY + 20], lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20], lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20]);
 					newMap_texture.render(beginX + deltaX, beginY + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 3);
 				}
 			}
 			beginX += 33;
 		}
-		beginX = (player.blockPosX-15) * (33);
+		beginX = (player.blockPosX-20) * (33);
 		beginY += (33);
 	}
+	for (int i = 0; i < 40; i++)
+	{
+		for (int j = 0; j < 40; j++)
+		{
+			lightBlock[i][j] = 0;
+		}
+	}
+}
+
+void Map::calculateLight(int x, int y)
+{
+	if (lightBlock[x][y] <= 1) {
+		return;
+	}
+
+	if (x - 1 < 0)
+		return;
+
+	if (lightBlock[x][y] / 1.3 > lightBlock[x - 1][y]) {
+		lightBlock[x - 1][y] = lightBlock[x][y] / 1.3;
+		calculateLight(x - 1, y);
+	}
+
+	if (x + 1 > 40)
+		return;
+	if (lightBlock[x][y] / 1.3 > lightBlock[x + 1][y]) {
+		lightBlock[x + 1][y] = lightBlock[x][y] / 1.3;
+		calculateLight(x + 1, y);
+	}
+
+	if (y - 1 < 0)
+		return;
+	if (lightBlock[x][y] / 1.3 > lightBlock[x][y - 1]) {
+		lightBlock[x][y - 1] = lightBlock[x][y] / 1.3;
+		calculateLight(x, y - 1);
+	}
+
+	if (y + 1 > 40)
+		return;
+	if (lightBlock[x][y] / 1.3 > lightBlock[x][y + 1]) {
+		lightBlock[x][y + 1] = lightBlock[x][y] / 1.3;
+		calculateLight(x, y + 1);
+	}
+
 }
 
 void Map::renderWall(int deltaX, int deltaY)
@@ -144,6 +234,21 @@ int Map::checkIfWallExist()
 {
 	FILE *fp;
 	fopen_s(&fp, "wall.txt", "r");
+	if (fp == NULL)
+	{
+		return 0;
+	}
+	else
+	{
+		fclose(fp);
+		return 1;
+	}
+}
+
+int Map::checkIfBiomeExist()
+{
+	FILE *fp;
+	fopen_s(&fp, "biome.txt", "r");
 	if (fp == NULL)
 	{
 		return 0;
@@ -500,6 +605,97 @@ void Map::wallRead()
 	}
 }
 
+void Map::biomeRead()
+{
+	FILE *fp;
+	fopen_s(&fp, "biome.txt", "r");
+	char presentChar;
+	int targetNum = 0;
+	int num = 0;
+	if (fp != NULL)
+	{
+		int m = 0, n = 0;
+		int negativeFlag = 0;
+		while ((presentChar = fgetc(fp)) != EOF)
+		{
+			if (presentChar == 'E')
+			{
+				fclose(fp);
+				return;
+			}
+			else
+			{
+				if (presentChar != ',')
+				{
+
+					if (presentChar == '-')
+					{
+						negativeFlag = 1;
+					}
+					if ((int)presentChar >= 48 && (int)presentChar <= 57)
+					{
+						targetNum = targetNum * 10 + (int)presentChar - 48;
+					}
+					if (presentChar == 'R')
+					{
+						fgetc(fp);
+						n = 0;
+						m++;
+					}
+				}
+				else if (presentChar == ',')
+				{
+					if (negativeFlag)
+					{
+						targetNum = targetNum * (-1);
+					}
+					negativeFlag = 0;
+					switch (n)
+					{
+					case 0:
+						groundBiomes[m].biomeRange.x = targetNum; break;
+					case 1:
+						groundBiomes[m].biomeRange.y = targetNum; break;
+					case 2:
+						groundBiomes[m].biomeRange.w = targetNum; break;
+					case 3:
+						groundBiomes[m].biomeRange.h = targetNum; break;
+					case 4:
+						switch (targetNum)
+						{
+						case 1:
+							groundBiomes[m].biomeType = GROUND_BIOME_PLAIN;
+							break;
+						case 2:
+							groundBiomes[m].biomeType = GROUND_BIOME_FOREST;
+							break;
+						case 3:
+							groundBiomes[m].biomeType = GROUND_BIOME_DESERT;
+							break;
+						case 4:
+							groundBiomes[m].biomeType = GROUND_BIOME_SNOWLAND;
+							break;
+						case 5:
+							groundBiomes[m].biomeType = GROUND_BIOME_VOCANIC;
+							break;
+						case 6:
+							groundBiomes[m].biomeType = GROUND_BIOME_MOUNTAIN;
+							break;
+						default:
+							break;
+						}
+					default:
+						break;
+					}
+					n++;
+					targetNum = 0;
+				}
+			}
+		}
+		fclose(fp);
+	}
+}
+
 /*
 @brief break a block on the map
 @param The BLOCK position of the map
@@ -545,14 +741,16 @@ void Map::plantTree(int x, int y)
 
 void Map::breakBlock(int x, int y)
 {
-	for (int i = 0; i < 200; i++)
-		if (droppedItemList[i].item.itemType == ITEM_NULL)
-		{
-			droppedItemList[i].create((33) * x + 15, (33) * y, itemList[mapData[y][x]]);
-			break;
-		}
-	mapData[y][x] = 0;
-	
+	if (abs(x - player.blockPosX) + abs(y - player.blockPosY) <= 4 && (!mapData[y+1][x] || !mapData[y][x+1] || !mapData[y-1][x] || !mapData[y][x-1]))
+	{
+		for (int i = 0; i < 200; i++)
+			if (droppedItemList[i].item.itemType == ITEM_NULL)
+			{
+				droppedItemList[i].create((33) * x + 15, (33) * y, itemList[mapData[y][x]]);
+				break;
+			}
+		mapData[y][x] = 0;
+	}
 }
 
 void Map::breakWall(int x, int y)
@@ -570,7 +768,7 @@ void Map::breakWall(int x, int y)
 void Map::putBlock(int x, int y, int ID)
 {
 	SDL_Rect tempRect;
-	if (!mapData[y][x])
+	if (!mapData[y][x]&& abs(x - player.blockPosX) + abs(y - player.blockPosY) <= 6)
 	{
 		tempRect.x = (33) * x;
 		tempRect.y = (33) * y;
@@ -647,28 +845,101 @@ void Map::wallWrite()
 	fclose(fp);
 }
 
-void Map::renderBg()
+void Map::biomeWrite()
+{
+	FILE *fp;
+	fopen_s(&fp, "biome.txt", "w");
+	int m = 0, n = 0;
+	int num = 0;
+	for (m; m < 25; m++)
+	{
+		for (n; n < 5; n++)
+		{
+			switch (n)
+			{
+			case 0:
+				fprintf(fp, "%d,", groundBiomes[m].biomeRange.x); break;
+			case 1:
+				fprintf(fp, "%d,", groundBiomes[m].biomeRange.y); break;
+			case 2:
+				fprintf(fp, "%d,", groundBiomes[m].biomeRange.w); break;
+			case 3:
+				fprintf(fp, "%d,", groundBiomes[m].biomeRange.h); break;
+			case 4:
+				fprintf(fp, "%d,", (int)groundBiomes[m].biomeType); break;
+			default:
+				break;
+			}
+		}
+		fprintf(fp, "R,");
+		n = 0;
+	}
+	m = 0;
+	fprintf(fp, "E");
+	fclose(fp);
+}
+
+void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 {
 	scroll[0] -= player.mVelX / 4;
-	scroll[1] -= player.mVelX / 3;
-	scroll[2] -= player.mVelX / 2;
-	for (int i = 0; i < 3; i++)
+	scroll[1] -= player.mVelX / 3.6;
+	scroll[2] -= player.mVelX / 3;
+	scroll[3] -= player.mVelX / 2.8;
+	scroll[4] -= player.mVelX / 2.6;
+	scroll[5] -= player.mVelX / 2.5;
+	for (int i = 0; i < 6; i++)
 	{
 		if (abs(scroll[i]) > 900)
 		{
 			scroll[i] = 0;
 		}
 	}
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 6; i++)
 	{
-		bg_texture[preType][i].setAlpha(preAlpha);
-		bg_texture[preType][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-		bg_texture[preType][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-		bg_texture[preType][i].render(scroll[i] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-		bg_texture[targetType][i].setAlpha(targetAlpha);
-		bg_texture[targetType][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-		bg_texture[targetType][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-		bg_texture[targetType][i].render(scroll[i] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
-	}
+		bg_texture[pre][i].setAlpha(preBgAlpha);
+		bg_texture[pre][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[pre][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[pre][i].render(scroll[i] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
 
+		bg_texture[tar][i].setAlpha(tarBgAlpha);
+		bg_texture[tar][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[tar][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		bg_texture[tar][i].render(scroll[i] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	}
+}
+
+int Map::renderBgChange(GroundBiomeTypes tar)
+{
+	for (int i = 0; i < 6; i++)
+	{
+		if (abs(scroll[i]) > 900)
+		{
+			scroll[i] = 0;
+		}
+	}
+	tarBgAlpha += 3;
+	preBgAlpha -= 3;
+	if (tarBgAlpha >= 255)
+	{
+
+		preBgAlpha = 255;
+		tarBgAlpha = 0;
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+int Map::presentState()
+{
+	int presentPosX = player.blockPosX;
+	for (int i = 0; i < 25; i++)
+	{
+		if (presentPosX >= groundBiomes[i].biomeRange.x && presentPosX < groundBiomes[i].biomeRange.w+ groundBiomes[i].biomeRange.x)
+		{
+			return (int)groundBiomes[i].biomeType;
+		}
+	}
 }

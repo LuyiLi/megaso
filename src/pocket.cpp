@@ -94,6 +94,7 @@ void pocket::mainPocketRender()
 
 		if (pocketData[1][p] && pocketData[0][p] <= 100)
 		{
+			mainMap.newMap_texture.setColor(255, 255, 255);
 			SDL_Rect* currentPocketClip = &mainMap.newMap_clips[pocketData[0][p]];
 			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 		}
@@ -134,6 +135,7 @@ void pocket::mainPocketRender()
 		{
 			if (pocketData[1][p] && pocketData[0][p] <= 100)
 			{
+				mainMap.newMap_texture.setColor(255, 255, 255);
 				SDL_Rect* currentPocketClip = &mainMap.newMap_clips[pocketData[0][p]];
 				mainMap.newMap_texture.render(20 + 50 * (p % 10) + 12, 20 + 50 * (p / 10 - 1) + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 				gTextTexture1[p].render(20 + 26 + 50 * (p % 10), 20 + 18 + 50 * (p / 10 - 1), 0, 0, NULL, SDL_FLIP_NONE, 1);
@@ -158,6 +160,7 @@ void pocket::mainPocketRender()
 				int mouseX, mouseY, mouseState;
 				mouseState = SDL_GetMouseState(&mouseX, &mouseY);
 				SDL_Rect* currentPocketClip = &mainMap.newMap_clips[IDWithMouse];
+				mainMap.newMap_texture.setColor(255, 255, 255);
 				mainMap.newMap_texture.render(mouseX, mouseY, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 
 				char str1[23];
@@ -256,20 +259,6 @@ void pocket::handlePocketEvents(SDL_Event e)
 			{
 				isOpened = 0;
 			}
-			break;
-		case SDLK_x:
-			mainMap.targetAlpha -= 5;
-			mainMap.preAlpha += 5;
-			printf("1 %d %d\n", mainMap.targetAlpha, mainMap.preAlpha);
-			
-			break;
-
-		case SDLK_c:
-
-
-			mainMap.targetAlpha += 5;
-			mainMap.preAlpha -= 5;
-			printf("2 %d %d\n", mainMap.targetAlpha, mainMap.preAlpha);
 			break;
 		}
 		

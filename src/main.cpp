@@ -75,7 +75,7 @@ LTexture weapon_texture;
 SDL_Rect hp_clips[2];
 LTexture hp_texture;
 
-
+SDL_TimerID backgroundTimer;
 
 LTexture gPlayerTexture;
 
@@ -91,7 +91,7 @@ int pocketNumber = 1;
 int prevPocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
-int target[3] = {2500,0,100};
+int target[4] = {2500,0,100};
 int posInPocket = 0;
 int mouseX, mouseY, mouseState;
 int crackFlag;
@@ -101,6 +101,8 @@ int absMouseY;//mouseState = 0/1/2/4  NULL/left/middle/right
 int isTakenUp = 0;
 int IDWithMouse = 0, numWithMouse = 0;
 int heartFrame = 0;
+GroundBiomeTypes presentState = GROUND_BIOME_PLAIN;
+GroundBiomeTypes targetState = GROUND_BIOME_VOCANIC;
 
 double angleForBlock = 0;
 
@@ -110,29 +112,26 @@ bool init()
 	mainMap.targetAlpha = 255;
 	mainMap.targetType = GROUND_BIOME_PLAIN;
 	mainMap.preType = GROUND_BIOME_VOCANIC;
-	if (mainMap.checkIfExist())
+	if (mainMap.checkIfExist()&&mainMap.checkIfWallExist()&&mainMap.checkIfBiomeExist())
 	{
 		mainMap.mapRead();
+		mainMap.wallRead();
+		mainMap.biomeRead();
 	}
 	else
 	{
 		mainMap.generateMap();
+		mainMap.generateWall();
 		mainMap.mapWrite();
+		mainMap.wallWrite();
+		mainMap.biomeWrite();
 		mainMap.mapRead();
+		mainMap.wallRead();
+		mainMap.biomeRead();
 	}
 	//init the itemList
 	initItemList();
-	
-	if (mainMap.checkIfWallExist())
-	{
-		mainMap.wallRead();
-	}
-	else
-	{
-		mainMap.generateWall();
-		mainMap.wallWrite();
-		mainMap.wallRead();
-	}
+
 	//init the itemList
 	initItemList();
 
@@ -302,7 +301,7 @@ bool loadMedia()
 
 void close()
 {
-	int data[3] = {0};
+	int data[4] = {0};
 	data[0] = player.mCollider.x;
 	data[1] = player.mCollider.y;
 	data[2] = player.healthPoint;
@@ -332,8 +331,8 @@ Uint32 callback(Uint32 interval, void* param)
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
 	//very_behind_background_texture.render(0, 0, very_behind_background_clips, 0, NULL, SDL_FLIP_NONE,2);
-	mainMap.renderBg();
-	mainMap.renderWall(deltaX, deltaY);
+	mainMap.renderBg(presentState, targetState);
+	//mainMap.renderWall(deltaX, deltaY);
 	mainMap.render(deltaX, deltaY);
 	
 
@@ -341,7 +340,7 @@ Uint32 callback(Uint32 interval, void* param)
 	SDL_Rect* crackClip2 = &crack_clips[1];
 	SDL_Rect* crackClip3 = &crack_clips[2];
 
-	if (crackFlag && mainMap.mapData[blockMouseY][blockMouseX])
+	if (crackFlag && mainMap.mapData[blockMouseY][blockMouseX]&& abs(blockMouseX - player.blockPosX) + abs(blockMouseY - player.blockPosY) <= 4 && (!mainMap.mapData[blockMouseY + 1][blockMouseX] || !mainMap.mapData[blockMouseY][blockMouseX + 1] || !mainMap.mapData[blockMouseY - 1][blockMouseX] || !mainMap.mapData[blockMouseY][blockMouseX - 1]))
 	{
 		switch (crackFlag)
 		{
@@ -615,6 +614,22 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 	return 0;
 
 	//SDL_TimerID mouseTimer = SDL_AddTimer(10, mouseTimerCallback, (void*)mouseState);
+}
+
+Uint32 renderBgChangeCallback(Uint32 interval, void* param) 
+{
+	if (!mainMap.renderBgChange(targetState))
+	{
+		SDL_TimerID backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
+	}
+	else
+	{
+		GroundBiomeTypes temp;
+		temp = targetState;
+		targetState = presentState;
+		presentState = temp;
+	}
+	return 0;
 }
 
 int main(int argc, char* args[])
