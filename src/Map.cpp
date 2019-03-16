@@ -283,28 +283,7 @@ void Map::generateMap()
 	generateCave();
 	generateTrees();
 }
-/*
-{
-	for (int i = 0; i < xBlockNumber; i++)
-	{
-		for (int j = 0; j < yBlockNumber; j++)
-		{
-			if (j == 50)
-			{
-				mapData[j][i] = 1;
-			}
-			else if (j < 50)
-			{
-				mapData[j][i] = 0;
-			}
-			else
-			{
-				mapData[j][i] = 2;
-			}
-		}
-	}
-}
-*/
+
 void Map::generateBiome()
 {
 	int currentBlockNumber = 1;
@@ -398,6 +377,7 @@ void Map::generateGroundSurface()
 					break;
 				}
 				mapData[(int)y][x] = 1;
+				wallData[(int)y][x] = 101;
 				//flatten the ground
 				if (mapData[(int)y][x - 3])
 				{
@@ -406,6 +386,11 @@ void Map::generateGroundSurface()
 					mapData[(int)y + 2][x - 2] = 0;
 					mapData[(int)y - 1][x - 2] = 0;
 					mapData[(int)y - 2][x - 2] = 0;
+					wallData[(int)y][x - 2] = 101;
+					wallData[(int)y + 1][x - 2] = 0;
+					wallData[(int)y + 2][x - 2] = 0;
+					wallData[(int)y - 1][x - 2] = 0;
+					wallData[(int)y - 2][x - 2] = 0;
 					tempSurfaceArray[x - 2] = y;
 				}
 				if (mapData[(int)y][x - 2])
@@ -415,6 +400,11 @@ void Map::generateGroundSurface()
 					mapData[(int)y + 2][x - 1] = 0;
 					mapData[(int)y - 1][x - 1] = 0;
 					mapData[(int)y - 2][x - 1] = 0;
+					wallData[(int)y][x - 1] = 101;
+					wallData[(int)y + 1][x - 1] = 0;
+					wallData[(int)y + 2][x - 1] = 0;
+					wallData[(int)y - 1][x - 1] = 0;
+					wallData[(int)y - 2][x - 1] = 0;
 					tempSurfaceArray[x - 1] = y;
 				}
 				tempSurfaceArray[x] = y;
@@ -438,31 +428,17 @@ void Map::generateRockSurface()
 		}
 		tempY = (int)(temp / 9 + 40);
 		for (int k = tempY; !mapData[k][i]; k--)
-			mapData[k][i] = 2;
-		for (int k = tempY + 1; k < yBlockNumber; k++)
-			mapData[k][i] = 7;
-	}
-}
-
-void Map::generateWall()
-{
-	for (int i = 0; i < xBlockNumber; i++)
-	{
-		for (int j = 0; j < yBlockNumber - 1; j++)
 		{
-			if (j == 50)
-			{
-				wallData[j][i] = 101;
-			}
-			else if (j < 50)
-			{
-				wallData[j][i] = 0;
-			}
-			else
-			{
-				wallData[j][i] = 101;
-			}
+			mapData[k][i] = 2;
+			wallData[k][i] = 101;
 		}
+			
+		for (int k = tempY + 1; k < yBlockNumber; k++)
+		{
+			mapData[k][i] = 7;
+			wallData[k][i] = 103;
+		}
+			
 	}
 }
 
@@ -501,10 +477,36 @@ void Map::generateCave()
 
 void Map::generateTrees()
 {
+	int currentBiomeNum = 0;
+	int generationRate = calculateTreeGenerationRate(groundBiomes[0].biomeType);
 	for (int i = 30; i < xBlockNumber - 30; i++)
 	{
-		if ((int)10 * random01() < 4)
-			plantTree(i, (int)tempSurfaceArray[i]);
+		if (i > groundBiomes[currentBiomeNum].biomeRange.x + groundBiomes[currentBiomeNum].biomeRange.w)
+			currentBiomeNum++;
+		if (10 * random01() < generationRate)
+			plantTree(i, (int)tempSurfaceArray[i], groundBiomes[currentBiomeNum].biomeType);
+	}
+}
+
+int Map::calculateTreeGenerationRate(GroundBiomeTypes biomeType)
+{
+	switch (biomeType)
+	{
+	case GROUND_BIOME_PLAIN:case GROUND_BIOME_SNOWLAND:
+		return 1;
+		break;
+	case GROUND_BIOME_DESERT:case GROUND_BIOME_VOCANIC:
+		return 0;
+		break;
+	case GROUND_BIOME_MOUNTAIN:
+		return 3;
+		break;
+	case GROUND_BIOME_FOREST:
+		return 6;
+		break;
+	default:
+		return 0;
+		break;
 	}
 }
 
@@ -709,14 +711,11 @@ void Map::biomeRead()
 	}
 }
 
-/*
-@brief break a block on the map
-@param The BLOCK position of the map
-*/
-void Map::plantTree(int x, int y)
+void Map::plantTree(int x, int y, GroundBiomeTypes)
 {
+	int leafID = 105, trunkID = 104;
 	int treeHeight = random01() * 6 + 7;
-	if (y < 30)
+	if (y < 30 || mapData[y][x] != 1)
 		return;
 	//check if it is possible to plant trees
 	for (int i = x - 3; i <= x + 3; i++)
@@ -726,30 +725,31 @@ void Map::plantTree(int x, int y)
 	switch ((int)(random01() * 2))
 	{
 	case 0:
-		mapData[y - treeHeight - 3][x] = 5;
+		wallData[y - treeHeight - 3][x] = leafID;
 		for (int i = x - 1; i <= x+1; i++)
-			mapData[y - treeHeight - 2][i] = 5;
+			wallData[y - treeHeight - 2][i] = leafID;
 		for (int i = x - 2; i <= x + 2; i++)
-			mapData[y - treeHeight - 1][i] = 5;
+			wallData[y - treeHeight - 1][i] = leafID;
 		for (int i = x - 2; i <= x + 2; i++)
-			mapData[y - treeHeight][i] = 5;
+			wallData[y - treeHeight][i] = leafID;
 		for (int i = x - 1; i <= x + 1; i++)
-			mapData[y - treeHeight + 1][i] = 5;
+			wallData[y - treeHeight + 1][i] = leafID;
 		for (int i = 1; i <= treeHeight; i++)
-			mapData[y - i][x] = 4;
+			wallData[y - i][x] = trunkID;
 		break;
 	case 1:
-		mapData[y - treeHeight - 2][x] = 5;
+		wallData[y - treeHeight - 2][x] = 5;
 		for (int i = x - 1; i <= x + 1; i++)
-			mapData[y - treeHeight - 1][i] = 5;
-		mapData[y - treeHeight + 1][x - 1] = 5;
-		mapData[y - treeHeight + 2][x - 1] = 5;
-		mapData[y - treeHeight + 3][x + 1] = 5;
-		mapData[y - treeHeight + 4][x + 1] = 5;
+			wallData[y - treeHeight - 1][i] = leafID;
+		wallData[y - treeHeight + 1][x - 1] = leafID;
+		wallData[y - treeHeight + 2][x - 1] = leafID;
+		wallData[y - treeHeight + 3][x + 1] = leafID;
+		wallData[y - treeHeight + 4][x + 1] = leafID;
 		for (int i = 1; i <= treeHeight; i++)
-			mapData[y - i][x] = 4;
+			wallData[y - i][x] = trunkID;
 		break;
 	}
+	mapData[y][x] = 2;
 }
 
 void Map::breakBlock(int x, int y)
