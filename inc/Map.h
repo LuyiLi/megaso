@@ -34,6 +34,7 @@ public:
 	LTexture newMap_texture;
 	SDL_Rect wall_clips[233];
 	GroundBiome groundBiomes[25];
+	float tempSurfaceArray[5000];
 	LTexture wall_texture;
 	SDL_Rect bg_clips[1];
 	LTexture bg_texture[20][3];
@@ -47,6 +48,7 @@ public:
 	void generateBiome();
 	void generateGroundSurface();
 	void generateRockSurface();
+	void generateCave();
 	void breakBlock(int x, int y);
 	void putBlock(int x, int y, int ID);
 	void mapRead();
