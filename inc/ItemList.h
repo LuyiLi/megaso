@@ -251,7 +251,7 @@ void initItemList()
 	itemList[410].weaponDamage = 5;
 
 	//ID=411
-	strcpy_s(itemList[411].itemName, "Crossbow");
+	strcpy_s(itemList[411].itemName, "Bronzen bow");
 	strcpy_s(itemList[411].itemDescription, "Shoot faster than Wooden bow.");
 	itemList[411].maxStack = 1;
 	itemList[411].weaponDamage = 8;
