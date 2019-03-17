@@ -54,7 +54,7 @@ void droppedItem::move()
 		//Move the droppedItem up or down
 		mCollider.y += mVelY;
 
-		//If the droppedItem collided
+		//Stop the dropped item If collided
 		if (checkCollision())
 		{
 			//Move back
@@ -66,6 +66,7 @@ void droppedItem::move()
 			if (abs(mVelY) < 25)
 				mVelY += g;
 		}
+		//update the position of the droppeditem
 		if (blockPosY != mCollider.y / (33) || blockPosX != mCollider.x / (33))
 		{
 			blockPosX = mCollider.x / (33);
@@ -83,7 +84,7 @@ bool droppedItem::checkCollision()
 
 	return false;
 }
-
+//update the collision block of the droppeditem
 void droppedItem::updateCollisionBox()
 {
 	if (mainMap.mapData[blockPosY + 1][blockPosX]) 
@@ -97,7 +98,7 @@ void droppedItem::updateCollisionBox()
 		collisionRect.y = 0;
 	}
 }
-
+//render the droppeditem picture
 void droppedItem::render(int deltaX, int deltaY)
 {
 	if (item.itemType != ITEM_NULL) 

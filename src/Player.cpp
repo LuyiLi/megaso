@@ -47,12 +47,13 @@ Player::Player()
 		rectArray[i].h = 33;
 	}
 }
-
+//control the movement of reimu rubo through the keyboard
 void Player::handleEvent(SDL_Event& e)
 {
 	//If a key was pressed
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
 	{
+		//if "w" or "SPACE" is pressed
 		if (e.key.keysym.sym == SDLK_w || e.key.keysym.sym == SDLK_SPACE)
 		{
 			if (canJump)
@@ -131,7 +132,8 @@ void Player::move()
 		canJump = true;
 	}
 	else
-	{
+	{ 
+		//block drops
 		if (abs(mVelY) < 25)
 			mVelY += g;
 		//if (mVelY > 5)
@@ -233,6 +235,7 @@ void Player::getKilled()
 void Player::pickUpItem(droppedItem *droppeditem)
 {
 	if (droppeditem->item.itemType != ITEM_NULL)
+		//player touches the droppeditem
 		if (intersect(mCollider, droppeditem->mCollider))
 		{
 			mainPocket.pocketUpdate();
@@ -248,6 +251,7 @@ void Player::pickUpItem(droppedItem *droppeditem)
 					break;
 				}
 			}
+			//if the droppeditem is not exist , create a type
 			if (!existFlag)
 			{
 				for (int i = 0; i < 40; i++)
@@ -264,7 +268,7 @@ void Player::pickUpItem(droppedItem *droppeditem)
 		}
 
 }
-
+//update the player's surrounding collision box
 void Player::updateCollisionBox()
 {
 	int startBlockX, startBlockY;
@@ -423,24 +427,4 @@ bool Player::loadTexture()
 		slime_stand_clips[5].w = 416;
 		slime_stand_clips[5].h = 304;
 	}
-}
-
-int Player::getPosX()
-{
-	return posX;
-}
-
-int Player::getPosY()
-{
-	return posY;
-}
-
-int Player::getVelX()
-{
-	return mVelX;
-}
-
-int Player :: getVelY()
-{
-	return mVelY;
 }

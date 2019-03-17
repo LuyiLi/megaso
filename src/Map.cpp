@@ -28,6 +28,7 @@ Map::Map()
 
 bool Map::loadTexture()
 {
+	//create the texture of new map
 	if (newMap_texture.loadFromFile("images/newMapTexture.png"))
 	{
 		for (int i = 0; i < 10; i++)
@@ -542,9 +543,12 @@ void Map::mapRead()
 	if (fp != NULL)
 	{
 		int m = 0, n = 0;
+
+		//avoid having a negative number in the text
 		int negativeFlag = 0;
 		while ((presentChar = fgetc(fp)) != EOF)
 		{
+			//'E'is the symbol of the end of file
 			if (presentChar == 'E')
 			{
 				fclose(fp);
@@ -554,7 +558,6 @@ void Map::mapRead()
 			{
 				if (presentChar != ',')
 				{
-
 					if (presentChar == '-')
 					{
 						negativeFlag = 1;
@@ -563,6 +566,7 @@ void Map::mapRead()
 					{
 						targetNum = targetNum * 10 + (int)presentChar - 48;
 					}
+					//create a new line
 					if (presentChar == 'R')
 					{
 						fgetc(fp);
@@ -570,6 +574,7 @@ void Map::mapRead()
 						m++;
 					}
 				}
+				//create a space between two numbers
 				else if (presentChar == ',')
 				{
 					if (negativeFlag)
@@ -799,7 +804,7 @@ void Map::breakWall(int x, int y)
 	wallData[y][x] = 0;
 
 }
-
+//put block into the map, reduce one from your pocket
 void Map::putBlock(int x, int y, int ID)
 {
 	SDL_Rect tempRect;
