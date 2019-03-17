@@ -168,6 +168,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="inc\EnemyData.h" />
     <ClInclude Include="inc\Enemy.h" />
     <ClInclude Include="inc\droppedItem.h" />
     <ClInclude Include="inc\Camera.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="inc\pocket.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\EnemyData.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\droppedItem.cpp" />
     <ClCompile Include="src\pocket.cpp" />

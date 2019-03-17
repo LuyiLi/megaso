@@ -13,8 +13,8 @@ Enemy::Enemy()
 	//Initialize the offsets
 	//Set collision box dimension
 	Enemy_VEL = 3;
-	mCollider.w = Enemy_WIDTH ;
-	mCollider.h = Enemy_HEIGHT / 2;
+	mCollider.w = enemyData.Enemy_WIDTH ;
+	mCollider.h = enemyData.Enemy_HEIGHT / 2;
 	mCollider.x = 100;
 	mCollider.y = 500;
 	canBeHit = true;
@@ -23,9 +23,9 @@ Enemy::Enemy()
 	mVelX = 0;
 	mVelY = 0;
 	canJump = true;
-	damage = 5;
+	enemyData.damage = 5;
 	attackMode = ATTACKMODE_NONE;
-	AI = AI_WARRIOR;
+	enemyData.AI = AI_WARRIOR;
 
 	for (int i = 0; i < 36; i++)
 	{
@@ -252,8 +252,8 @@ void Enemy::moveAction(int deltaX, int deltaY)
 
 	if (acceleration > 0 && attackMode==ATTACKMODE_NONE)
 	{
-		mCollider.h = Enemy_HEIGHT / 2;
-		mCollider.w = Enemy_WIDTH ;
+		mCollider.h = enemyData.Enemy_HEIGHT / 2;
+		mCollider.w = enemyData.Enemy_WIDTH ;
 		SDL_Rect* currentClip = &enemy_walk_clips[0][frame_walk/10+5];
 		enemy_walking_texture[0].render((posX + deltaX), (-33+posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
 		if (frame_walk / 10 >= 3)
@@ -267,8 +267,8 @@ void Enemy::moveAction(int deltaX, int deltaY)
 	}
 	if (acceleration < 0 && attackMode == ATTACKMODE_NONE)
 	{
-		mCollider.h = Enemy_HEIGHT / 2;
-		mCollider.w = Enemy_WIDTH;
+		mCollider.h = enemyData.Enemy_HEIGHT / 2;
+		mCollider.w = enemyData.Enemy_WIDTH;
 		SDL_Rect* currentClip = &enemy_walk_clips[0][frame_walk / 10 + 5];
 		enemy_walking_texture[0].render((posX + deltaX), (-33+posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
 		if (frame_walk / 10 >= 3)
@@ -283,8 +283,8 @@ void Enemy::moveAction(int deltaX, int deltaY)
 
 	if (acceleration > 0&&attackMode==ATTACKMODE_ATTACKING)
 	{
-		mCollider.h = Enemy_HEIGHT / 2;
-		mCollider.w = Enemy_WIDTH / 2;
+		mCollider.h = enemyData.Enemy_HEIGHT / 2;
+		mCollider.w = enemyData.Enemy_WIDTH / 2;
 		enemyCenter.x = 42;
 		enemyCenter.y = 42;
 		SDL_Rect* currentClip = &enemy_walk_clips[0][0];
@@ -294,8 +294,8 @@ void Enemy::moveAction(int deltaX, int deltaY)
 	}
 	else if(acceleration < 0 && attackMode == ATTACKMODE_ATTACKING)
 	{
-		mCollider.h = Enemy_HEIGHT / 2;
-		mCollider.w = Enemy_WIDTH / 2;
+		mCollider.h = enemyData.Enemy_HEIGHT / 2;
+		mCollider.w = enemyData.Enemy_WIDTH / 2;
 		enemyCenter.x = 42;
 		enemyCenter.y = 42;
 		SDL_Rect* currentClip = &enemy_walk_clips[0][0];
@@ -361,7 +361,7 @@ bool Enemy::loadTexture()
 
 void Enemy::changeEnemyBehavior()
 {
-	switch (AI)
+	switch (enemyData.AI)
 	{
 	case AI_WARRIOR:
 		acceleration = player.mCollider.x - mCollider.x < 0 ? -1 : 1;
@@ -376,24 +376,4 @@ void Enemy::changeEnemyBehavior()
 	default:
 		break;
 	}
-}
-
-int Enemy::getPosX()
-{
-	return posX;
-}
-
-int Enemy::getPosY()
-{
-	return posY;
-}
-
-int Enemy::getVelX()
-{
-	return mVelX;
-}
-
-int Enemy::getVelY()
-{
-	return mVelY;
 }

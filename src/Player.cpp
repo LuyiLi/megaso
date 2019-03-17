@@ -192,9 +192,9 @@ void Player::getHit(Enemy *enemy)
 				mVelY -= 6;
 			canBeHit = false;
 			hitFlag = 0;
-			if (healthPoint - enemy->damage >= 0)
+			if (healthPoint - enemy->enemyData.damage >= 0)
 			{
-				healthPoint -= enemy->damage;
+				healthPoint -= enemy->enemyData.damage;
 			}
 			else
 			{

@@ -3,37 +3,31 @@
 #include "LTexture.h"
 #include "droppedItem.h"
 #include "item.h"
+#include "EnemyData.h"
 
 class Enemy;
 class Player;
-
-enum AttackMode
-{
-	ATTACKMODE_NONE=0,
-	ATTACKMODE_PREPARE,
-	ATTACKMODE_ATTACKING,
-	ATTACKMODE_FINISH
-};
 
 extern const int g;
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
 
-
-enum EnemyAI
+enum AttackMode
 {
-	AI_WARRIOR,
-	AI_PANGOLIN
+	ATTACKMODE_NONE = 0,
+	ATTACKMODE_PREPARE,
+	ATTACKMODE_ATTACKING,
+	ATTACKMODE_FINISH
 };
+
 
 class Enemy
 {
 
 public:
 	//The dimensions of the Enemy
-	int Enemy_WIDTH = 170;
-	int Enemy_HEIGHT = 152;
 
+	EnemyData enemyData;
 	//The position of the Enemy
 	int posX;
 	int posY;
@@ -41,14 +35,12 @@ public:
 	int blockPosX;
 	int blockPosY;
 	
-	int healthLimit;
 	int healthPoint;
 
 	int hitFlag;
 	bool canBeHit;
 	bool canJump;
 	bool canBeKnockedBack;
-	int damage;
 	int acceleration;
 
 	AttackMode attackMode;
@@ -78,13 +70,6 @@ public:
 
 	void render(int camX, int camY);
 
-	int getPosX();
-	int getPosY();
-
-	int getVelX();
-	int getVelY();
-
-	EnemyAI AI;
 	//The velocity of the Enemy
 	int mVelX, mVelY;
 
