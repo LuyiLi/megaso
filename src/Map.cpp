@@ -122,8 +122,14 @@ void Map::render(int deltaX, int deltaY)
 			}
 			*/
 		}
-		
-		
+		lightBlock[20][20] = 255;
+		lightBlock[21][20] = 255;
+		lightBlock[21][21] = 255;
+		lightBlock[20][21] = 255;
+		calculateLight(20, 20);
+		calculateLight(21, 20);
+		calculateLight(20, 21);
+		calculateLight(21, 21);
 	}
 	num = 0;
 	for (int i = player.blockPosY-20; i < player.blockPosY+20; i++)
@@ -156,7 +162,9 @@ void Map::render(int deltaX, int deltaY)
 void Map::calculateLight(int x, int y)
 {
 	int lightValue = lightBlock[x][y] / 1.3;
-	int diagonalLightValue = lightBlock[x][y] / 1.4;
+	int diagonalLightValue = lightBlock[x][y] / 1.5;
+	int airLightValue = lightBlock[x][y] / 1.1;
+	int diagonalAirLightValue = lightBlock[x][y] / 1.15;
 
 	if (lightBlock[x][y] <= 1) {
 		return;
@@ -166,48 +174,48 @@ void Map::calculateLight(int x, int y)
 		return;
 
 	if (lightValue > lightBlock[x - 1][y]) {
-		lightBlock[x - 1][y] = lightValue;
+		lightBlock[x - 1][y] = mapData[y + player.blockPosY - 20][x + player.blockPosX - 21] ? lightValue : airLightValue;
 		calculateLight(x - 1, y);
 	}
 
 	if (y - 1 < 0)
 			return;
 	if (lightValue > lightBlock[x][y - 1]) {
-		lightBlock[x][y - 1] = lightValue;
+		lightBlock[x][y - 1] = mapData[y + player.blockPosY - 21][x + player.blockPosX - 20] ? lightValue : airLightValue;
 		calculateLight(x, y - 1);
 	}
 
 	if (x + 1 > 40)
 		return;
 	if (lightValue > lightBlock[x + 1][y]) {
-		lightBlock[x + 1][y] = lightValue;
+		lightBlock[x + 1][y] = mapData[y + player.blockPosY - 20][x + player.blockPosX - 19] ? lightValue : airLightValue;
 		calculateLight(x + 1, y);
 	}
 
 	if (y + 1 > 40)
 		return;
 	if (lightValue > lightBlock[x][y + 1]) {
-		lightBlock[x][y + 1] = lightValue;
+		lightBlock[x][y + 1] = mapData[y + player.blockPosY - 19][x + player.blockPosX - 20] ? lightValue : airLightValue;;
 		calculateLight(x, y + 1);
 	}
 
 	if (diagonalLightValue > lightBlock[x + 1][y + 1]) {
-		lightBlock[x + 1][y + 1] = diagonalLightValue;
+		lightBlock[x + 1][y + 1] = mapData[y + player.blockPosY - 19][x + player.blockPosX - 19] ? diagonalLightValue : diagonalAirLightValue;
 		calculateLight(x + 1, y + 1);
 	}
 
 	if (diagonalLightValue > lightBlock[x - 1][y + 1]) {
-		lightBlock[x - 1][y + 1] = diagonalLightValue;
+		lightBlock[x - 1][y + 1] = mapData[y + player.blockPosY - 19][x + player.blockPosX - 21] ? diagonalLightValue : diagonalAirLightValue;
 		calculateLight(x - 1, y + 1);
 	}
 
 	if (diagonalLightValue > lightBlock[x + 1][y - 1]) {
-		lightBlock[x + 1][y - 1] = diagonalLightValue;
+		lightBlock[x + 1][y - 1] = mapData[y + player.blockPosY - 21][x + player.blockPosX - 19] ? diagonalLightValue : diagonalAirLightValue;
 		calculateLight(x + 1, y - 1);
 	}
 
 	if (diagonalLightValue > lightBlock[x - 1][y - 1]) {
-		lightBlock[x - 1][y - 1] = diagonalLightValue;
+		lightBlock[x - 1][y - 1] = mapData[y + player.blockPosY - 21][x + player.blockPosX - 21] ? diagonalLightValue : diagonalAirLightValue;
 		calculateLight(x - 1, y - 1);
 	}
 }
