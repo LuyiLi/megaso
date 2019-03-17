@@ -24,6 +24,12 @@ void initItemList()
 		itemList[i].ID = i;
 		itemList[i].itemType = ITEM_BLOCK;
 	}
+	//ID 401-500 is blocks
+	for (int i = 401; i < 500; i++)
+	{
+		itemList[i].ID = i;
+		itemList[i].itemType = ITEM_WEAPON;
+	}
 	//ID = 1
 	strcpy_s(itemList[1].itemName,"Dirt");
 	strcpy_s(itemList[1].itemDescription, "A fundemental block for constructing.");

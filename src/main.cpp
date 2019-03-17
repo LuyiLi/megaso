@@ -745,11 +745,14 @@ int main(int argc, char* args[])
 						quit = true;
 						close();
 					}
-					if (e.type == SDL_MOUSEBUTTONDOWN&&!mainPocket.isOpened)
-					if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+					if (e.type == SDL_MOUSEBUTTONDOWN && !mainPocket.isOpened)
 					{
-						//Adjust the velocity
-						{
+						//Get mouse position
+						mouseTimerCallback(0, &mouseState);
+					}
+					mainPocket.handlePocketEvents(e);
+					if (pocketNumber != prevPocketNumber)
+					{
 						prevPocketNumber = pocketNumber;
 						player.currentItem = itemList[mainPocket.pocketData[0][pocketNumber - 1]];
 					}
