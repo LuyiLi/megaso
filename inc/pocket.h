@@ -18,6 +18,7 @@ public:
 	void pocketUpdate();
 	void mainPocketRender();
 	void handlePocketEvents(SDL_Event e);
+	void composingTableUpdate();
 	void pocketWrite(int targrtPocket[2][40]);
 	int checkIfExist();
 };

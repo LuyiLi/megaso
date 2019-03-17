@@ -20,6 +20,9 @@ void pocket::pocketGenerate()
 	}
 }
 
+
+
+
 extern Map mainMap;
 extern int pocketNumber;
 extern int isTakenUp;
@@ -51,6 +54,7 @@ LTexture gTextTextureOne;
 LTexture gTextTextureTwo;
 SDL_Rect rubbish_clips[1];
 LTexture rubbish_texture;
+
 
 
 void pocket::mainPocketRender()
@@ -128,6 +132,27 @@ void pocket::mainPocketRender()
 		}
 	}
 
+	for (int pocketPos = 43; pocketPos < 55; pocketPos++)
+	{
+		char str1[23];
+		if (craftData[1][pocketPos - 43] < 10)
+		{
+			_itoa_s(craftData[1][pocketPos - 40], str1, 10);
+			char newStr1[23] = " ";
+			strcat_s(newStr1, str1);
+
+			gTextTexture1[pocketPos].loadFromRenderedText(newStr1, textColorBlack);
+			gTextTexture2[pocketPos].loadFromRenderedText(newStr1, textColorWhite);
+		}
+		else
+		{
+			_itoa_s(craftData[1][pocketPos - 40], str1, 10);
+			//Render text
+			gTextTexture1[pocketPos].loadFromRenderedText(str1, textColorBlack);
+			gTextTexture2[pocketPos].loadFromRenderedText(str1, textColorWhite);
+		}
+	}
+
 	for (int p = 0; p < 10; p++)
 	{
 		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
@@ -178,6 +203,12 @@ void pocket::mainPocketRender()
 			pocketUI_texture.render(700, 120, AccessoriesTitleClip, 0, NULL, SDL_FLIP_NONE, 2);
 		}
 	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		
+	}
+
 	if (pocketNumber > 0 && pocketNumber < 11)
 	{
 		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * (pocketNumber - 1), SCREEN_HEIGHT - 60, highLightPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
@@ -227,6 +258,28 @@ void pocket::mainPocketRender()
 				SDL_Rect* currentmaterialClip = &weapon_clips[materialData[0][i] - 400];
 				weapon_texture.render(20 + 50 * i + 9, 235, currentmaterialClip, 0, NULL, SDL_FLIP_NONE, 3);
 			}
+		}
+		for (int i = 0; i < 6; i++)
+		{
+			if (craftData[0][i] && craftData[0][i] <= 100)
+			{
+				mainMap.newMap_texture.setColor(255, 255, 255);
+				SDL_Rect* currentcraftClip = &mainMap.newMap_clips[craftData[0][i]];
+				mainMap.newMap_texture.render(20 + 50 * i + 12, 292, currentcraftClip, 0, NULL, SDL_FLIP_NONE, 4);
+				//gTextTexture1[i + 40].render(20 + 26 + 50 * i, 298, 0, 0, NULL, SDL_FLIP_NONE, 1);
+				//gTextTexture2[i + 40].render(20 + 24 + 50 * i, 298, 0, 0, NULL, SDL_FLIP_NONE, 1);
+			}
+			if (craftData[0][i] && craftData[0][i] > 300 && craftData[0][i] <= 400)
+			{
+				SDL_Rect* currentcraftClip = &tool_clips[craftData[0][i] - 300];
+				tool_texture.render(20 + 50 * i + 9, 290, currentcraftClip, 0, NULL, SDL_FLIP_NONE, 3);
+			}
+			if (craftData[0][i] && craftData[0][i] > 400 && craftData[0][i] <= 500)
+			{
+				SDL_Rect* currentcraftClip = &weapon_clips[craftData[0][i] - 400];
+				weapon_texture.render(20 + 50 * i + 9, 290, currentcraftClip, 0, NULL, SDL_FLIP_NONE, 3);
+			}
+			
 		}
 		rubbish_texture.render(20 + 50 * 9 + 9, 20 + 50 * 3 + 9, rubbish_clips, 0, NULL, SDL_FLIP_NONE, 3);
 		if (isTakenUp)
@@ -283,9 +336,25 @@ void pocket::mainPocketRender()
 	}
 }
 
+void pocket::composingTableUpdate()
+{
+	//²Ý·½¿éºÏ³É
+	if (materialData[0][0] == 2|| materialData[0][1] == 2|| materialData[0][2] == 2)
+	{
+		craftData[0][0] = 1;
+	}
+	//
+
+	else
+	{
+		craftData[0][0] = 0;
+	}
+}
+
 void pocket::handlePocketEvents(SDL_Event e)
 {
 	pocketUpdate();
+	composingTableUpdate();
 	if (e.type == SDL_MOUSEWHEEL)
 	{
 		if (e.wheel.y == -1)
@@ -343,6 +412,7 @@ void pocket::handlePocketEvents(SDL_Event e)
 	}
 	if (e.type == SDL_MOUSEBUTTONDOWN && isOpened)
 	{
+		
 		int mouseX, mouseY, mouseState;
 		posInPocket = 0;
 
@@ -480,6 +550,19 @@ void pocket::handlePocketEvents(SDL_Event e)
 		if (mouseX > 20 && mouseX < 320 && mouseY>280 && mouseY < 380)
 		{
 			craftPos = 6 * ((mouseY - 280) / 50) + (mouseX - 20) / 50;
+			if (!isTakenUp && craftData[0][craftPos])
+			{
+				IDWithMouse = craftData[0][craftPos];
+				numWithMouse = 1;
+				for (int p=0;p<3;p++)
+				{
+					if (materialData[0][p] && materialData[1][p])
+					{
+						materialData[1][p]--;
+					}
+				}
+				isTakenUp = 1;
+			}
 			printf("craft %d\n", craftPos);
 		}
 
