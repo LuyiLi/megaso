@@ -55,7 +55,11 @@ bool Map::loadTexture()
 		&& bg_texture[GROUND_BIOME_PLAIN][2].loadFromFile("images/plain4.png") && bg_texture[GROUND_BIOME_PLAIN][1].loadFromFile("images/plain5.png") && bg_texture[GROUND_BIOME_PLAIN][0].loadFromFile("images/plain6.png")
 		&& bg_texture[GROUND_BIOME_VOCANIC][0].loadFromFile("images/bg0_test.png") && bg_texture[GROUND_BIOME_VOCANIC][1].loadFromFile("images/bg1_test.png") && bg_texture[GROUND_BIOME_VOCANIC][2].loadFromFile("images/bg2_test.png")
 		&& bg_texture[GROUND_BIOME_FOREST][5].loadFromFile("images/forest1.png") && bg_texture[GROUND_BIOME_FOREST][4].loadFromFile("images/forest2.png") && bg_texture[GROUND_BIOME_FOREST][3].loadFromFile("images/forest3.png")
-		&& bg_texture[GROUND_BIOME_FOREST][2].loadFromFile("images/forest4.png") && bg_texture[GROUND_BIOME_FOREST][1].loadFromFile("images/forest5.png") && bg_texture[GROUND_BIOME_FOREST][0].loadFromFile("images/forest6.png"))
+		&& bg_texture[GROUND_BIOME_FOREST][2].loadFromFile("images/forest4.png") && bg_texture[GROUND_BIOME_FOREST][1].loadFromFile("images/forest5.png") && bg_texture[GROUND_BIOME_FOREST][0].loadFromFile("images/forest6.png")
+		&& bg_texture[GROUND_BIOME_DESERT][5].loadFromFile("images/desert1.png") && bg_texture[GROUND_BIOME_DESERT][4].loadFromFile("images/desert2.png") && bg_texture[GROUND_BIOME_DESERT][3].loadFromFile("images/desert3.png")
+		&& bg_texture[GROUND_BIOME_DESERT][2].loadFromFile("images/desert4.png") && bg_texture[GROUND_BIOME_DESERT][1].loadFromFile("images/desert5.png") && bg_texture[GROUND_BIOME_DESERT][0].loadFromFile("images/desert6.png")
+		&& bg_texture[GROUND_BIOME_MOUNTAIN][5].loadFromFile("images/mountain1.png") && bg_texture[GROUND_BIOME_MOUNTAIN][4].loadFromFile("images/mountain2.png") && bg_texture[GROUND_BIOME_MOUNTAIN][3].loadFromFile("images/mountain3.png")
+		&& bg_texture[GROUND_BIOME_MOUNTAIN][2].loadFromFile("images/mountain4.png") && bg_texture[GROUND_BIOME_MOUNTAIN][1].loadFromFile("images/mountain5.png") && bg_texture[GROUND_BIOME_MOUNTAIN][0].loadFromFile("images/mountain6.png"))
 	{
 		bg_clips[0].x = 0;
 		bg_clips[0].y = 0;
@@ -198,13 +202,13 @@ void Map::renderWall(int deltaX, int deltaY)
 			}
 		}
 	}
-	lightBlock[20][20] = 255;
-	lightBlock[21][20] = 255;
+	//lightBlock[20][20] = 255;
+	//lightBlock[21][20] = 255;
 	lightBlock[21][21] = 255;
-	lightBlock[20][21] = 255;
-	calculateLight(20, 20);
-	calculateLight(21, 20);
-	calculateLight(20, 21);
+	//lightBlock[20][21] = 255;
+	//calculateLight(20, 20);
+	//calculateLight(21, 20);
+	//calculateLight(20, 21);
 	calculateLight(21, 21);
 	num = 0;
 	for (int i = player.blockPosY - 15; i < player.blockPosY + 15; i++)
@@ -936,9 +940,9 @@ void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 {
 	scroll[0] -= player.mVelX / 4;
 	scroll[1] -= player.mVelX / 3.6;
-	scroll[2] -= player.mVelX / 3;
-	scroll[3] -= player.mVelX / 2.8;
-	scroll[4] -= player.mVelX / 2.6;
+	scroll[2] -= player.mVelX / 3.3;
+	scroll[3] -= player.mVelX / 3;
+	scroll[4] -= player.mVelX / 2.8;
 	scroll[5] -= player.mVelX / 2.5;
 	for (int i = 0; i < 6; i++)
 	{

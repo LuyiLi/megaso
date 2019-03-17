@@ -115,7 +115,7 @@ int IDWithMouse = 0, numWithMouse = 0;
 int heartFrame = 0;
 int magicFrame = 0;
 GroundBiomeTypes currentBiome = GROUND_BIOME_PLAIN;
-GroundBiomeTypes targetState = GROUND_BIOME_FOREST;
+GroundBiomeTypes targetState = GROUND_BIOME_DESERT;
 
 double angleForBlock = 0;
 
@@ -124,7 +124,7 @@ bool init()
 	mainMap.preAlpha = 0;
 	mainMap.targetAlpha = 255;
 	mainMap.targetType = GROUND_BIOME_PLAIN;
-	mainMap.preType = GROUND_BIOME_VOCANIC;
+	mainMap.preType = GROUND_BIOME_PLAIN;
 	//Check if map.txt exist, generate one if not
 	if (mainMap.checkIfExist()&&mainMap.checkIfWallExist()&&mainMap.checkIfBiomeExist())
 	{
