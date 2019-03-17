@@ -223,10 +223,10 @@ bool Player::checkCollision()
 void Player::getKilled()
 {
 	isDead = 1;
-	SDL_Delay(5000);
+	
 	mCollider.x = 2500;
 	mCollider.y = 0;
-	isDead = 0;
+	
 	healthPoint = healthLimit;
 }
 

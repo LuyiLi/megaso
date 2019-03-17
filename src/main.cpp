@@ -525,6 +525,9 @@ Uint32 callback(Uint32 interval, void* param)
 	if (player.isDead)
 	{
 		dead_texture.render(0, 0, dead_clips, 0, NULL, SDL_FLIP_NONE, 2);
+		SDL_RenderPresent(gRenderer);
+		SDL_Delay(5000);
+		player.isDead = 0;
 	}
 
 	// Render the dropped items
