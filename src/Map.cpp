@@ -152,6 +152,9 @@ void Map::render(int deltaX, int deltaY)
 
 void Map::calculateLight(int x, int y)
 {
+	int lightValue = lightBlock[x][y] / 1.3;
+	int diagonalLightValue = lightBlock[x][y] / 1.4;
+
 	if (lightBlock[x][y] <= 1) {
 		return;
 	}
@@ -159,32 +162,51 @@ void Map::calculateLight(int x, int y)
 	if (x - 1 < 0)
 		return;
 
-	if (lightBlock[x][y] / 1.3 > lightBlock[x - 1][y]) {
-		lightBlock[x - 1][y] = lightBlock[x][y] / 1.3;
+	if (lightValue > lightBlock[x - 1][y]) {
+		lightBlock[x - 1][y] = lightValue;
 		calculateLight(x - 1, y);
+	}
+
+	if (y - 1 < 0)
+			return;
+	if (lightValue > lightBlock[x][y - 1]) {
+		lightBlock[x][y - 1] = lightValue;
+		calculateLight(x, y - 1);
 	}
 
 	if (x + 1 > 40)
 		return;
-	if (lightBlock[x][y] / 1.3 > lightBlock[x + 1][y]) {
-		lightBlock[x + 1][y] = lightBlock[x][y] / 1.3;
+	if (lightValue > lightBlock[x + 1][y]) {
+		lightBlock[x + 1][y] = lightValue;
 		calculateLight(x + 1, y);
-	}
-
-	if (y - 1 < 0)
-		return;
-	if (lightBlock[x][y] / 1.3 > lightBlock[x][y - 1]) {
-		lightBlock[x][y - 1] = lightBlock[x][y] / 1.3;
-		calculateLight(x, y - 1);
 	}
 
 	if (y + 1 > 40)
 		return;
-	if (lightBlock[x][y] / 1.3 > lightBlock[x][y + 1]) {
-		lightBlock[x][y + 1] = lightBlock[x][y] / 1.3;
+	if (lightValue > lightBlock[x][y + 1]) {
+		lightBlock[x][y + 1] = lightValue;
 		calculateLight(x, y + 1);
 	}
 
+	if (diagonalLightValue > lightBlock[x + 1][y + 1]) {
+		lightBlock[x + 1][y + 1] = diagonalLightValue;
+		calculateLight(x + 1, y + 1);
+	}
+
+	if (diagonalLightValue > lightBlock[x - 1][y + 1]) {
+		lightBlock[x - 1][y + 1] = diagonalLightValue;
+		calculateLight(x - 1, y + 1);
+	}
+
+	if (diagonalLightValue > lightBlock[x + 1][y - 1]) {
+		lightBlock[x + 1][y - 1] = diagonalLightValue;
+		calculateLight(x + 1, y - 1);
+	}
+
+	if (diagonalLightValue > lightBlock[x - 1][y - 1]) {
+		lightBlock[x - 1][y - 1] = diagonalLightValue;
+		calculateLight(x - 1, y - 1);
+	}
 }
 
 void Map::renderWall(int deltaX, int deltaY)
@@ -269,7 +291,7 @@ void Map::drawCircle(int x, int y, int r)
 	for(int i = -r; i <= r; i++)
 		for (int j = -r; j <= r; j++)
 		{
-			if (i*i + j * j <= r*r)
+			if (i*i + j * j <= r*r && i != r && j != r )
 				mapData[y + j][x + i] = 0;
 		}
 }

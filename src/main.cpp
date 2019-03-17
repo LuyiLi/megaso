@@ -41,6 +41,7 @@
 
 Item itemList[500];
 droppedItem droppedItemList[200];
+Enemy enemyList[20];
 
 Enemy testEnemy;
 

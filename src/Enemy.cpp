@@ -322,23 +322,6 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		}
 		
 	}
-	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
-	SDL_Rect tempRect;
-	tempRect.x = mCollider.x + deltaX;
-	tempRect.y = mCollider.y + deltaY;
-	tempRect.w = mCollider.w;
-	tempRect.h = mCollider.h;
-	SDL_RenderDrawRect(gRenderer, &tempRect);
-	SDL_Rect temp[36];
-	for (int i = 0; i < 36; i++)
-	{
-		temp[i].h = rectArray[i].h;
-		temp[i].w = rectArray[i].w;
-		temp[i].x = rectArray[i].x + deltaX;
-		temp[i].y = rectArray[i].y + deltaY;
-		SDL_RenderDrawRect(gRenderer, &temp[i]);
-	}
-	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
 	
 }
 
