@@ -45,8 +45,8 @@ SDL_Rect* AccessoriesTitleClip = &pocketUI_clips[7];
 
 SDL_Color textColorWhite = { 255, 255, 255 };
 SDL_Color textColorBlack = { 0, 0, 0 };
-LTexture gTextTexture1[40];
-LTexture gTextTexture2[40];
+LTexture gTextTexture1[80];
+LTexture gTextTexture2[80];
 LTexture gTextTextureOne;
 LTexture gTextTextureTwo;
 SDL_Rect rubbish_clips[1];
@@ -102,6 +102,26 @@ void pocket::mainPocketRender()
 		else
 		{
 			_itoa_s(pocketData[1][pocketPos], str1, 10);
+			//Render text
+			gTextTexture1[pocketPos].loadFromRenderedText(str1, textColorBlack);
+			gTextTexture2[pocketPos].loadFromRenderedText(str1, textColorWhite);
+		}
+	}
+	for (int pocketPos = 40; pocketPos < 43; pocketPos++)
+	{
+		char str1[23];
+		if (materialData[1][pocketPos-40] < 10)
+		{
+			_itoa_s(materialData[1][pocketPos - 40], str1, 10);
+			char newStr1[23] = " ";
+			strcat_s(newStr1, str1);
+
+			gTextTexture1[pocketPos].loadFromRenderedText(newStr1, textColorBlack);
+			gTextTexture2[pocketPos].loadFromRenderedText(newStr1, textColorWhite);
+		}
+		else
+		{
+			_itoa_s(materialData[1][pocketPos - 40], str1, 10);
 			//Render text
 			gTextTexture1[pocketPos].loadFromRenderedText(str1, textColorBlack);
 			gTextTexture2[pocketPos].loadFromRenderedText(str1, textColorWhite);
@@ -185,6 +205,27 @@ void pocket::mainPocketRender()
 			{
 				SDL_Rect* currentPocketClip = &weapon_clips[pocketData[0][p] - 400];
 				weapon_texture.render(20 + 50 * (p % 10) + 9, 20 + 50 * (p / 10 - 1) + 9, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 3);
+			}
+		}
+		for (int i = 0; i < 3; i++)
+		{
+			if (materialData[1][i] && materialData[0][i] <= 100)
+			{
+				mainMap.newMap_texture.setColor(255, 255, 255);
+				SDL_Rect* currentmaterialClip = &mainMap.newMap_clips[materialData[0][i]];
+				mainMap.newMap_texture.render(20 + 50 * i + 12, 235, currentmaterialClip, 0, NULL, SDL_FLIP_NONE, 4);
+				gTextTexture1[i+40].render(20 + 26 + 50 * i, 235, 0, 0, NULL, SDL_FLIP_NONE, 1);
+				gTextTexture2[i+40].render(20 + 24 + 50 * i, 235, 0, 0, NULL, SDL_FLIP_NONE, 1);
+			}
+			if (materialData[1][i] && materialData[0][i] > 300 && materialData[0][i] <= 400)
+			{
+				SDL_Rect* currentmaterialClip = &tool_clips[materialData[0][i] - 300];
+				tool_texture.render(20 + 50 * i + 9, 235, currentmaterialClip, 0, NULL, SDL_FLIP_NONE, 3);
+			}
+			if (materialData[1][i] && materialData[0][i] > 400 && materialData[0][i] <= 500)
+			{
+				SDL_Rect* currentmaterialClip = &weapon_clips[materialData[0][i] - 400];
+				weapon_texture.render(20 + 50 * i + 9, 235, currentmaterialClip, 0, NULL, SDL_FLIP_NONE, 3);
 			}
 		}
 		rubbish_texture.render(20 + 50 * 9 + 9, 20 + 50 * 3 + 9, rubbish_clips, 0, NULL, SDL_FLIP_NONE, 3);
@@ -318,7 +359,6 @@ void pocket::handlePocketEvents(SDL_Event e)
 
 				pocketData[0][posInPocket - 1] = 0;
 				pocketData[1][posInPocket - 1] = 0;
-
 			}
 			else if (isTakenUp && pocketData[1][posInPocket - 1])
 			{
@@ -400,6 +440,42 @@ void pocket::handlePocketEvents(SDL_Event e)
 		{
 			materialPos = (mouseX - 20) / 50;
 			printf("material %d\n", materialPos);
+			if (materialData[1][materialPos] && !isTakenUp)
+			{
+				isTakenUp = 1;
+				IDWithMouse = materialData[0][materialPos];
+				numWithMouse = materialData[1][materialPos];
+
+				materialData[0][materialPos] = 0;
+				materialData[1][materialPos] = 0;
+			}
+			else if (isTakenUp && materialData[1][materialPos])
+			{
+				if (materialData[0][materialPos] == IDWithMouse && materialData[1][materialPos] + numWithMouse <= 99)
+				{
+					materialData[1][materialPos] += numWithMouse;
+					isTakenUp = 0;
+				}
+				else
+				{
+					int temp1 = materialData[0][materialPos];
+					int temp2 = materialData[1][materialPos];
+
+					materialData[0][materialPos] = IDWithMouse;
+					materialData[1][materialPos] = numWithMouse;
+
+					IDWithMouse = temp1;
+					numWithMouse = temp2;
+
+					isTakenUp = 1;
+				}
+			}
+			else if (isTakenUp && !materialData[1][materialPos])
+			{
+				materialData[0][materialPos] = IDWithMouse;
+				materialData[1][materialPos] = numWithMouse;
+				isTakenUp = 0;
+			}
 		}
 		if (mouseX > 20 && mouseX < 320 && mouseY>280 && mouseY < 380)
 		{
