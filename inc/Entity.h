@@ -43,6 +43,7 @@ public:
 	
 	int healthLimit;
 	int healthPoint;
+
 	int hitFlag;
 	bool canBeHit;
 	bool canJump;
@@ -121,6 +122,9 @@ public:
 
 	int healthLimit;
 	int healthPoint;
+	int magicLimit;
+	int magicPoint;
+	int isDead;
 
 	int hitFlag;
 	bool canBeHit;
