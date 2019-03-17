@@ -31,7 +31,7 @@ bool Map::loadTexture()
 	//create the texture of new map
 	if (newMap_texture.loadFromFile("images/newMapTexture.png"))
 	{
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 50; i++)
 		{
 			newMap_clips[i].x = i*100;
 			newMap_clips[i].y = 0;
