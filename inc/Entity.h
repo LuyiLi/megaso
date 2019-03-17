@@ -39,16 +39,24 @@ public:
 
 	int blockPosX;
 	int blockPosY;
-	
+
+	//the whole blood(maximum)
 	int healthLimit;
+	//the current blood
 	int healthPoint;
+	//whether it is hitted
 	int hitFlag;
+	// whether reimu rubo hits the enemy or whether the enemy runs away
 	bool canBeHit;
+
 	bool canJump;
+	//whether the enemy runs away
 	bool canBeKnockedBack;
+	//the enemys attacking degree
 	int damage;
 	int acceleration;
 
+	//which status the enemy is
 	AttackMode attackMode;
 
 	SDL_Rect rectArray[36];
@@ -64,11 +72,14 @@ public:
 	//Moves the Enemy and checks collision
 	void move();
 	void getHit(Player *);
+
+	//the enemy's moving image 
 	void moveAction(int, int);
 	bool loadTexture();
 
+	//check the collision of the boundary
 	bool checkCollision();
-
+	//update the items collision box 
 	void updateCollisionBox();
 
 	//Shows the Enemy on the screen
@@ -89,11 +100,10 @@ public:
 	//Enemy's collision box
 	SDL_Rect mCollider;
 
-	/*վ��״̬ͼ����Ƭ*/
 	//const int standing_frames = 6;
 	SDL_Rect slime_stand_clips[6];
 	LTexture slime_standing_texture;
-	/*����״̬ͼ����Ƭ*/
+
 	//const int walking_frames = 4;
 	SDL_Rect slime_walk_clips[4];
 	LTexture slime_walking_texture;
@@ -121,7 +131,10 @@ public:
 	int hitFlag;
 	bool canBeHit;
 	bool canJump;
+
+	//current item reimu rubo hands in
 	Item currentItem;
+	//the weapon's attacking angle 
 	double currentAngle;
 	bool isUsing;
 	int weaponState;
@@ -148,11 +161,6 @@ public:
 	void pickUpItem(droppedItem *);
 	void updateCollisionBox();
 
-	int getPosX();
-	int getPosY();
-
-	int getVelX();
-	int getVelY();
 
 	void getHit(Enemy*);
 	//The velocity of the Player
@@ -161,11 +169,11 @@ public:
 	//Player's collision box
 	SDL_Rect mCollider;
 
-	/*վ��״̬ͼ����Ƭ*/
+	
 	//const int standing_frames = 6;
 	SDL_Rect slime_stand_clips[6];
 	LTexture slime_standing_texture;
-	/*����״̬ͼ����Ƭ*/
+	
 	//const int walking_frames = 4;
 	SDL_Rect slime_walk_clips[4];
 	LTexture slime_walking_texture;

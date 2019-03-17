@@ -85,6 +85,7 @@ void Enemy::move()
 		blockPosY = mCollider.y / 33;
 		updateCollisionBox();
 	}
+	
 	if (!canBeHit)
 	{
 		hitFlag++;
@@ -98,10 +99,12 @@ void Enemy::getHit(Player *player)
 	if (canBeHit)
 	{
 		for (int i = 0; i < 5; i++)
+			//judge whether the weapon hits the enemy
 			if (inRect(player->weaponCollisionPoints[i], mCollider))
 			{
 				healthPoint -= 1;
 				//todo: Change the damage
+				//judge whether the enemy hits back
 				if (canBeKnockedBack)
 				{
 					mVelX = player->mCollider.x < mCollider.x ? 10 : -10;
@@ -157,6 +160,7 @@ void Enemy::moveAction(int deltaX, int deltaY)
 
 	static int angle = 0;
 	static int modeFlag = 0;
+	//the clips of the enemy in several modes
 	static int frame = 0;
 	static int frameFlag = 0;
 	static int frame_walk = 0;
@@ -342,6 +346,7 @@ void Enemy::moveAction(int deltaX, int deltaY)
 	
 }
 
+//create a texture
 bool Enemy::loadTexture()
 {
 	if (!enemy_walking_texture[0].loadFromFile("images/pangolin.png"))
@@ -376,6 +381,7 @@ bool Enemy::loadTexture()
 
 }
 
+// change the enemy attacking behaviour
 void Enemy::changeEnemyBehavior()
 {
 	switch (AI)
