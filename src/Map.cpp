@@ -82,50 +82,7 @@ void Map::render(int deltaX, int deltaY)
 	int beginY = (player.blockPosY-20) * (33);
 	int endX = (player.blockPosX) * (33);
 	int endY = (player.blockPosY) * (33);
-	
-	int num=0;
-	
-	for (int i = player.blockPosX - 20; i < player.blockPosX + 20; i++)
-	{
-		int isLight = 1;
-		for (int j = player.blockPosY - 20; j > 0; j--)
-		{
-			if (mapData[j][i])
-			{
-				isLight = 0;
-			}
-		}
-		if (isLight)
-		{
-			int flag = 1;
-			for (int j = player.blockPosY - 20; j < player.blockPosY + 20; j++)
-			{
-				
-				if (mapData[j][i])
-				{
-					flag = 0;
-					lightPoint[num].x = i - player.blockPosX + 20;
-					lightPoint[num].y = j - 1 - player.blockPosY + 20+1;
-					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
-					calculateLight(lightPoint[num].x, lightPoint[num].y);
-					num++;
-					break;
-				}
-			}
-			/*
-			if (flag)
-			{
-				printf("%d %d\n", i - player.blockPosX + 20, 0);
-				lightPoint[num].x = i - player.blockPosX + 20;
-				lightPoint[num].y = 0;
-				num++;
-			}
-			*/
-		}
-		
-		
-	}
-	num = 0;
+
 	for (int i = player.blockPosY-20; i < player.blockPosY+20; i++)
 	{
 		for (int j = player.blockPosX-20; j < player.blockPosX+20; j++)
@@ -144,13 +101,7 @@ void Map::render(int deltaX, int deltaY)
 		beginX = (player.blockPosX-20) * (33);
 		beginY += (33);
 	}
-	for (int i = 0; i < 40; i++)
-	{
-		for (int j = 0; j < 40; j++)
-		{
-			lightBlock[i][j] = 0;
-		}
-	}
+	
 }
 
 void Map::calculateLight(int x, int y)
@@ -220,7 +171,33 @@ void Map::renderWall(int deltaX, int deltaY)
 	int beginY = (player.blockPosY - 15) * (33);
 	int endX = (player.blockPosX) * (33);
 	int endY = (player.blockPosY) * (33);
-
+	int num = 0;
+	for (int i = 0; i < 40; i++)
+	{
+		for (int j = 0; j < 40; j++)
+		{
+			lightBlock[i][j] = 0;
+		}
+	}
+	for (int i = player.blockPosX - 20; i < player.blockPosX + 20; i++)
+	{
+		for (int j = player.blockPosY - 20; j < player.blockPosY + 20; j++)
+		{
+			if (!mapData[j][i] && !wallData[j][i])
+			{
+				if (mapData[j + 1][i] || mapData[j - 1][i] || mapData[j][i + 1] || mapData[j][i - 1]|| wallData[j + 1][i] || wallData[j - 1][i] || wallData[j][i + 1] || wallData[j][i - 1])
+				{
+					lightPoint[num].x = i - player.blockPosX + 20;
+					lightPoint[num].y = j - 1 - player.blockPosY + 20 + 1;
+					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
+					calculateLight(lightPoint[num].x, lightPoint[num].y);
+					num++;
+				}
+				
+			}
+		}
+	}
+	num = 0;
 	for (int i = player.blockPosY - 15; i < player.blockPosY + 15; i++)
 	{
 		for (int j = player.blockPosX - 15; j < player.blockPosX + 16; j++)
@@ -229,6 +206,7 @@ void Map::renderWall(int deltaX, int deltaY)
 			{
 				if (wallData[i][j] > 100 && wallData[i][j] <= 200)
 				{
+					wall_texture.setColor(lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20], lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20], lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20]);
 					SDL_Rect* currentClip = &newMap_clips[wallData[i][j] - 100];
 					wall_texture.render(beginX + deltaX, beginY + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 3);
 				}
