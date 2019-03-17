@@ -29,6 +29,9 @@ Player::Player()
 	mCollider.h = Player_HEIGHT/3;
 	healthPoint = 100;
 	healthLimit = 100;
+	magicPoint = 100;
+	magicLimit = 100;
+	isDead = 0;
 
 	//Initialize the velocity
 	mVelX = 0;
@@ -219,10 +222,11 @@ bool Player::checkCollision()
 
 void Player::getKilled()
 {
-	printf("AWSL\n");
+	isDead = 1;
+	SDL_Delay(5000);
 	mCollider.x = 2500;
 	mCollider.y = 0;
-	SDL_Delay(10000);
+	isDead = 0;
 	healthPoint = healthLimit;
 }
 

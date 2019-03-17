@@ -295,6 +295,8 @@ void pocket::handlePocketEvents(SDL_Event e)
 				isOpened = 0;
 			}
 			break;
+		case SDLK_x: 
+			player.getKilled();
 		}
 		
 	}
@@ -304,6 +306,7 @@ void pocket::handlePocketEvents(SDL_Event e)
 		posInPocket = 0;
 
 		mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+
 		if (mouseX > 20 && mouseX < 520 && mouseY>20 && mouseY < 170)
 		{
 			posInPocket = 10 + ((mouseY - 20) / 50) * 10 + (mouseX - 20) / 50 + 1;
@@ -392,6 +395,22 @@ void pocket::handlePocketEvents(SDL_Event e)
 				pocketData[1][posInPocket - 1] = numWithMouse;
 				isTakenUp = 0;
 			}
+		}
+		if (mouseX > 20 && mouseX < 170 && mouseY>220 && mouseY < 270)
+		{
+			materialPos = (mouseX - 20) / 50;
+			printf("material %d\n", materialPos);
+		}
+		if (mouseX > 20 && mouseX < 320 && mouseY>280 && mouseY < 380)
+		{
+			craftPos = 6 * ((mouseY - 280) / 50) + (mouseX - 20) / 50;
+			printf("craft %d\n", craftPos);
+		}
+
+		if (mouseX > 700 && mouseX < 850 && mouseY>160 && mouseY < 210)
+		{
+			accessoriesPos = (mouseX - 700) / 50;
+			printf("accessories %d\n", accessoriesPos);
 		}
 	}
 }

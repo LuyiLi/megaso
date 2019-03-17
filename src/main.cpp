@@ -61,11 +61,14 @@ SDL_Window* gWindow = NULL;
 SDL_Rect heart_clips[8];
 LTexture heart_texture;
 
+SDL_Rect magic_clips[8];
+LTexture magic_texture;
+
 SDL_Rect crack_clips[3];
 LTexture crack_texture;
 
-SDL_Rect very_behind_background_clips[1];
-LTexture very_behind_background_texture;
+SDL_Rect dead_clips[1];
+LTexture dead_texture;
 
 SDL_Rect tool_clips[1];
 LTexture tool_texture;
@@ -75,6 +78,9 @@ LTexture weapon_texture;
 
 SDL_Rect hp_clips[2];
 LTexture hp_texture;
+
+SDL_Rect mp_clips[2];
+LTexture mp_texture;
 
 SDL_TimerID backgroundTimer;
 
@@ -93,7 +99,7 @@ int prevPocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
 int target[4] = {2500,0,100};
-int posInPocket = 0;
+
 int mouseX, mouseY, mouseState;
 int crackFlag;
 int blockMouseX, blockMouseY;
@@ -102,6 +108,7 @@ int absMouseY;//mouseState = 0/1/2/4  NULL/left/middle/right
 int isTakenUp = 0;
 int IDWithMouse = 0, numWithMouse = 0;
 int heartFrame = 0;
+int magicFrame = 0;
 GroundBiomeTypes currentBiome = GROUND_BIOME_PLAIN;
 GroundBiomeTypes targetState = GROUND_BIOME_VOCANIC;
 
@@ -222,12 +229,12 @@ bool loadMedia()
 		success = false;
 	}
 	
-	if (very_behind_background_texture.loadFromFile("images/very_behind_bg.png"))
+	if (dead_texture.loadFromFile("images/dead.png"))
 	{
-		very_behind_background_clips[0].x = 0;
-		very_behind_background_clips[0].y = 0;
-		very_behind_background_clips[0].w = 1800;
-		very_behind_background_clips[0].h = 1196;
+		dead_clips[0].x = 0;
+		dead_clips[0].y = 0;
+		dead_clips[0].w = 1800;
+		dead_clips[0].h = 1200;
 	}
 
 
@@ -242,6 +249,18 @@ bool loadMedia()
 			heart_clips[i].h = 100;
 		}
 		
+	}
+
+	if (magic_texture.loadFromFile("images/magic.png"))
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			magic_clips[i].x = i * 100;
+			magic_clips[i].y = 0;
+			magic_clips[i].w = 100;
+			magic_clips[i].h = 100;
+		}
+
 	}
 
 	if (tool_texture.loadFromFile("images/tools.png"))
@@ -288,6 +307,17 @@ bool loadMedia()
 		}
 	}
 
+	if (mp_texture.loadFromFile("images/magicPoint.png"))
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			mp_clips[i].x = i * 100;
+			mp_clips[i].y = 0;
+			mp_clips[i].w = 100;
+			mp_clips[i].h = 100;
+		}
+	}
+
 	else
 	{
 		printf("Failed to load media\n");
@@ -309,7 +339,6 @@ void close()
 
 	mainMap.mapWrite();
 	mainPocket.pocketWrite(mainPocket.pocketData);
-	very_behind_background_texture.free();
 
 	IMG_Quit();
 	SDL_Quit();
@@ -369,6 +398,19 @@ Uint32 callback(Uint32 interval, void* param)
 		heartFrame = 0;
 	}
 
+	double mpPercentage = (double)player.magicPoint / (double)player.magicLimit;
+	mp_texture.renderWithScale(SCREEN_WIDTH / 2 + 130 + 30, 75, &magic_clips[0], 0, NULL, SDL_FLIP_NONE, 0.4, 2, mpPercentage);
+
+	mp_texture.render(int(SCREEN_WIDTH / 2 + 130 + 30 + (250 * mpPercentage)), 75, &magic_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
+
+
+	SDL_Rect* currentMagicClip = &magic_clips[magicFrame / 8];
+	magic_texture.render(SCREEN_WIDTH / 2 + 130, 75, currentMagicClip, 0, NULL, SDL_FLIP_NONE, 2);
+	++magicFrame;
+	if (magicFrame / 8 >= 8)
+	{
+		magicFrame = 0;
+	}
 	
 	centralPoint[0].x = 25 * 2 / 3;
 	centralPoint[0].y = 75 * 2 / 3;
@@ -480,7 +522,10 @@ Uint32 callback(Uint32 interval, void* param)
 
 	player.moveAction(deltaX,deltaY);
 	testEnemy.getHit(&player);
-	
+	if (player.isDead)
+	{
+		dead_texture.render(0, 0, dead_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	}
 
 	// Render the dropped items
 	
@@ -496,11 +541,14 @@ Uint32 callback(Uint32 interval, void* param)
 		tempRect[i].x += deltaX;
 		tempRect[i].y += deltaY;
 	}
-	SDL_RenderDrawRects(gRenderer, tempRect, 16);
-	SDL_RenderDrawPoints(gRenderer, player.weaponCollisionPoints, 5);
+	//SDL_RenderDrawRects(gRenderer, tempRect, 16);
+	//SDL_RenderDrawPoints(gRenderer, player.weaponCollisionPoints, 5);
 	SDL_RenderPresent(gRenderer);
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
+
+	
+
 	SDL_TimerID timerID1 = SDL_AddTimer(20, callback, (void*)"ad");
 	return 0;
 }
