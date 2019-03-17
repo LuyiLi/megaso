@@ -40,6 +40,7 @@
 */
 
 Item itemList[500];
+EnemyData enemyDataList[30];
 droppedItem droppedItemList[200];
 Enemy enemyList[20];
 

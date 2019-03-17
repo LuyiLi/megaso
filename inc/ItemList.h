@@ -24,7 +24,7 @@ void initItemList()
 		itemList[i].ID = i;
 		itemList[i].itemType = ITEM_BLOCK;
 	}
-	//ID 401-500 is blocks
+	//ID 401-500 is weapon
 	for (int i = 401; i < 500; i++)
 	{
 		itemList[i].ID = i;
@@ -73,16 +73,52 @@ void initItemList()
 	itemList[7].blockHardness = 3;
 
 	//ID=8
-	strcpy_s(itemList[8].itemName, "clay");
-	strcpy_s(itemList[8].itemDescription, "For building a door.");
+	strcpy_s(itemList[8].itemName, "ore1");
+	strcpy_s(itemList[8].itemDescription, "\0");
 	itemList[8].maxStack = 99;
 	itemList[8].blockHardness = 3;
 
 	//ID=9
-	strcpy_s(itemList[9].itemName, "Magic clay");
-	strcpy_s(itemList[9].itemDescription, "With some other materials, there will be some magic power.");
+	strcpy_s(itemList[9].itemName, "ore2");
+	strcpy_s(itemList[9].itemDescription, "\0");
 	itemList[9].maxStack = 99;
-	itemList[9].blockHardness = 4;
+	itemList[9].blockHardness = 3;
+
+	//ID=10
+	strcpy_s(itemList[10].itemName, "ore3");
+	strcpy_s(itemList[10].itemDescription, "\0");
+	itemList[10].maxStack = 99;
+	itemList[10].blockHardness = 3;
+
+	//ID=11
+	strcpy_s(itemList[11].itemName, "ore4");
+	strcpy_s(itemList[11].itemDescription, "\0");
+	itemList[11].maxStack = 99;
+	itemList[11].blockHardness = 3;
+
+	//ID=12
+	strcpy_s(itemList[12].itemName, "ore5");
+	strcpy_s(itemList[12].itemDescription, "\0");
+	itemList[12].maxStack = 99;
+	itemList[12].blockHardness = 3;
+
+	//ID=13
+	strcpy_s(itemList[13].itemName, "ore6");
+	strcpy_s(itemList[13].itemDescription, "\0");
+	itemList[13].maxStack = 99;
+	itemList[13].blockHardness = 3;
+
+	//ID=14
+	strcpy_s(itemList[14].itemName, "clay");
+	strcpy_s(itemList[14].itemDescription, "For building a door.");
+	itemList[14].maxStack = 99;
+	itemList[14].blockHardness = 3;
+
+	//ID=15
+	strcpy_s(itemList[15].itemName, "Magic clay");
+	strcpy_s(itemList[15].itemDescription, "With some other materials, there will be some magic power.");
+	itemList[15].maxStack = 99;
+	itemList[15].blockHardness = 4;
 
 	
 

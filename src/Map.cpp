@@ -303,6 +303,7 @@ void Map::generateMap()
 	generateBiome();
 	generateGroundSurface();
 	generateRockSurface();
+	generateOre();
 	generateCave();
 	generateTrees();
 }
@@ -463,6 +464,29 @@ void Map::generateRockSurface()
 		}
 			
 	}
+}
+
+void Map::generateOre()
+{
+	int x, y;
+	for (int i = 0; i < 6; i ++)
+		for (int j = 0; j < 2000; j++)
+		{
+			x = random01() * xBlockNumber;
+			y = random01() * yBlockNumber;
+			if (x < 30 || x > xBlockNumber - 30 || y < 30 || y > yBlockNumber - 30)
+				continue;
+			if (mapData[y][x] == 7)
+			{
+				for (int k = - 5; k <= 5; k ++)
+					for (int l = -5; l <= 5; l++)
+					{
+						if (mapData[k + y][l + x] == 7)
+							if (random01()*(abs(k) + abs(l)) < 2)
+								mapData[k + y][l + x] = i + 8;
+					}
+			}
+		}
 }
 
 void Map::generateCave()

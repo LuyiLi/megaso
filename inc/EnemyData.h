@@ -14,6 +14,7 @@ public:
 	EnemyData();
 	~EnemyData();
 	//The dimensions of the Enemy
+	int ID = 0;
 	int Enemy_WIDTH = 170;
 	int Enemy_HEIGHT = 152;
 

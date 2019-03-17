@@ -101,5 +101,8 @@
     <ClInclude Include="inc\EnemyData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\Header.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
