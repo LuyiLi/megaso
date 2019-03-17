@@ -56,7 +56,6 @@ public:
 	void generateOre();
 	void plantTree(int x, int y, GroundBiomeTypes);
 	void generateTrees();
-	void putDownOre();
 	int calculateTreeGenerationRate(GroundBiomeTypes biomeType);
 	void breakBlock(int x, int y);
 	void putBlock(int x, int y, int ID);
