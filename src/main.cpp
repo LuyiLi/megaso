@@ -114,7 +114,7 @@ int IDWithMouse = 0, numWithMouse = 0;
 int heartFrame = 0;
 int magicFrame = 0;
 GroundBiomeTypes currentBiome = GROUND_BIOME_PLAIN;
-GroundBiomeTypes targetState = GROUND_BIOME_VOCANIC;
+GroundBiomeTypes targetState = GROUND_BIOME_FOREST;
 
 double angleForBlock = 0;
 
