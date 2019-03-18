@@ -15,8 +15,11 @@ extern bool intersect(SDL_Rect, SDL_Rect);
 extern droppedItem droppedItemList[200];
 extern Item itemList[100];
 extern pocket mainPocket;
+extern int worldTime;
 int preBgAlpha = 255;
 int tarBgAlpha = 0;
+
+
 //todo: add enemy collisonbox when breaking
 
 Map::Map()
@@ -24,6 +27,12 @@ Map::Map()
 	int scroll[6] = { 0 };
 	int mapData[yBlockNumber][xBlockNumber] = { 0 };
 	int wallData[yBlockNumber][xBlockNumber] = { 0 };
+	bgColor[0] = 255;
+	bgColor[1] = 255;
+	bgColor[2] = 255;
+	frontBgColor[0] = 255;
+	frontBgColor[1] = 255;
+	frontBgColor[2] = 255;
 }
 
 bool Map::loadTexture()
@@ -941,12 +950,12 @@ void Map::biomeWrite()
 
 void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 {
-	scroll[0] -= player.mVelX / 4;
-	scroll[1] -= player.mVelX / 3.6;
-	scroll[2] -= player.mVelX / 3.3;
+	scroll[0] -= player.mVelX / 6;
+	scroll[1] -= player.mVelX / 5;
+	scroll[2] -= player.mVelX / 4;
 	scroll[3] -= player.mVelX / 3;
-	scroll[4] -= player.mVelX / 2.8;
-	scroll[5] -= player.mVelX / 2.5;
+	scroll[4] -= player.mVelX / 2.5;
+	scroll[5] -= player.mVelX / 2;
 	for (int i = 0; i < 6; i++)
 	{
 		if (abs(scroll[i]) > 900)
@@ -954,8 +963,25 @@ void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 			scroll[i] = 0;
 		}
 	}
+	
+	bg_texture[pre][0].setColor(bgColor[0], bgColor[1], bgColor[2]);
+	bg_texture[pre][1].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[pre][2].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[pre][3].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[pre][4].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[pre][5].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+
+	bg_texture[tar][0].setColor(bgColor[0], bgColor[1], bgColor[2]);
+	bg_texture[tar][1].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[tar][2].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[tar][3].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[tar][4].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[tar][5].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+
 	for (int i = 0; i < 6; i++)
 	{
+		
+
 		bg_texture[pre][i].setAlpha(preBgAlpha);
 		bg_texture[pre][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
 		bg_texture[pre][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
@@ -1002,4 +1028,83 @@ GroundBiomeTypes Map::currentBiome(int presentPosX)
 		}
 	}
 	return GROUND_BIOME_PLAIN;
+}
+
+void Map::countBgColor()
+{
+	printf("%d  %d %d %d\n", worldTime, bgColor[0], bgColor[1], bgColor[2]);
+	if (worldTime >= 500 && worldTime <= 550)
+	{
+		if (worldTime < 515)
+		{
+			bgColor[1] -= 4;
+		}
+		else if (worldTime < 540)
+		{
+			bgColor[0] -= 8;
+			bgColor[1] -= 4;
+			bgColor[2] -= 2;
+		}
+		else
+		{
+			if (bgColor[0] > 5 && bgColor[1]>5)
+			{
+				bgColor[0] -= 5;
+				bgColor[1] -= 5;
+			}
+			else 
+			{
+				bgColor[0] = 0;
+				bgColor[1] = 0;
+			}
+			if (bgColor[2]>25)
+			{
+				bgColor[2] -= 16;
+			}
+		}
+	}
+	if (worldTime > 1000)
+	{
+		if(bgColor[0] < 253)
+			bgColor[0] += 2;
+		else
+			bgColor[0] = 255;
+
+		if (bgColor[1] < 253)
+			bgColor[1] += 2;
+		else
+			bgColor[1] = 255;
+
+		if (bgColor[2] < 253)
+			bgColor[2] += 2;
+		else
+			bgColor[2] = 255;
+		
+	}
+}
+
+void Map::countFrontBgColor()
+{
+	if (worldTime >= 500 && worldTime <= 550)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			frontBgColor[i] -= 4;
+		}
+	}
+	else if (worldTime > 1000)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (frontBgColor[i] < 253)
+			{
+				frontBgColor[i] += 2;
+			}
+			else
+			{
+				frontBgColor[i] = 255;
+			}
+		}
+	}
+
 }

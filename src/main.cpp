@@ -94,7 +94,7 @@ LTexture gPlayerTexture;
 
 SDL_Point centralPoint[4];
 int direction = 0;
-int time = 0;
+int worldTime = 0;
 bool quit = false;
 bool init();
 bool loadMedia();
@@ -725,10 +725,12 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 
 Uint32 mainMapUpdate(Uint32 interval, void* param)
 {
-	if (time >= 600)
-		time = 0;
-	time++;
-	SDL_TimerID mainTimer = SDL_AddTimer(1000, mainMapUpdate, (void*)"a");
+	if (worldTime >= 1200)
+		worldTime = 0;
+	mainMap.countBgColor();
+	mainMap.countFrontBgColor();
+	worldTime++;
+	SDL_TimerID mainTimer = SDL_AddTimer(25, mainMapUpdate, (void*)"a");
 	return 0;
 }
 
