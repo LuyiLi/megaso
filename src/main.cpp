@@ -12,6 +12,7 @@
 #include "ItemList.h"
 #include "droppedItem.h"
 #include "pocket.h"
+#include "global.h"
 #include <SDL_ttf.h>
 #include <cmath>
 
@@ -104,7 +105,7 @@ int prevPocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
 int target[4] = {2500,0,100};
-
+int bgIsChanging=0;
 int mouseX, mouseY, mouseState;
 int crackFlag;
 int blockMouseX, blockMouseY;
@@ -114,8 +115,8 @@ int isTakenUp = 0;
 int IDWithMouse = 0, numWithMouse = 0;
 int heartFrame = 0;
 int magicFrame = 0;
-GroundBiomeTypes currentBiome = GROUND_BIOME_PLAIN;
-GroundBiomeTypes targetState = GROUND_BIOME_DESERT;
+GroundBiomeTypes currentBiome = mainMap.currentBiome(player.blockPosX);
+GroundBiomeTypes targetState = mainMap.currentBiome(player.blockPosX);
 
 double angleForBlock = 0;
 
@@ -123,8 +124,6 @@ bool init()
 {
 	mainMap.preAlpha = 0;
 	mainMap.targetAlpha = 255;
-	mainMap.targetType = GROUND_BIOME_PLAIN;
-	mainMap.preType = GROUND_BIOME_PLAIN;
 	//Check if map.txt exist, generate one if not
 	if (mainMap.checkIfExist()&&mainMap.checkIfWallExist()&&mainMap.checkIfBiomeExist())
 	{
@@ -358,8 +357,32 @@ void close()
 	TTF_Quit();
 }
 
+Uint32 renderBgChangeCallback(Uint32 interval, void* param)
+{
+	if (!mainMap.renderBgChange(targetState))
+	{
+		bgIsChanging = 1;
+		SDL_TimerID backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
+	}
+	else
+	{
+		GroundBiomeTypes temp;
+		temp = targetState;
+		targetState = currentBiome;
+		currentBiome = temp;
+		bgIsChanging = 0;
+	}
+	return 0;
+}
+
+
 Uint32 callback(Uint32 interval, void* param)
 {
+	targetState = mainMap.currentBiome(player.blockPosX);
+	if (targetState != currentBiome&& !bgIsChanging)
+	{
+		backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
+	}
 	for (int i = 0; i < 200; i++)
 	{
 		player.pickUpItem(&droppedItemList[i]);
@@ -699,21 +722,6 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 	//SDL_TimerID mouseTimer = SDL_AddTimer(10, mouseTimerCallback, (void*)mouseState);
 }
 
-Uint32 renderBgChangeCallback(Uint32 interval, void* param) 
-{
-	if (!mainMap.renderBgChange(targetState))
-	{
-		SDL_TimerID backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
-	}
-	else
-	{
-		GroundBiomeTypes temp;
-		temp = targetState;
-		targetState = currentBiome;
-		currentBiome = temp;
-	}
-	return 0;
-}
 
 Uint32 mainMapUpdate(Uint32 interval, void* param)
 {
