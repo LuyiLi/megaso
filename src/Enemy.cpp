@@ -322,14 +322,14 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		}
 		
 	}
+	if (healthPoint < healthLimit)
+	{
+		double percentage = (double)healthPoint / (double)healthLimit;
+		enemyHp_texture.render(0 + posX + deltaX + 40, posY + deltaY - 40, &enemyHp_clips[2], 0, NULL, SDL_FLIP_NONE, 2);
+		enemyHp_texture.renderWithScale(0 + posX + deltaX + 40, posY + deltaY - 40, &enemyHp_clips[0], 0, NULL, SDL_FLIP_NONE, 2, 2, percentage);
+		enemyHp_texture.render((50 * percentage) - 7 + posX + deltaX + 40, posY + deltaY - 40, &enemyHp_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
 
-	double percentage = (double)healthPoint / (double)healthLimit;
-	enemyHp_texture.render(0+posX+deltaX+40, posY+deltaY-40, &enemyHp_clips[2], 0, NULL, SDL_FLIP_NONE, 2);
-	enemyHp_texture.renderWithScale(0+posX+deltaX + 40, posY + deltaY - 40, &enemyHp_clips[0], 0, NULL, SDL_FLIP_NONE, 2, 2, percentage);
-	enemyHp_texture.render((50 * percentage)-7 + posX + deltaX + 40,posY + deltaY - 40, &enemyHp_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
-	
-
-	
+	}
 }
 
 bool Enemy::loadTexture()
