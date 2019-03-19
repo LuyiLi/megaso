@@ -76,10 +76,10 @@ LTexture crack_texture;
 SDL_Rect dead_clips[1];
 LTexture dead_texture;
 
-SDL_Rect tool_clips[1];
+SDL_Rect tool_clips[10];
 LTexture tool_texture;
 
-SDL_Rect weapon_clips[1];
+SDL_Rect weapon_clips[6];
 LTexture weapon_texture;
 
 SDL_Rect hp_clips[2];
@@ -273,7 +273,7 @@ bool loadMedia()
 
 	if (tool_texture.loadFromFile("images/tools.png"))
 	{
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			tool_clips[i].x = 100 * i;
 			tool_clips[i].y = 0;
@@ -284,7 +284,7 @@ bool loadMedia()
 
 	if (weapon_texture.loadFromFile("images/weapons.png"))
 	{
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 6; i++)
 		{
 			weapon_clips[i].x = 100 * i;
 			weapon_clips[i].y = 0;

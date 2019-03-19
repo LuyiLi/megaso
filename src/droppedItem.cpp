@@ -7,10 +7,13 @@
 #include "global.h"
 #include "Camera.h"
 #include "Map.h"
+#include "entity.h"
 
 extern Map mainMap;
 extern const int g;
 extern Item itemList[100];
+extern Player player;
+//extern LTexture newMap_texture;
 
 droppedItem::droppedItem()
 {
@@ -114,6 +117,14 @@ void droppedItem::render(int deltaX, int deltaY)
 		
 		//todo: change the texture
 		SDL_Rect* currentDroppedItemClip = &mainMap.newMap_clips[item.ID];
+		//printf("%d %d\n", mCollider.x / 33 - player.blockPosX+20, mCollider.y / 33 - player.blockPosY + 20);
+		mainMap.newMap_texture.setColor(
+			mainMap.lightBlock[mCollider.x/33 - player.blockPosX + 20]
+			[mCollider.y/33 - player.blockPosY + 20],
+			mainMap.lightBlock[mCollider.x / 33 - player.blockPosX + 20]
+			[mCollider.y / 33 - player.blockPosY + 20], 
+			mainMap.lightBlock[mCollider.x / 33 - player.blockPosX]
+			[mCollider.y / 33 - player.blockPosY + 20]);
 		mainMap.newMap_texture.render(mCollider.x+deltaX,mCollider.y+deltaY, currentDroppedItemClip, 0, NULL, SDL_FLIP_NONE, 6);
 		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
 		SDL_RenderDrawRect(gRenderer, &tempRect);
