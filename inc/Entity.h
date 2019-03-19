@@ -35,7 +35,8 @@ public:
 	int blockPosX;
 	int blockPosY;
 	
-	int healthPoint;
+	int healthLimit = 100;
+	int healthPoint = 100;
 
 	int hitFlag;
 	bool canBeHit;
@@ -84,6 +85,9 @@ public:
 	//const int walking_frames = 4;
 	SDL_Rect slime_walk_clips[4];
 	LTexture slime_walking_texture;
+
+	SDL_Rect enemyHp_clips[3];
+	LTexture enemyHp_texture;
 };
 
 class Player

@@ -322,6 +322,13 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		}
 		
 	}
+
+	double percentage = (double)healthPoint / (double)healthLimit;
+	enemyHp_texture.render(0+posX+deltaX+40, posY+deltaY-40, &enemyHp_clips[2], 0, NULL, SDL_FLIP_NONE, 2);
+	enemyHp_texture.renderWithScale(0+posX+deltaX + 40, posY + deltaY - 40, &enemyHp_clips[0], 0, NULL, SDL_FLIP_NONE, 2, 2, percentage);
+	enemyHp_texture.render((50 * percentage)-7 + posX + deltaX + 40,posY + deltaY - 40, &enemyHp_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
+	
+
 	
 }
 
@@ -333,6 +340,11 @@ bool Enemy::loadTexture()
 		return false;
 	}
 	if (!enemy_walking_texture[1].loadFromFile("images/pangolin_1.png"))
+	{
+		printf("Failed to load walking animation texture!\n");
+		return false;
+	}
+	if (!enemyHp_texture.loadFromFile("images/enemyHp.png"))
 	{
 		printf("Failed to load walking animation texture!\n");
 		return false;
@@ -350,6 +362,13 @@ bool Enemy::loadTexture()
 			enemy_walk_clips[1][i].y = 0;
 			enemy_walk_clips[1][i].w = 100;
 			enemy_walk_clips[1][i].h = 100;
+		}
+		for (int i = 0; i < 3; i++)
+		{
+			enemyHp_clips[i].x = i * 100;
+			enemyHp_clips[i].y = 0;
+			enemyHp_clips[i].w = 100;
+			enemyHp_clips[i].h = 100;
 		}
 		//Set sprite clips
 		
