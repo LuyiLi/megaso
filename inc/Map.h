@@ -80,5 +80,11 @@ public:
 	GroundBiomeTypes currentBiome(int);
 	void countBgColor();
 	void countFrontBgColor();
+	SDL_Rect sun_clips[1];
+	LTexture sun_texture;
+	SDL_Rect moon_clips[1];
+	LTexture moon_texture;
+	SDL_Rect star_clips[1];
+	LTexture star_texture;
 };
 

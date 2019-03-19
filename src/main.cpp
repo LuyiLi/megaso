@@ -87,6 +87,8 @@ LTexture hp_texture;
 SDL_Rect mp_clips[2];
 LTexture mp_texture;
 
+
+
 SDL_TimerID backgroundTimer;
 
 LTexture gPlayerTexture;
@@ -327,6 +329,7 @@ bool loadMedia()
 			mp_clips[i].h = 100;
 		}
 	}
+
 	else
 	{
 		printf("Failed to load media\n");
