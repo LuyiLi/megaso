@@ -20,17 +20,14 @@ void pocket::pocketGenerate()
 	}
 }
 
-
-
-
 extern Map mainMap;
 extern int pocketNumber;
 extern int isTakenUp;
 extern int IDWithMouse;
 extern int numWithMouse;
-extern SDL_Rect tool_clips[1];
+extern SDL_Rect tool_clips[10];
 extern LTexture tool_texture;
-extern SDL_Rect weapon_clips[1];
+extern SDL_Rect weapon_clips[6];
 extern LTexture weapon_texture;
 extern int posInPocket;
 extern Player player;
@@ -204,11 +201,6 @@ void pocket::mainPocketRender()
 		}
 	}
 
-	for (int i = 0; i < 2; i++)
-	{
-		
-	}
-
 	if (pocketNumber > 0 && pocketNumber < 11)
 	{
 		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * (pocketNumber - 1), SCREEN_HEIGHT - 60, highLightPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
@@ -338,17 +330,41 @@ void pocket::mainPocketRender()
 
 void pocket::composingTableUpdate()
 {
+	int sortedData[2][3];
+	int temp1, temp2;
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 2; ++j)
+			sortedData[j][i] = materialData[j][i];
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 2; ++j)
+			if (sortedData[0][j] > sortedData[0][j + 1])
+			{
+				temp1 = sortedData[0][j + 1];
+				temp2 = sortedData[1][j + 1];
+				sortedData[0][j + 1] = sortedData[0][j];
+				sortedData[1][j + 1] = sortedData[1][j];
+				sortedData[0][j] = temp1;
+				sortedData[1][j] = temp2;
+			}
+	}
+	
 	//草方块合成
-	if (materialData[0][0] == 2|| materialData[0][1] == 2|| materialData[0][2] == 2)
+	if (sortedData[0][0] == 0 && sortedData[0][1] == 0 && sortedData[0][2] == 2)
 	{
 		craftData[0][0] = 1;
+	}//剑合成
+	else if (sortedData[0][0] == 0 && sortedData[0][1] == 4 && sortedData[0][2] == 7 )
+	{
+		craftData[0][0] = 401;
 	}
-	//
+	
 
 	else
 	{
 		craftData[0][0] = 0;
 	}
+	craftData[1][0] = 1;
 }
 
 void pocket::handlePocketEvents(SDL_Event e)
@@ -421,7 +437,7 @@ void pocket::handlePocketEvents(SDL_Event e)
 		if (mouseX > 20 && mouseX < 520 && mouseY>20 && mouseY < 170)
 		{
 			posInPocket = 10 + ((mouseY - 20) / 50) * 10 + (mouseX - 20) / 50 + 1;
-			if (pocketData[1][posInPocket - 1] && !isTakenUp)
+			if (pocketData[1][posInPocket - 1] && !isTakenUp && mouseState==1)
 			{
 				isTakenUp = 1;
 				IDWithMouse = pocketData[0][posInPocket - 1];
@@ -430,14 +446,28 @@ void pocket::handlePocketEvents(SDL_Event e)
 				pocketData[0][posInPocket - 1] = 0;
 				pocketData[1][posInPocket - 1] = 0;
 			}
+			else if (pocketData[1][posInPocket - 1] && !isTakenUp && mouseState == 4)
+			{
+				isTakenUp = 1;
+				IDWithMouse = pocketData[0][posInPocket - 1];
+				numWithMouse = 1;
+
+				pocketData[1][posInPocket - 1] --;
+			}
 			else if (isTakenUp && pocketData[1][posInPocket - 1])
 			{
-				if (pocketData[0][posInPocket - 1] == IDWithMouse && pocketData[1][posInPocket - 1] + numWithMouse <= 99)
+				if (pocketData[0][posInPocket - 1] == IDWithMouse && pocketData[1][posInPocket - 1] + numWithMouse <= 99 && mouseState == 1)
 				{
 					pocketData[1][posInPocket - 1] += numWithMouse;
 					isTakenUp = 0;
 				}
-				else
+				else if (pocketData[0][posInPocket - 1] == IDWithMouse && pocketData[1][posInPocket - 1] + numWithMouse <= 99 && mouseState == 4)
+				{
+					numWithMouse++;
+					pocketData[1][posInPocket - 1]--;
+					isTakenUp = 1;
+				}
+				else if(mouseState == 1)
 				{
 					int temp1 = pocketData[0][posInPocket - 1];
 					int temp2 = pocketData[1][posInPocket - 1];
@@ -451,14 +481,14 @@ void pocket::handlePocketEvents(SDL_Event e)
 					isTakenUp = 1;
 				}
 			}
-			else if (isTakenUp && !pocketData[1][posInPocket - 1])
+			else if (isTakenUp && !pocketData[1][posInPocket - 1] && mouseState == 1)
 			{
 				pocketData[0][posInPocket - 1] = IDWithMouse;
 				pocketData[1][posInPocket - 1] = numWithMouse;
 				isTakenUp = 0;
 			}
 		}
-		if (mouseX > 470 && mouseX < 520 && mouseY>170 && mouseY < 230 && isTakenUp)
+		if (mouseX > 470 && mouseX < 520 && mouseY>170 && mouseY < 230 && isTakenUp && mouseState == 1)
 		{
 			IDWithMouse = 0;
 			numWithMouse = 0;
@@ -467,25 +497,41 @@ void pocket::handlePocketEvents(SDL_Event e)
 		if (mouseX > SCREEN_WIDTH / 2 - 250 && mouseX < SCREEN_WIDTH / 2 + 250 && mouseY>SCREEN_HEIGHT - 60 && mouseY < SCREEN_HEIGHT - 10)
 		{
 			posInPocket = (mouseX) / 50 - 4 + 1;
-			if (pocketData[1][posInPocket - 1] && !isTakenUp)
+			if (pocketData[1][posInPocket - 1] && !isTakenUp && mouseState == 1)
 			{
 				isTakenUp = 1;
 				IDWithMouse = pocketData[0][posInPocket - 1];
 				numWithMouse = pocketData[1][posInPocket - 1];
 
-
 				pocketData[0][posInPocket - 1] = 0;
 				pocketData[1][posInPocket - 1] = 0;
 
 			}
+
+			else if (pocketData[1][posInPocket - 1] && !isTakenUp && mouseState == 4)
+			{
+				isTakenUp = 1;
+				IDWithMouse = pocketData[0][posInPocket - 1];
+				numWithMouse = 1;
+
+				pocketData[1][posInPocket - 1] --;
+
+			}
+
 			else if (isTakenUp && pocketData[1][posInPocket - 1])
 			{
-				if (pocketData[0][posInPocket - 1] == IDWithMouse && pocketData[1][posInPocket - 1] + numWithMouse <= 99)
+				if (pocketData[0][posInPocket - 1] == IDWithMouse && pocketData[1][posInPocket - 1] + numWithMouse <= 99 && mouseState == 1)
 				{
 					pocketData[1][posInPocket - 1] += numWithMouse;
 					isTakenUp = 0;
 				}
-				else
+				else if (pocketData[0][posInPocket - 1] == IDWithMouse && pocketData[1][posInPocket - 1] + numWithMouse <= 99 && mouseState == 4)
+				{
+					numWithMouse++;
+					pocketData[1][posInPocket - 1]--;
+					isTakenUp = 1;
+				}
+				else if(mouseState == 1)
 				{
 					int temp1 = pocketData[0][posInPocket - 1];
 					int temp2 = pocketData[1][posInPocket - 1];
@@ -499,14 +545,14 @@ void pocket::handlePocketEvents(SDL_Event e)
 					isTakenUp = 1;
 				}
 			}
-			else if (isTakenUp && !pocketData[1][posInPocket - 1])
+			else if (isTakenUp && !pocketData[1][posInPocket - 1] && mouseState == 1)
 			{
 				pocketData[0][posInPocket - 1] = IDWithMouse;
 				pocketData[1][posInPocket - 1] = numWithMouse;
 				isTakenUp = 0;
 			}
 		}
-		if (mouseX > 20 && mouseX < 170 && mouseY>220 && mouseY < 270)
+		if (mouseX > 20 && mouseX < 170 && mouseY>220 && mouseY < 270 && mouseState == 1)
 		{
 			materialPos = (mouseX - 20) / 50;
 			printf("material %d\n", materialPos);
@@ -547,7 +593,7 @@ void pocket::handlePocketEvents(SDL_Event e)
 				isTakenUp = 0;
 			}
 		}
-		if (mouseX > 20 && mouseX < 320 && mouseY>280 && mouseY < 380)
+		if (mouseX > 20 && mouseX < 320 && mouseY>280 && mouseY < 380 && mouseState == 1)
 		{
 			craftPos = 6 * ((mouseY - 280) / 50) + (mouseX - 20) / 50;
 			if (!isTakenUp && craftData[0][craftPos])
@@ -563,10 +609,21 @@ void pocket::handlePocketEvents(SDL_Event e)
 				}
 				isTakenUp = 1;
 			}
-			printf("craft %d\n", craftPos);
+			else if (isTakenUp && craftData[0][craftPos])
+			{
+				numWithMouse ++;
+				for (int p = 0; p < 3; p++)
+				{
+					if (materialData[0][p] && materialData[1][p])
+					{
+						materialData[1][p]--;
+					}
+				}
+				isTakenUp = 1;
+			}
 		}
 
-		if (mouseX > 700 && mouseX < 850 && mouseY>160 && mouseY < 210)
+		if (mouseX > 700 && mouseX < 850 && mouseY>160 && mouseY < 210 && mouseState == 1)
 		{
 			accessoriesPos = (mouseX - 700) / 50;
 			printf("accessories %d\n", accessoriesPos);

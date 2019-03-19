@@ -15,8 +15,11 @@ extern bool intersect(SDL_Rect, SDL_Rect);
 extern droppedItem droppedItemList[200];
 extern Item itemList[100];
 extern pocket mainPocket;
+extern int worldTime;
 int preBgAlpha = 255;
 int tarBgAlpha = 0;
+
+
 //todo: add enemy collisonbox when breaking
 
 Map::Map()
@@ -24,6 +27,12 @@ Map::Map()
 	int scroll[6] = { 0 };
 	int mapData[yBlockNumber][xBlockNumber] = { 0 };
 	int wallData[yBlockNumber][xBlockNumber] = { 0 };
+	bgColor[0] = 255;
+	bgColor[1] = 255;
+	bgColor[2] = 255;
+	frontBgColor[0] = 255;
+	frontBgColor[1] = 255;
+	frontBgColor[2] = 255;
 }
 
 bool Map::loadTexture()
@@ -31,7 +40,7 @@ bool Map::loadTexture()
 	//create the texture of new map
 	if (newMap_texture.loadFromFile("images/newMapTexture.png"))
 	{
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 50; i++)
 		{
 			newMap_clips[i].x = i*100;
 			newMap_clips[i].y = 0;
@@ -53,9 +62,16 @@ bool Map::loadTexture()
 
 	if (bg_texture[GROUND_BIOME_PLAIN][5].loadFromFile("images/plain1.png") && bg_texture[GROUND_BIOME_PLAIN][4].loadFromFile("images/plain2.png") && bg_texture[GROUND_BIOME_PLAIN][3].loadFromFile("images/plain3.png")
 		&& bg_texture[GROUND_BIOME_PLAIN][2].loadFromFile("images/plain4.png") && bg_texture[GROUND_BIOME_PLAIN][1].loadFromFile("images/plain5.png") && bg_texture[GROUND_BIOME_PLAIN][0].loadFromFile("images/plain6.png")
-		&& bg_texture[GROUND_BIOME_VOCANIC][0].loadFromFile("images/bg0_test.png") && bg_texture[GROUND_BIOME_VOCANIC][1].loadFromFile("images/bg1_test.png") && bg_texture[GROUND_BIOME_VOCANIC][2].loadFromFile("images/bg2_test.png")
 		&& bg_texture[GROUND_BIOME_FOREST][5].loadFromFile("images/forest1.png") && bg_texture[GROUND_BIOME_FOREST][4].loadFromFile("images/forest2.png") && bg_texture[GROUND_BIOME_FOREST][3].loadFromFile("images/forest3.png")
-		&& bg_texture[GROUND_BIOME_FOREST][2].loadFromFile("images/forest4.png") && bg_texture[GROUND_BIOME_FOREST][1].loadFromFile("images/forest5.png") && bg_texture[GROUND_BIOME_FOREST][0].loadFromFile("images/forest6.png"))
+		&& bg_texture[GROUND_BIOME_FOREST][2].loadFromFile("images/forest4.png") && bg_texture[GROUND_BIOME_FOREST][1].loadFromFile("images/forest5.png") && bg_texture[GROUND_BIOME_FOREST][0].loadFromFile("images/forest6.png")
+		&& bg_texture[GROUND_BIOME_DESERT][5].loadFromFile("images/desert1.png") && bg_texture[GROUND_BIOME_DESERT][4].loadFromFile("images/desert2.png") && bg_texture[GROUND_BIOME_DESERT][3].loadFromFile("images/desert3.png")
+		&& bg_texture[GROUND_BIOME_DESERT][2].loadFromFile("images/desert4.png") && bg_texture[GROUND_BIOME_DESERT][1].loadFromFile("images/desert5.png") && bg_texture[GROUND_BIOME_DESERT][0].loadFromFile("images/desert6.png")
+		&& bg_texture[GROUND_BIOME_MOUNTAIN][5].loadFromFile("images/mountain1.png") && bg_texture[GROUND_BIOME_MOUNTAIN][4].loadFromFile("images/mountain2.png") && bg_texture[GROUND_BIOME_MOUNTAIN][3].loadFromFile("images/mountain3.png")
+		&& bg_texture[GROUND_BIOME_MOUNTAIN][2].loadFromFile("images/mountain4.png") && bg_texture[GROUND_BIOME_MOUNTAIN][1].loadFromFile("images/mountain5.png") && bg_texture[GROUND_BIOME_MOUNTAIN][0].loadFromFile("images/mountain6.png")
+		&& bg_texture[GROUND_BIOME_SNOWLAND][5].loadFromFile("images/snow1.png") && bg_texture[GROUND_BIOME_SNOWLAND][4].loadFromFile("images/snow2.png") && bg_texture[GROUND_BIOME_SNOWLAND][3].loadFromFile("images/snow3.png")
+		&& bg_texture[GROUND_BIOME_SNOWLAND][2].loadFromFile("images/snow4.png") && bg_texture[GROUND_BIOME_SNOWLAND][1].loadFromFile("images/snow5.png") && bg_texture[GROUND_BIOME_SNOWLAND][0].loadFromFile("images/snow6.png")
+		&& bg_texture[GROUND_BIOME_VOCANIC][5].loadFromFile("images/Volcanic1.png") && bg_texture[GROUND_BIOME_VOCANIC][4].loadFromFile("images/Volcanic2.png") && bg_texture[GROUND_BIOME_VOCANIC][3].loadFromFile("images/Volcanic3.png")
+		&& bg_texture[GROUND_BIOME_VOCANIC][2].loadFromFile("images/Volcanic4.png") && bg_texture[GROUND_BIOME_VOCANIC][1].loadFromFile("images/Volcanic5.png") && bg_texture[GROUND_BIOME_VOCANIC][0].loadFromFile("images/Volcanic6.png"))
 	{
 		bg_clips[0].x = 0;
 		bg_clips[0].y = 0;
@@ -82,56 +98,6 @@ void Map::render(int deltaX, int deltaY)
 	int beginY = (player.blockPosY-20) * (33);
 	int endX = (player.blockPosX) * (33);
 	int endY = (player.blockPosY) * (33);
-	
-	int num=0;
-	
-	for (int i = player.blockPosX - 20; i < player.blockPosX + 20; i++)
-	{
-		int isLight = 1;
-		for (int j = player.blockPosY - 20; j > 0; j--)
-		{
-			if (mapData[j][i])
-			{
-				isLight = 0;
-			}
-		}
-		if (isLight)
-		{
-			int flag = 1;
-			for (int j = player.blockPosY - 20; j < player.blockPosY + 20; j++)
-			{
-				
-				if (mapData[j][i])
-				{
-					flag = 0;
-					lightPoint[num].x = i - player.blockPosX + 20;
-					lightPoint[num].y = j - 1 - player.blockPosY + 20+1;
-					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
-					calculateLight(lightPoint[num].x, lightPoint[num].y);
-					num++;
-					break;
-				}
-			}
-			/*
-			if (flag)
-			{
-				printf("%d %d\n", i - player.blockPosX + 20, 0);
-				lightPoint[num].x = i - player.blockPosX + 20;
-				lightPoint[num].y = 0;
-				num++;
-			}
-			*/
-		}
-		lightBlock[20][20] = 255;
-		lightBlock[21][20] = 255;
-		lightBlock[21][21] = 255;
-		lightBlock[20][21] = 255;
-		calculateLight(20, 20);
-		calculateLight(21, 20);
-		calculateLight(20, 21);
-		calculateLight(21, 21);
-	}
-	num = 0;
 	for (int i = player.blockPosY-20; i < player.blockPosY+20; i++)
 	{
 		for (int j = player.blockPosX-20; j < player.blockPosX+20; j++)
@@ -150,13 +116,7 @@ void Map::render(int deltaX, int deltaY)
 		beginX = (player.blockPosX-20) * (33);
 		beginY += (33);
 	}
-	for (int i = 0; i < 40; i++)
-	{
-		for (int j = 0; j < 40; j++)
-		{
-			lightBlock[i][j] = 0;
-		}
-	}
+	
 }
 
 void Map::calculateLight(int x, int y)
@@ -228,7 +188,41 @@ void Map::renderWall(int deltaX, int deltaY)
 	int beginY = (player.blockPosY - 15) * (33);
 	int endX = (player.blockPosX) * (33);
 	int endY = (player.blockPosY) * (33);
-
+	int num = 0;
+	for (int i = 0; i < 40; i++)
+	{
+		for (int j = 0; j < 40; j++)
+		{
+			lightBlock[i][j] = 0;
+		}
+	}
+	for (int i = player.blockPosX - 20; i < player.blockPosX + 20; i++)
+	{
+		for (int j = player.blockPosY - 20; j < player.blockPosY + 20; j++)
+		{
+			if (!mapData[j][i] && !wallData[j][i])
+			{
+				if (mapData[j + 1][i] || mapData[j - 1][i] || mapData[j][i + 1] || mapData[j][i - 1]|| wallData[j + 1][i] || wallData[j - 1][i] || wallData[j][i + 1] || wallData[j][i - 1])
+				{
+					lightPoint[num].x = i - player.blockPosX + 20;
+					lightPoint[num].y = j - 1 - player.blockPosY + 20 + 1;
+					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
+					calculateLight(lightPoint[num].x, lightPoint[num].y);
+					num++;
+				}
+				
+			}
+		}
+	}
+	//lightBlock[20][20] = 255;
+	//lightBlock[21][20] = 255;
+	lightBlock[21][21] = 255;
+	//lightBlock[20][21] = 255;
+	//calculateLight(20, 20);
+	//calculateLight(21, 20);
+	//calculateLight(20, 21);
+	calculateLight(21, 21);
+	num = 0;
 	for (int i = player.blockPosY - 15; i < player.blockPosY + 15; i++)
 	{
 		for (int j = player.blockPosX - 15; j < player.blockPosX + 16; j++)
@@ -237,6 +231,7 @@ void Map::renderWall(int deltaX, int deltaY)
 			{
 				if (wallData[i][j] > 100 && wallData[i][j] <= 200)
 				{
+					wall_texture.setColor(lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20], lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20], lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20]);
 					SDL_Rect* currentClip = &newMap_clips[wallData[i][j] - 100];
 					wall_texture.render(beginX + deltaX, beginY + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 3);
 				}
@@ -955,12 +950,12 @@ void Map::biomeWrite()
 
 void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 {
-	scroll[0] -= player.mVelX / 4;
-	scroll[1] -= player.mVelX / 3.6;
-	scroll[2] -= player.mVelX / 3;
-	scroll[3] -= player.mVelX / 2.8;
-	scroll[4] -= player.mVelX / 2.6;
-	scroll[5] -= player.mVelX / 2.5;
+	scroll[0] -= player.mVelX / 6;
+	scroll[1] -= player.mVelX / 5;
+	scroll[2] -= player.mVelX / 4;
+	scroll[3] -= player.mVelX / 3;
+	scroll[4] -= player.mVelX / 2.5;
+	scroll[5] -= player.mVelX / 2;
 	for (int i = 0; i < 6; i++)
 	{
 		if (abs(scroll[i]) > 900)
@@ -968,8 +963,25 @@ void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 			scroll[i] = 0;
 		}
 	}
+	
+	bg_texture[pre][0].setColor(bgColor[0], bgColor[1], bgColor[2]);
+	bg_texture[pre][1].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[pre][2].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[pre][3].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[pre][4].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[pre][5].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+
+	bg_texture[tar][0].setColor(bgColor[0], bgColor[1], bgColor[2]);
+	bg_texture[tar][1].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[tar][2].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[tar][3].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[tar][4].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+	bg_texture[tar][5].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
+
 	for (int i = 0; i < 6; i++)
 	{
+		
+
 		bg_texture[pre][i].setAlpha(preBgAlpha);
 		bg_texture[pre][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
 		bg_texture[pre][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
@@ -993,7 +1005,7 @@ int Map::renderBgChange(GroundBiomeTypes tar)
 	}
 	tarBgAlpha += 3;
 	preBgAlpha -= 3;
-	if (tarBgAlpha >= 255)
+	if (tarBgAlpha >= 250)
 	{
 
 		preBgAlpha = 255;
@@ -1006,13 +1018,93 @@ int Map::renderBgChange(GroundBiomeTypes tar)
 	}
 }
 
-int Map::currentBiome(int presentPosX)
+GroundBiomeTypes Map::currentBiome(int presentPosX)
 {
 	for (int i = 0; i < 25; i++)
 	{
 		if (presentPosX >= groundBiomes[i].biomeRange.x && presentPosX < groundBiomes[i].biomeRange.w+ groundBiomes[i].biomeRange.x)
 		{
-			return (int)groundBiomes[i].biomeType;
+			return groundBiomes[i].biomeType;
 		}
 	}
+	return GROUND_BIOME_PLAIN;
+}
+
+void Map::countBgColor()
+{
+	printf("%d  %d %d %d\n", worldTime, bgColor[0], bgColor[1], bgColor[2]);
+	if (worldTime >= 500 && worldTime <= 550)
+	{
+		if (worldTime < 515)
+		{
+			bgColor[1] -= 4;
+		}
+		else if (worldTime < 540)
+		{
+			bgColor[0] -= 8;
+			bgColor[1] -= 4;
+			bgColor[2] -= 2;
+		}
+		else
+		{
+			if (bgColor[0] > 5 && bgColor[1]>5)
+			{
+				bgColor[0] -= 5;
+				bgColor[1] -= 5;
+			}
+			else 
+			{
+				bgColor[0] = 0;
+				bgColor[1] = 0;
+			}
+			if (bgColor[2]>25)
+			{
+				bgColor[2] -= 16;
+			}
+		}
+	}
+	if (worldTime > 1000)
+	{
+		if(bgColor[0] < 253)
+			bgColor[0] += 2;
+		else
+			bgColor[0] = 255;
+
+		if (bgColor[1] < 253)
+			bgColor[1] += 2;
+		else
+			bgColor[1] = 255;
+
+		if (bgColor[2] < 253)
+			bgColor[2] += 2;
+		else
+			bgColor[2] = 255;
+		
+	}
+}
+
+void Map::countFrontBgColor()
+{
+	if (worldTime >= 500 && worldTime <= 550)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			frontBgColor[i] -= 4;
+		}
+	}
+	else if (worldTime > 1000)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (frontBgColor[i] < 253)
+			{
+				frontBgColor[i] += 2;
+			}
+			else
+			{
+				frontBgColor[i] = 255;
+			}
+		}
+	}
+
 }

@@ -75,6 +75,10 @@ public:
 	void biomeRead();
 	void biomeWrite();
 	int checkIfBiomeExist();
-	int currentBiome(int);
+	int bgColor[3];
+	int frontBgColor[3];
+	GroundBiomeTypes currentBiome(int);
+	void countBgColor();
+	void countFrontBgColor();
 };
 

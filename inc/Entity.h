@@ -35,7 +35,8 @@ public:
 	int blockPosX;
 	int blockPosY;
 	
-	int healthPoint;
+	int healthLimit = 100;
+	int healthPoint = 100;
 
 	int hitFlag;
 	bool canBeHit;

@@ -12,6 +12,7 @@
 #include "ItemList.h"
 #include "droppedItem.h"
 #include "pocket.h"
+#include "global.h"
 #include <SDL_ttf.h>
 #include <cmath>
 
@@ -74,10 +75,10 @@ LTexture crack_texture;
 SDL_Rect dead_clips[1];
 LTexture dead_texture;
 
-SDL_Rect tool_clips[1];
+SDL_Rect tool_clips[10];
 LTexture tool_texture;
 
-SDL_Rect weapon_clips[1];
+SDL_Rect weapon_clips[6];
 LTexture weapon_texture;
 
 SDL_Rect hp_clips[2];
@@ -92,7 +93,7 @@ LTexture gPlayerTexture;
 
 SDL_Point centralPoint[4];
 int direction = 0;
-int time = 0;
+int worldTime = 0;
 bool quit = false;
 bool init();
 bool loadMedia();
@@ -103,7 +104,7 @@ int prevPocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
 int target[4] = {2500,0,100};
-
+int bgIsChanging=0;
 int mouseX, mouseY, mouseState;
 int crackFlag;
 int blockMouseX, blockMouseY;
@@ -113,8 +114,8 @@ int isTakenUp = 0;
 int IDWithMouse = 0, numWithMouse = 0;
 int heartFrame = 0;
 int magicFrame = 0;
-GroundBiomeTypes currentBiome = GROUND_BIOME_PLAIN;
-GroundBiomeTypes targetState = GROUND_BIOME_FOREST;
+GroundBiomeTypes currentBiome = mainMap.currentBiome(player.blockPosX);
+GroundBiomeTypes targetState = mainMap.currentBiome(player.blockPosX);
 
 double angleForBlock = 0;
 
@@ -122,8 +123,6 @@ bool init()
 {
 	mainMap.preAlpha = 0;
 	mainMap.targetAlpha = 255;
-	mainMap.targetType = GROUND_BIOME_PLAIN;
-	mainMap.preType = GROUND_BIOME_VOCANIC;
 	//Check if map.txt exist, generate one if not
 	if (mainMap.checkIfExist()&&mainMap.checkIfWallExist()&&mainMap.checkIfBiomeExist())
 	{
@@ -275,7 +274,7 @@ bool loadMedia()
 
 	if (tool_texture.loadFromFile("images/tools.png"))
 	{
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			tool_clips[i].x = 100 * i;
 			tool_clips[i].y = 0;
@@ -286,7 +285,7 @@ bool loadMedia()
 
 	if (weapon_texture.loadFromFile("images/weapons.png"))
 	{
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 6; i++)
 		{
 			weapon_clips[i].x = 100 * i;
 			weapon_clips[i].y = 0;
@@ -359,8 +358,32 @@ void close()
 	TTF_Quit();
 }
 
+Uint32 renderBgChangeCallback(Uint32 interval, void* param)
+{
+	if (!mainMap.renderBgChange(targetState))
+	{
+		bgIsChanging = 1;
+		SDL_TimerID backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
+	}
+	else
+	{
+		GroundBiomeTypes temp;
+		temp = targetState;
+		targetState = currentBiome;
+		currentBiome = temp;
+		bgIsChanging = 0;
+	}
+	return 0;
+}
+
+
 Uint32 callback(Uint32 interval, void* param)
 {
+	targetState = mainMap.currentBiome(player.blockPosX);
+	if (targetState != currentBiome&& !bgIsChanging)
+	{
+		backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
+	}
 	for (int i = 0; i < 200; i++)
 	{
 		player.pickUpItem(&droppedItemList[i]);
@@ -707,28 +730,15 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 	//SDL_TimerID mouseTimer = SDL_AddTimer(10, mouseTimerCallback, (void*)mouseState);
 }
 
-Uint32 renderBgChangeCallback(Uint32 interval, void* param) 
-{
-	if (!mainMap.renderBgChange(targetState))
-	{
-		SDL_TimerID backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
-	}
-	else
-	{
-		GroundBiomeTypes temp;
-		temp = targetState;
-		targetState = currentBiome;
-		currentBiome = temp;
-	}
-	return 0;
-}
 
 Uint32 mainMapUpdate(Uint32 interval, void* param)
 {
-	if (time >= 600)
-		time = 0;
-	time++;
-	SDL_TimerID mainTimer = SDL_AddTimer(1000, mainMapUpdate, (void*)"a");
+	if (worldTime >= 1200)
+		worldTime = 0;
+	mainMap.countBgColor();
+	mainMap.countFrontBgColor();
+	worldTime++;
+	SDL_TimerID mainTimer = SDL_AddTimer(25, mainMapUpdate, (void*)"a");
 	return 0;
 }
 
