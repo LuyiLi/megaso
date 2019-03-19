@@ -421,8 +421,6 @@ void pocket::handlePocketEvents(SDL_Event e)
 				isOpened = 0;
 			}
 			break;
-		case SDLK_x: 
-			player.getKilled();
 		}
 		
 	}

@@ -198,10 +198,7 @@ void Enemy::moveAction(int deltaX, int deltaY)
 {
 	if (!isAlive)
 		return;
-	static int modeFlag = 0;
-	static int frame = 0;
-	static int frameFlag = 0;
-	static int frame_walk = 0;
+
 	SDL_Point enemyCenter;
 
 	if (acceleration > 0 && attackMode == ATTACKMODE_PREPARE)
@@ -364,12 +361,12 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		}
 		
 	}
-	if (healthPoint < healthLimit)
+	if (healthPoint < enemyData->healthLimit)
 	{
-		double percentage = (double)healthPoint / (double)healthLimit;
-		enemyHp_texture.render(0 + posX + deltaX + 40, posY + deltaY - 40, &enemyHp_clips[2], 0, NULL, SDL_FLIP_NONE, 2);
-		enemyHp_texture.renderWithScale(0 + posX + deltaX + 40, posY + deltaY - 40, &enemyHp_clips[0], 0, NULL, SDL_FLIP_NONE, 2, 2, percentage);
-		enemyHp_texture.render((50 * percentage) - 7 + posX + deltaX + 40, posY + deltaY - 40, &enemyHp_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
+		double percentage = (double)healthPoint / (double)enemyData->healthLimit;
+		enemyData->enemyHp_texture.render(0 + posX + deltaX + 40, posY + deltaY - 40, &enemyData->enemyHp_clips[2], 0, NULL, SDL_FLIP_NONE, 2);
+		enemyData->enemyHp_texture.renderWithScale(0 + posX + deltaX + 40, posY + deltaY - 40, &enemyData->enemyHp_clips[0], 0, NULL, SDL_FLIP_NONE, 2, 2, percentage);
+		enemyData->enemyHp_texture.render((50 * percentage) - 7 + posX + deltaX + 40, posY + deltaY - 40, &enemyData->enemyHp_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
 
 	}
 }

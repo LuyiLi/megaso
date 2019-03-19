@@ -34,8 +34,10 @@ public:
 
 	int blockPosX;
 	int blockPosY;
-	
-	int healthLimit = 100;
+	int modeFlag = 0;
+	int frame = 0;
+	int frameFlag = 0;
+	int frame_walk = 0;
 	int healthPoint = 100;
 
 	int hitFlag;

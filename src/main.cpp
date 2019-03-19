@@ -758,6 +758,17 @@ int main(int argc, char* args[])
 			{
 				while (SDL_PollEvent(&e) != 0)
 				{
+					if (e.key.keysym.sym == SDLK_x)
+					{
+						for (int i = 0; i < 10; i++)
+						{
+							if (!(enemyList[i].isAlive))
+							{
+								enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyData);
+								break;
+							}
+						}
+					}
 					//User requests quit
 					if (e.type == SDL_QUIT)
 					{

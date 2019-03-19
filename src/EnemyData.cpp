@@ -26,6 +26,11 @@ bool EnemyData::loadTexture()
 		printf("Failed to load walking animation texture!\n");
 		return false;
 	}
+	if (!enemyHp_texture.loadFromFile(enemyHpPath))
+	{
+		printf("Failed to load walking animation texture!\n");
+		return false;
+	}
 	else
 	{
 		for (int i = 0; i < 20; i++)
@@ -39,6 +44,16 @@ bool EnemyData::loadTexture()
 			enemy_walk_clips[1][i].y = 0;
 			enemy_walk_clips[1][i].w = 100;
 			enemy_walk_clips[1][i].h = 100;
+
+			
+
+		}
+		for (int i = 0; i < 3; i++)
+		{
+			enemyHp_clips[i].x = i * 100;
+			enemyHp_clips[i].y = 0;
+			enemyHp_clips[i].w = 100;
+			enemyHp_clips[i].h = 100;
 		}
 		//Set sprite clips
 
