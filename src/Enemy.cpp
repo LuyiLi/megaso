@@ -2,9 +2,12 @@
 #include "Entity.h"
 #include "global.h"
 #include "Map.h"
+#include "droppedItem.h"
 
 extern Map mainMap;
 extern Player player;
+extern droppedItem droppedItemList[200];
+extern Item itemList[500];
 
 Enemy::Enemy()
 {
@@ -125,8 +128,7 @@ void Enemy::getHit(Player *player)
 		for (int i = 0; i < 5; i++)
 			if (inRect(player->weaponCollisionPoints[i], mCollider))
 			{
-				healthPoint -= 1;
-				//todo: Change the damage
+				healthPoint -= player->currentItem.weaponDamage;
 				if (canBeKnockedBack)
 				{
 					mVelX = player->mCollider.x < mCollider.x ? 10 : -10;
@@ -135,9 +137,24 @@ void Enemy::getHit(Player *player)
 					canBeHit = false;
 					hitFlag = 0;
 				}
+				if (healthPoint < 0)
+					getKilled();
 				return;
 			}
 	}
+}
+
+void Enemy::getKilled()
+{
+	for (int i = 0; i < 200; i++)
+		if (droppedItemList[i].item.itemType == ITEM_NULL)
+		{
+			droppedItemList[i].create(mCollider.x + 15, mCollider.y, itemList[1]);
+			break;
+		}
+	isAlive = false;
+	mCollider.x = 0;
+	mCollider.y = 0;
 }
 
 bool Enemy::checkCollision()

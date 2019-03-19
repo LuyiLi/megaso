@@ -22,6 +22,7 @@ public:
 	int damage;
 	char texturePath1[30] = "images/pangolin.png";
 	char texturePath2[30] = "images/pangolin_1.png";
+	int dropID = 1;
 	bool loadTexture();
 
 	//Shows the Enemy on the screen

@@ -61,7 +61,7 @@ public:
 	void moveAction(int, int);
 	void create(int x, int y, EnemyData *data);
 	bool checkCollision();
-
+	void getKilled();
 	void updateCollisionBox();
 
 	//Shows the Enemy on the screen
