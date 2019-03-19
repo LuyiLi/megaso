@@ -101,7 +101,7 @@
     <ClInclude Include="inc\EnemyData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Header.h">
+    <ClInclude Include="inc\InitEnemyList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -94,7 +94,17 @@ void Player::handleEvent(SDL_Event& e)
 
 void Player::move()
 {
-	
+	static int healthFlag = 0;
+	if (healthPoint < 100)
+	{
+		healthFlag++;
+		if (healthFlag >= 30)
+		{
+			healthFlag = 0;
+			healthPoint++;
+		}
+	}
+
 	if (!acceleration && mVelX != 0)
 		mVelX = mVelX > 0 ? mVelX - 1 : mVelX + 1;
 
@@ -194,9 +204,9 @@ void Player::getHit(Enemy *enemy)
 				mVelY -= 6;
 			canBeHit = false;
 			hitFlag = 0;
-			if (healthPoint - enemy->enemyData.damage >= 0)
+			if (healthPoint - enemy->enemyData->damage >= 0)
 			{
-				healthPoint -= enemy->enemyData.damage;
+				healthPoint -= enemy->enemyData->damage;
 			}
 			else
 			{

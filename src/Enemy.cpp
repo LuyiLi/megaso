@@ -5,27 +5,48 @@
 
 extern Map mainMap;
 extern Player player;
-SDL_Rect enemy_walk_clips[50][50];
-LTexture enemy_walking_texture[50];
 
 Enemy::Enemy()
 {
 	//Initialize the offsets
 	//Set collision box dimension
 	Enemy_VEL = 3;
-	mCollider.w = enemyData.Enemy_WIDTH ;
-	mCollider.h = enemyData.Enemy_HEIGHT / 2;
-	mCollider.x = 100;
-	mCollider.y = 500;
+	mCollider.x = 0;
+	mCollider.y = 0;
 	canBeHit = true;
 	canBeKnockedBack = true;
 	//Initialize the velocity
 	mVelX = 0;
 	mVelY = 0;
 	canJump = true;
-	enemyData.damage = 5;
 	attackMode = ATTACKMODE_NONE;
-	enemyData.AI = AI_WARRIOR;
+	isAlive = false;
+
+	for (int i = 0; i < 36; i++)
+	{
+		rectArray[i].x = 0;
+		rectArray[i].y = 0;
+		rectArray[i].w = 33;
+		rectArray[i].h = 33;
+	}
+}
+
+void Enemy::create(int x, int y, EnemyData *data)
+{
+	enemyData = data;
+	Enemy_VEL = enemyData->Enemy_VEL;
+	mCollider.w = enemyData->Enemy_WIDTH;
+	mCollider.h = enemyData->Enemy_HEIGHT / 2;
+	mCollider.x = x;
+	mCollider.y = y;
+	canBeHit = true;
+	canBeKnockedBack = true;
+	//Initialize the velocity
+	mVelX = 0;
+	mVelY = 0;
+	canJump = true;
+	attackMode = ATTACKMODE_NONE;
+	isAlive = true;
 
 	for (int i = 0; i < 36; i++)
 	{
@@ -38,6 +59,8 @@ Enemy::Enemy()
 
 void Enemy::move()
 {
+	if (!isAlive)
+		return;
 	changeEnemyBehavior();
 	mCollider.x += mVelX;
 	posX = mCollider.x - 10;
@@ -95,6 +118,8 @@ void Enemy::move()
 
 void Enemy::getHit(Player *player)
 {
+	if (!isAlive)
+		return;
 	if (canBeHit)
 	{
 		for (int i = 0; i < 5; i++)
@@ -154,8 +179,8 @@ void Enemy::updateCollisionBox()
 
 void Enemy::moveAction(int deltaX, int deltaY)
 {
-
-	static int angle = 0;
+	if (!isAlive)
+		return;
 	static int modeFlag = 0;
 	static int frame = 0;
 	static int frameFlag = 0;
@@ -178,8 +203,8 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		}
 		else
 		{
-			SDL_Rect* currentClip = &enemy_walk_clips[0][frame];
-			enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame];
+			enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
 			
 		}
 	}
@@ -200,8 +225,8 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		}
 		else
 		{
-			SDL_Rect* currentClip = &enemy_walk_clips[0][frame];
-			enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame];
+			enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
 
 		}
 	}
@@ -222,8 +247,8 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		}
 		else
 		{
-			SDL_Rect* currentClip = &enemy_walk_clips[0][abs(frame-4)];
-			enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][abs(frame-4)];
+			enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
 			
 		}
 	}
@@ -244,18 +269,18 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		}
 		else
 		{
-			SDL_Rect* currentClip = &enemy_walk_clips[0][abs(frame-4)];
-			enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][abs(frame-4)];
+			enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
 
 		}
 	}
 
 	if (acceleration > 0 && attackMode==ATTACKMODE_NONE)
 	{
-		mCollider.h = enemyData.Enemy_HEIGHT / 2;
-		mCollider.w = enemyData.Enemy_WIDTH ;
-		SDL_Rect* currentClip = &enemy_walk_clips[0][frame_walk/10+5];
-		enemy_walking_texture[0].render((posX + deltaX), (-33+posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
+		mCollider.h = enemyData->Enemy_HEIGHT / 2;
+		mCollider.w = enemyData->Enemy_WIDTH ;
+		SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame_walk/10+5];
+		enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33+posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
 		if (frame_walk / 10 >= 3)
 		{
 			frame_walk = 0;
@@ -267,10 +292,10 @@ void Enemy::moveAction(int deltaX, int deltaY)
 	}
 	if (acceleration < 0 && attackMode == ATTACKMODE_NONE)
 	{
-		mCollider.h = enemyData.Enemy_HEIGHT / 2;
-		mCollider.w = enemyData.Enemy_WIDTH;
-		SDL_Rect* currentClip = &enemy_walk_clips[0][frame_walk / 10 + 5];
-		enemy_walking_texture[0].render((posX + deltaX), (-33+posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
+		mCollider.h = enemyData->Enemy_HEIGHT / 2;
+		mCollider.w = enemyData->Enemy_WIDTH;
+		SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame_walk / 10 + 5];
+		enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33+posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
 		if (frame_walk / 10 >= 3)
 		{
 			frame_walk = 0;
@@ -283,23 +308,23 @@ void Enemy::moveAction(int deltaX, int deltaY)
 
 	if (acceleration > 0&&attackMode==ATTACKMODE_ATTACKING)
 	{
-		mCollider.h = enemyData.Enemy_HEIGHT / 2;
-		mCollider.w = enemyData.Enemy_WIDTH / 2;
+		mCollider.h = enemyData->Enemy_HEIGHT / 2;
+		mCollider.w = enemyData->Enemy_WIDTH / 2;
 		enemyCenter.x = 42;
 		enemyCenter.y = 42;
-		SDL_Rect* currentClip = &enemy_walk_clips[0][0];
-		enemy_walking_texture[1].render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_NONE, 1.2);
+		SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][0];
+		enemyData->enemy_walking_texture[1].render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_NONE, 1.2);
 		angle += 30;
 
 	}
 	else if(acceleration < 0 && attackMode == ATTACKMODE_ATTACKING)
 	{
-		mCollider.h = enemyData.Enemy_HEIGHT / 2;
-		mCollider.w = enemyData.Enemy_WIDTH / 2;
+		mCollider.h = enemyData->Enemy_HEIGHT / 2;
+		mCollider.w = enemyData->Enemy_WIDTH / 2;
 		enemyCenter.x = 42;
 		enemyCenter.y = 42;
-		SDL_Rect* currentClip = &enemy_walk_clips[0][0];
-		enemy_walking_texture[1].render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_HORIZONTAL, 1.2);
+		SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][0];
+		enemyData->enemy_walking_texture[1].render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_HORIZONTAL, 1.2);
 		angle -= 30;
 	}
 	if (modeFlag < 200)
@@ -325,43 +350,9 @@ void Enemy::moveAction(int deltaX, int deltaY)
 	
 }
 
-bool Enemy::loadTexture()
-{
-	if (!enemy_walking_texture[0].loadFromFile("images/pangolin.png"))
-	{
-		printf("Failed to load walking animation texture!\n");
-		return false;
-	}
-	if (!enemy_walking_texture[1].loadFromFile("images/pangolin_1.png"))
-	{
-		printf("Failed to load walking animation texture!\n");
-		return false;
-	}
-	else
-	{
-		for (int i = 0; i < 20; i++)
-		{
-			enemy_walk_clips[0][i].x = i*100;
-			enemy_walk_clips[0][i].y = 0;
-			enemy_walk_clips[0][i].w = 100;
-			enemy_walk_clips[0][i].h = 100;
-
-			enemy_walk_clips[1][i].x = i * 100;
-			enemy_walk_clips[1][i].y = 0;
-			enemy_walk_clips[1][i].w = 100;
-			enemy_walk_clips[1][i].h = 100;
-		}
-		//Set sprite clips
-		
-		return true;
-	}
-	//Load sprite sheet texture
-
-}
-
 void Enemy::changeEnemyBehavior()
 {
-	switch (enemyData.AI)
+	switch (enemyData->AI)
 	{
 	case AI_WARRIOR:
 		acceleration = player.mCollider.x - mCollider.x < 0 ? -1 : 1;

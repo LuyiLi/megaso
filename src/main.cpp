@@ -40,11 +40,10 @@
 */
 
 Item itemList[500];
-EnemyData enemyDataList[30];
+EnemyData enemyDataList[10];
 droppedItem droppedItemList[200];
+EnemyData enemyData;
 Enemy enemyList[20];
-
-Enemy testEnemy;
 
 //the type of player
 Player player;
@@ -222,6 +221,8 @@ bool init()
 			}
 		}
 	}
+	enemyList[0].create(500, 100, &enemyData);
+	enemyList[1].create(500, 200, &enemyData);
 	return success;
 }
 
@@ -331,7 +332,7 @@ bool loadMedia()
 	{
 		printf("Failed to load media\n");
 	}
-	if (!player.loadTexture() || !mainMap.loadTexture() || !testEnemy.loadTexture())
+	if (!player.loadTexture() || !mainMap.loadTexture() || !enemyData.loadTexture())
 	{
 		success = false;
 	}
@@ -368,8 +369,11 @@ Uint32 callback(Uint32 interval, void* param)
 
 	//Reimu-Rubo moves
 	player.move();
-	testEnemy.move();
-	player.getHit(&testEnemy);
+	for (int i = 0; i < 20; i++)
+	{
+		enemyList[i].move();
+		player.getHit(&enemyList[i]);
+	}
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
 
@@ -396,7 +400,9 @@ Uint32 callback(Uint32 interval, void* param)
 	for (int i = 0; i < 200; i++)
 		droppedItemList[i].render(deltaX, deltaY);
 
-	testEnemy.moveAction(deltaX, deltaY);
+	for (int i = 0; i < 20; i++)
+		enemyList[i].moveAction(deltaX, deltaY);
+	
 
 	mainPocket.mainPocketRender();
 
@@ -536,7 +542,9 @@ Uint32 callback(Uint32 interval, void* param)
 
 
 	player.moveAction(deltaX,deltaY);
-	testEnemy.getHit(&player);
+	for (int i = 0; i < 20; i++)
+		enemyList[i].getHit(&player);
+	
 	if (player.isDead)
 	{
 		dead_texture.render(0, 0, dead_clips, 0, NULL, SDL_FLIP_NONE, 2);

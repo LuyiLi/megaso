@@ -27,7 +27,7 @@ class Enemy
 public:
 	//The dimensions of the Enemy
 
-	EnemyData enemyData;
+	EnemyData *enemyData;
 	//The position of the Enemy
 	int posX;
 	int posY;
@@ -42,13 +42,13 @@ public:
 	bool canJump;
 	bool canBeKnockedBack;
 	int acceleration;
-
+	bool isAlive;
+	int angle = 0;
+	int Enemy_VEL;
 	AttackMode attackMode;
-
 	SDL_Rect rectArray[36];
 
 	//Maximum axis velocity of the Enemy
-	int Enemy_VEL = 5;
 
 	//Initializes the variables
 	Enemy();
@@ -59,8 +59,7 @@ public:
 	void move();
 	void getHit(Player *);
 	void moveAction(int, int);
-	bool loadTexture();
-
+	void create(int x, int y, EnemyData *data);
 	bool checkCollision();
 
 	void updateCollisionBox();
@@ -68,22 +67,12 @@ public:
 	//Shows the Enemy on the screen
 	void changeEnemyBehavior();
 
-	void render(int camX, int camY);
-
 	//The velocity of the Enemy
 	int mVelX, mVelY;
 
 	//Enemy's collision box
 	SDL_Rect mCollider;
 
-	/*վ��״̬ͼ����Ƭ*/
-	//const int standing_frames = 6;
-	SDL_Rect slime_stand_clips[6];
-	LTexture slime_standing_texture;
-	/*����״̬ͼ����Ƭ*/
-	//const int walking_frames = 4;
-	SDL_Rect slime_walk_clips[4];
-	LTexture slime_walking_texture;
 };
 
 class Player
