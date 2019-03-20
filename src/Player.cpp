@@ -210,7 +210,7 @@ void Player::getHit(Enemy *enemy)
 
 bool Player::checkCollision()
 {
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		if (rectArray[i].x == 0 && rectArray[i].y == 0)
 			continue;
@@ -278,7 +278,7 @@ void Player::updateCollisionBox()
 	startBlockY = blockPosX - 1;
 
 	for (int i = 0; i<4; i++)
-		for (int j = 0; j < 4; j++)
+		for (int j = 0; j < 5; j++)
 		{
 			if (mainMap.mapData[startBlockX + i][startBlockY + j])
 			{
@@ -298,6 +298,7 @@ void Player::moveAction(int deltaX, int deltaY)
 
 	static int frame_walk = 0;
 	static int frame_stand = 0;
+	
 	if (acceleration > 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];

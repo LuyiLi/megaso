@@ -50,7 +50,7 @@ void Enemy::create(int x, int y, EnemyData *data)
 	canJump = true;
 	attackMode = ATTACKMODE_NONE;
 	isAlive = true;
-
+	healthPoint = enemyData->healthLimit;
 	for (int i = 0; i < 36; i++)
 	{
 		rectArray[i].x = 0;

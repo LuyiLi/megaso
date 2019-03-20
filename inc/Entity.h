@@ -112,7 +112,7 @@ public:
 	int weaponState;
 	int acceleration;
 
-	SDL_Rect rectArray[16];
+	SDL_Rect rectArray[20];
 
 	//Maximum axis velocity of the Player
 	static const int Player_VEL = 7;
