@@ -27,7 +27,7 @@ public:
 	//Moves the Projectile and checks collision
 	void move();
 	bool loadTexture();
-	void create(int x, int y, int mousePosX, int mousePosY);
+	void create(int x, int y, int mousePosX, int mousePosY, int);
 	bool checkCollision();
 	void updateCollisionBox();
 
@@ -40,5 +40,8 @@ public:
 	//const int standing_frames = 6;
 	SDL_Rect projectile_clips[1];
 	LTexture projectile_texture;
+	LTexture projectile_texture_blue;
+	LTexture projectile_texture_green;
+	LTexture projectile_texture_red;
 };
 

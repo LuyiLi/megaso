@@ -2,6 +2,7 @@
 #include "Projectile.h"
 #include "global.h"
 #include "Map.h"
+#include "pocket.h"
 
 extern Map mainMap;
 
@@ -27,10 +28,11 @@ Projectile::~Projectile()
 {
 }
 
-void Projectile::create(int x, int y, int mousePosX, int mousePosY)
+void Projectile::create(int x, int y, int mousePosX, int mousePosY, int accessories)
 {
 	if (!isExitsting)
 	{
+		color = accessories;
 		mCollider.x = x + 20;
 		mCollider.y = y + 10;
 		posX = mCollider.x;
@@ -122,13 +124,33 @@ void Projectile::moveAction(int deltaX, int deltaY)
 		temp.x += deltaX;
 		temp.y += deltaY;
 		SDL_RenderDrawRect(gRenderer, &temp);
+		switch (color)
+		{
+		case 0:
+			projectile_texture.render((posX + deltaX), (posY + deltaY), &projectile_clips[0], 0, NULL, SDL_FLIP_NONE, 2);
+			break;
+		case 1:
+			projectile_texture_blue.render((posX + deltaX), (posY + deltaY), &projectile_clips[0], 0, NULL, SDL_FLIP_NONE, 2);
+			break;
+		case 2:
+			projectile_texture_green.render((posX + deltaX), (posY + deltaY), &projectile_clips[0], 0, NULL, SDL_FLIP_NONE, 2);
+			break;
+		case 3:
+			projectile_texture_red.render((posX + deltaX), (posY + deltaY), &projectile_clips[0], 0, NULL, SDL_FLIP_NONE, 2);
+			break;
+		default:
+			break;
+		}
 		projectile_texture.render((posX + deltaX), (posY + deltaY), &projectile_clips[0], 0, NULL, SDL_FLIP_NONE, 2);
 	}
 }
 
 bool Projectile::loadTexture()
 {
-	if (!projectile_texture.loadFromFile("images/projectile.png"))
+	if (!projectile_texture.loadFromFile("images/projectile.png")
+		|| !projectile_texture_blue.loadFromFile("images/projectile1.png")
+		|| !projectile_texture_green.loadFromFile("images/projectile2.png")
+		|| !projectile_texture_red.loadFromFile("images/projectile3.png"))
 	{
 		printf("Failed to load walking animation texture!\n");
 		return false;
