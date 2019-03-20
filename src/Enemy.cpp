@@ -200,6 +200,10 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		return;
 
 	SDL_Point enemyCenter;
+	int lightX = posX / 33 - player.blockPosX + 20;
+	int lightY = posY / 33 - player.blockPosY + 20;
+	enemyData->enemy_walking_texture[0].setColor(mainMap.lightBlock[lightX][lightY],mainMap.lightBlock[lightX][lightY],mainMap.lightBlock[lightX][lightY]);
+	enemyData->enemy_walking_texture[1].setColor(mainMap.lightBlock[lightX][lightY], mainMap.lightBlock[lightX][lightY], mainMap.lightBlock[lightX][lightY]);
 
 	if (acceleration > 0 && attackMode == ATTACKMODE_PREPARE)
 	{

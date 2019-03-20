@@ -644,8 +644,11 @@ int pocket::checkIfExist()
 	}
 }
 
+extern Item itemList[500];
+
 void pocket::pocketUpdate()
 {
+	player.currentItem = itemList[pocketData[pocketNumber - 1][0]];
 	for (int i = 0; i < 40; i++)
 	{
 		if (pocketData[0][i] == 0 || pocketData[1][i] == 0)

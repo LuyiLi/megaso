@@ -19,6 +19,14 @@ extern int worldTime;
 int preBgAlpha = 255;
 int tarBgAlpha = 0;
 
+double starAlpha = 0;
+double sunAngle=300;
+double moonAngle=300;
+double sunAlpha = 0;
+double moonAlpha = 0;
+SDL_Point skyCenter;
+
+
 
 //todo: add enemy collisonbox when breaking
 
@@ -33,6 +41,8 @@ Map::Map()
 	frontBgColor[0] = 255;
 	frontBgColor[1] = 255;
 	frontBgColor[2] = 255;
+	skyCenter.x = 450;
+	skyCenter.y = 550;
 }
 
 bool Map::loadTexture()
@@ -59,6 +69,29 @@ bool Map::loadTexture()
 			wall_clips[i].h = 100;
 		}
 	}
+
+	if (sun_texture.loadFromFile("images/sun.png"))
+	{
+		sun_clips[0].x = 0;
+		sun_clips[0].y = 0;
+		sun_clips[0].w = 1800;
+		sun_clips[0].h = 1200;
+	}
+	if (moon_texture.loadFromFile("images/moon.png"))
+	{
+		moon_clips[0].x = 0;
+		moon_clips[0].y = 0;
+		moon_clips[0].w = 1800;
+		moon_clips[0].h = 1200;
+	}
+	if (star_texture.loadFromFile("images/stars.png"))
+	{
+		star_clips[0].x = 0;
+		star_clips[0].y = 0;
+		star_clips[0].w = 1800;
+		star_clips[0].h = 1200;
+	}
+
 
 	if (bg_texture[GROUND_BIOME_PLAIN][5].loadFromFile("images/plain1.png") && bg_texture[GROUND_BIOME_PLAIN][4].loadFromFile("images/plain2.png") && bg_texture[GROUND_BIOME_PLAIN][3].loadFromFile("images/plain3.png")
 		&& bg_texture[GROUND_BIOME_PLAIN][2].loadFromFile("images/plain4.png") && bg_texture[GROUND_BIOME_PLAIN][1].loadFromFile("images/plain5.png") && bg_texture[GROUND_BIOME_PLAIN][0].loadFromFile("images/plain6.png")
@@ -1007,10 +1040,29 @@ void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 	bg_texture[tar][4].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
 	bg_texture[tar][5].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
 
-	for (int i = 0; i < 6; i++)
-	{
-		
 
+	bg_texture[pre][0].setAlpha(preBgAlpha);
+	bg_texture[pre][0].render(scroll[0], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	bg_texture[pre][0].render(scroll[0] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	bg_texture[pre][0].render(scroll[0] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+
+	bg_texture[tar][0].setAlpha(tarBgAlpha);
+	bg_texture[tar][0].render(scroll[0], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	bg_texture[tar][0].render(scroll[0] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	bg_texture[tar][0].render(scroll[0] - 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
+
+	////////////////////////////////////////////////////////////////////////
+	//printf("%lf %lf\n", sunAngle, moonAngle);
+	star_texture.setAlpha(starAlpha);
+	star_texture.render(0, 0, star_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	sun_texture.setAlpha(sunAlpha);
+	sun_texture.render(0, 10, sun_clips, sunAngle, &skyCenter, SDL_FLIP_NONE, 2);
+	moon_texture.setAlpha(moonAlpha);
+	moon_texture.render(0, 10, moon_clips, moonAngle, &skyCenter, SDL_FLIP_NONE, 2);
+	////////////////////////////////////////////////////////////////////////
+
+	for (int i = 1; i < 6; i++)
+	{
 		bg_texture[pre][i].setAlpha(preBgAlpha);
 		bg_texture[pre][i].render(scroll[i], 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
 		bg_texture[pre][i].render(scroll[i] + 900, 0, bg_clips, 0, NULL, SDL_FLIP_NONE, 2);
@@ -1061,14 +1113,14 @@ GroundBiomeTypes Map::currentBiome(int presentPosX)
 
 void Map::countBgColor()
 {
-	printf("%d  %d %d %d\n", worldTime, bgColor[0], bgColor[1], bgColor[2]);
-	if (worldTime >= 500 && worldTime <= 550)
+	//printf("%d  %d %d %d\n", worldTime, bgColor[0], bgColor[1], bgColor[2]);
+	if (worldTime >= 600 && worldTime <= 650)
 	{
-		if (worldTime < 515)
+		if (worldTime < 615)
 		{
 			bgColor[1] -= 4;
 		}
-		else if (worldTime < 540)
+		else if (worldTime < 640)
 		{
 			bgColor[0] -= 8;
 			bgColor[1] -= 4;
@@ -1092,7 +1144,7 @@ void Map::countBgColor()
 			}
 		}
 	}
-	if (worldTime > 1000)
+	if (worldTime > 0 && worldTime<600)
 	{
 		if(bgColor[0] < 253)
 			bgColor[0] += 2;
@@ -1110,18 +1162,67 @@ void Map::countBgColor()
 			bgColor[2] = 255;
 		
 	}
+	//printf("%d %d %d ", bgColor[0], bgColor[1], bgColor[2]);
 }
 
 void Map::countFrontBgColor()
 {
-	if (worldTime >= 500 && worldTime <= 550)
+	if (worldTime >= 600)
 	{
-		for (int i = 0; i < 3; i++)
+		if (moonAlpha < 255&&worldTime<900)
 		{
-			frontBgColor[i] -= 4;
+			moonAlpha += 5;
+		}
+		if (moonAlpha > 0 && worldTime > 1148)
+		{
+			moonAlpha -= 5;
+		}
+		
+		moonAngle = (80.0 / 600.0)*(worldTime-600) + 320;
+		if (worldTime < 900)
+		{
+			starAlpha = (255.0 / 300.0)*(worldTime - 600);
+		}
+		else if (worldTime >= 900)
+		{
+			starAlpha = (255.0 / 300.0)*(1200 - worldTime);
 		}
 	}
-	else if (worldTime > 1000)
+	else
+	{
+		moonAlpha = 0;
+		moonAngle = 270;
+		starAlpha = 0;
+	}
+	if (worldTime<600)
+	{
+		if (worldTime < 200 && sunAlpha < 255)
+		{
+			sunAlpha += 5;
+		}
+		if (worldTime > 548&&sunAlpha>0)
+		{
+			sunAlpha -= 5;
+		}
+		sunAngle = (80.0 / 600.0)*(worldTime) + 320;
+		starAlpha = 0;
+	}
+	else
+	{
+		sunAlpha = 0;
+		sunAngle = 270;
+	}
+	if (worldTime >= 600)
+	{
+		if (worldTime <= 650)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				frontBgColor[i] -= 4;
+			}
+		}
+	}
+	if (worldTime > 0&&worldTime<600)
 	{
 		for (int i = 0; i < 3; i++)
 		{
@@ -1135,5 +1236,4 @@ void Map::countFrontBgColor()
 			}
 		}
 	}
-
 }
