@@ -144,6 +144,26 @@ void Enemy::getHit(Player *player)
 	}
 }
 
+void Enemy::getHitProjectile(Projectile *projectile)
+{
+	if (isAlive && projectile->isExitsting)
+		if (intersect(mCollider, projectile->mCollider))
+		{
+			projectile->isExitsting = false;
+			healthPoint -= 5;
+			if (canBeKnockedBack)
+			{
+				mVelX = projectile->mVelX > 0 ? 10 : -10;
+				if (mVelY > -2)
+					mVelY -= 9;
+				canBeHit = false;
+				hitFlag = 0;
+			}
+			if (healthPoint < 0)
+				getKilled();
+		}
+}
+
 void Enemy::getKilled()
 {
 	for (int i = 0; i < 200; i++)
@@ -202,8 +222,9 @@ void Enemy::moveAction(int deltaX, int deltaY)
 	SDL_Point enemyCenter;
 	int lightX = posX / 33 - player.blockPosX + 20;
 	int lightY = posY / 33 - player.blockPosY + 20;
-	enemyData->enemy_walking_texture[0].setColor(mainMap.lightBlock[lightX][lightY],mainMap.lightBlock[lightX][lightY],mainMap.lightBlock[lightX][lightY]);
-	enemyData->enemy_walking_texture[1].setColor(mainMap.lightBlock[lightX][lightY], mainMap.lightBlock[lightX][lightY], mainMap.lightBlock[lightX][lightY]);
+	int light = 1.3*mainMap.lightBlock[lightX][lightY] < 255 ? 1.3*mainMap.lightBlock[lightX][lightY] : 255;
+	enemyData->enemy_walking_texture[0].setColor(light, light, light);
+	enemyData->enemy_walking_texture[1].setColor(light, light, light);
 
 	if (acceleration > 0 && attackMode == ATTACKMODE_PREPARE)
 	{

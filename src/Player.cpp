@@ -95,6 +95,7 @@ void Player::handleEvent(SDL_Event& e)
 void Player::move()
 {
 	static int healthFlag = 0;
+	static int magicFlag = 0;
 	if (healthPoint < 100)
 	{
 		healthFlag++;
@@ -102,6 +103,15 @@ void Player::move()
 		{
 			healthFlag = 0;
 			healthPoint++;
+		}
+	}
+	if (magicPoint < 100)
+	{
+		magicFlag++;
+		if (magicFlag >= 10)
+		{
+			magicFlag = 0;
+			magicPoint++;
 		}
 	}
 

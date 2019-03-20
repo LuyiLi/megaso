@@ -15,7 +15,8 @@
 #include "global.h"
 #include <SDL_ttf.h>
 #include <cmath>
-
+#include"InitEnemyList.h"
+#include "Projectile.h"
 /*
 				   _ooOoo_
 				  o8888888o
@@ -43,7 +44,6 @@
 Item itemList[500];
 EnemyData enemyDataList[10];
 droppedItem droppedItemList[200];
-EnemyData enemyData;
 Enemy enemyList[20];
 
 //the type of player
@@ -55,7 +55,7 @@ SavingControl savingControler;
 TTF_Font *gFont = NULL;
 Map mainMap;
 pocket mainPocket;
-
+Projectile projectile;
 //Rendered texture
 
 //a structure presenting renderer state
@@ -101,6 +101,8 @@ bool init();
 bool loadMedia();
 void close();
 
+bool projectileReady = true;
+int projectileFlag = 0;
 int pocketNumber = 1;
 int prevPocketNumber = 1;
 int breakTime = 2000;
@@ -146,8 +148,8 @@ bool init()
 	//init the ItemList
 	initItemList();
 
-	//init the itemList
-	initItemList();
+	//init the enemyDataList
+	initEnemyDataList();
 	//Check if pocket.txt exist, generate one if not
 	if (mainPocket.checkIfExist())
 	{
@@ -222,8 +224,8 @@ bool init()
 			}
 		}
 	}
-	enemyList[0].create(500, 100, &enemyData);
-	enemyList[1].create(500, 200, &enemyData);
+	enemyList[0].create(500, 100, &enemyDataList[1]);
+	enemyList[1].create(500, 200, &enemyDataList[1]);
 	return success;
 }
 
@@ -334,7 +336,13 @@ bool loadMedia()
 	{
 		printf("Failed to load media\n");
 	}
-	if (!player.loadTexture() || !mainMap.loadTexture() || !enemyData.loadTexture())
+	for (int i = 0; i < 10; i++)
+	{
+		if (enemyDataList[i].ID)
+			if (!enemyDataList[i].loadTexture())
+				success = false;
+	}
+	if (!player.loadTexture() || !mainMap.loadTexture() || !projectile.loadTexture())
 	{
 		success = false;
 	}
@@ -395,6 +403,16 @@ Uint32 callback(Uint32 interval, void* param)
 
 	//Reimu-Rubo moves
 	player.move();
+	projectile.move();
+	if (!projectileReady)
+	{
+		projectileFlag++;
+		if (projectileFlag > 10)
+		{
+			projectileReady = true;
+			projectileFlag = 0;
+		}
+	}
 	for (int i = 0; i < 20; i++)
 	{
 		enemyList[i].move();
@@ -566,10 +584,14 @@ Uint32 callback(Uint32 interval, void* param)
 		player.weaponState = 0;
 	}
 
-
+	projectile.moveAction(deltaX, deltaY);
 	player.moveAction(deltaX,deltaY);
 	for (int i = 0; i < 20; i++)
+	{
 		enemyList[i].getHit(&player);
+		enemyList[i].getHitProjectile(&projectile);
+	}
+		
 	
 	if (player.isDead)
 	{
@@ -767,9 +789,23 @@ int main(int argc, char* args[])
 						{
 							if (!(enemyList[i].isAlive))
 							{
-								enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyData);
+								enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[1]);
 								break;
 							}
+						}
+					}
+					if (e.key.keysym.sym == SDLK_f)
+					{
+						if (player.magicPoint > 12)
+						{
+							if (projectileReady)
+							{
+								projectileReady = false;
+								SDL_GetMouseState(&mouseX, &mouseY);
+								player.magicPoint -= 12;
+								projectile.create(player.posX, player.posY, mouseX, mouseY);
+							}
+							
 						}
 					}
 					//User requests quit

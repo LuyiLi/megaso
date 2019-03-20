@@ -235,15 +235,16 @@ void Map::renderWall(int deltaX, int deltaY)
 		{
 			if (!mapData[j][i] && !wallData[j][i])
 			{
+				lightPoint[num].x = i - player.blockPosX + 20;
+				lightPoint[num].y = j - player.blockPosY + 20;
+				lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
 				if (mapData[j + 1][i] || mapData[j - 1][i] || mapData[j][i + 1] || mapData[j][i - 1]|| wallData[j + 1][i] || wallData[j - 1][i] || wallData[j][i + 1] || wallData[j][i - 1])
 				{
-					lightPoint[num].x = i - player.blockPosX + 20;
-					lightPoint[num].y = j - 1 - player.blockPosY + 20 + 1;
-					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
 					calculateLight(lightPoint[num].x, lightPoint[num].y);
 					num++;
 				}
-				
+				//else
+					//lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
 			}
 		}
 	}

@@ -15,14 +15,14 @@ public:
 	~EnemyData();
 	//The dimensions of the Enemy
 	int ID = 0;
-	int Enemy_WIDTH = 170;
-	int Enemy_HEIGHT = 152;
-	int healthLimit=100;
+	int Enemy_WIDTH;
+	int Enemy_HEIGHT;
+	int healthLimit;
 	int Enemy_VEL;
 	int damage;
-	char texturePath1[30] = "images/pangolin.png";
-	char texturePath2[30] = "images/pangolin_1.png";
-	char enemyHpPath[30] = "images/enemyHp.png";
+	char texturePath1[30];
+	char texturePath2[30];
+	char enemyHpPath[30];
 	int dropID = 1;
 	bool loadTexture();
 
