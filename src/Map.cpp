@@ -235,15 +235,16 @@ void Map::renderWall(int deltaX, int deltaY)
 		{
 			if (!mapData[j][i] && !wallData[j][i])
 			{
+				lightPoint[num].x = i - player.blockPosX + 20;
+				lightPoint[num].y = j - player.blockPosY + 20;
+				lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
 				if (mapData[j + 1][i] || mapData[j - 1][i] || mapData[j][i + 1] || mapData[j][i - 1]|| wallData[j + 1][i] || wallData[j - 1][i] || wallData[j][i + 1] || wallData[j][i - 1])
 				{
-					lightPoint[num].x = i - player.blockPosX + 20;
-					lightPoint[num].y = j - 1 - player.blockPosY + 20 + 1;
-					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
 					calculateLight(lightPoint[num].x, lightPoint[num].y);
 					num++;
 				}
-				
+				//else
+					//lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
 			}
 		}
 	}
@@ -394,6 +395,9 @@ void Map::generateGroundSurface()
 {
 	float a = 0, v = 0, y = 150;
 	int x = 1, i = 0;
+	int currentSurfaceBlockID = 1;
+	if (groundBiomes[i].biomeType == GROUND_BIOME_DESERT)
+		currentSurfaceBlockID = 13;
 	while (x < xBlockNumber)
 	{	
 		if (groundBiomes[i].biomeType == GROUND_BIOME_NULL)
@@ -402,6 +406,7 @@ void Map::generateGroundSurface()
 		{
 			while (x >= groundBiomes[i].biomeRange.x && x <= groundBiomes[i].biomeRange.x + groundBiomes[i].biomeRange.w)
 			{
+				
 				switch (groundBiomes[i].biomeType)
 				{
 				default:
@@ -438,12 +443,15 @@ void Map::generateGroundSurface()
 					y += v;
 					break;
 				}
-				mapData[(int)y][x] = 1;
+				if (groundBiomes[i].biomeType == GROUND_BIOME_DESERT)
+					mapData[(int)y][x] = currentSurfaceBlockID;
+				else
+					mapData[(int)y][x] = currentSurfaceBlockID;
 				wallData[(int)y][x] = 101;
 				//flatten the ground
 				if (mapData[(int)y][x - 3])
 				{
-					mapData[(int)y][x - 2] = 1;
+					mapData[(int)y][x - 2] = currentSurfaceBlockID;
 					mapData[(int)y + 1][x - 2] = 0;
 					mapData[(int)y + 2][x - 2] = 0;
 					mapData[(int)y - 1][x - 2] = 0;
@@ -457,7 +465,7 @@ void Map::generateGroundSurface()
 				}
 				if (mapData[(int)y][x - 2])
 				{
-					mapData[(int)y][x - 1] = 1;
+					mapData[(int)y][x - 1] = currentSurfaceBlockID;
 					mapData[(int)y + 1][x - 1] = 0;
 					mapData[(int)y + 2][x - 1] = 0;
 					mapData[(int)y - 1][x - 1] = 0;
@@ -474,6 +482,11 @@ void Map::generateGroundSurface()
 			}
 		}
 		i++;
+
+		if (groundBiomes[i].biomeType == GROUND_BIOME_DESERT)
+			currentSurfaceBlockID = 13;
+		else
+			currentSurfaceBlockID = 1;
 	}
 }
 
@@ -481,8 +494,15 @@ void Map::generateRockSurface()
 {
 	float temp;
 	int tempY;
+	int currentBiomeNum = 0;
+	
 	for (int i = 0; i < xBlockNumber; i++)
 	{
+		if (i > groundBiomes[currentBiomeNum].biomeRange.x + groundBiomes[currentBiomeNum].biomeRange.w)
+		{
+			currentBiomeNum++;
+		}
+
 		temp = 0;
 		for (int j = i-4; j < i+4; j++)
 		{
@@ -491,10 +511,13 @@ void Map::generateRockSurface()
 		tempY = (int)(temp / 9 + 40);
 		for (int k = tempY; !mapData[k][i]; k--)
 		{
-			mapData[k][i] = 2;
+			if (groundBiomes[currentBiomeNum].biomeType == GROUND_BIOME_DESERT)
+				mapData[k][i] = 13;
+			else
+				mapData[k][i] = 2;
 			wallData[k][i] = 101;
 		}
-			
+
 		for (int k = tempY + 1; k < yBlockNumber; k++)
 		{
 			mapData[k][i] = 7;
@@ -508,7 +531,7 @@ void Map::generateOre()
 {
 	int x, y;
 	for (int i = 0; i < 6; i ++)
-		for (int j = 0; j < 2000; j++)
+		for (int j = 0; j < 700; j++)
 		{
 			x = random01() * xBlockNumber;
 			y = random01() * yBlockNumber;
@@ -516,6 +539,8 @@ void Map::generateOre()
 				continue;
 			if (mapData[y][x] == 7)
 			{
+				mapData[y][x] = i + 8;
+				/*
 				for (int k = - 5; k <= 5; k ++)
 					for (int l = -5; l <= 5; l++)
 					{
@@ -523,6 +548,7 @@ void Map::generateOre()
 							if (random01()*(abs(k) + abs(l)) < 2)
 								mapData[k + y][l + x] = i + 8;
 					}
+				*/
 			}
 		}
 }
@@ -567,7 +593,11 @@ void Map::generateTrees()
 	for (int i = 30; i < xBlockNumber - 30; i++)
 	{
 		if (i > groundBiomes[currentBiomeNum].biomeRange.x + groundBiomes[currentBiomeNum].biomeRange.w)
+		{
 			currentBiomeNum++;
+			generationRate = calculateTreeGenerationRate(groundBiomes[currentBiomeNum].biomeType);
+		}
+			
 		if (10 * random01() < generationRate)
 			plantTree(i, (int)tempSurfaceArray[i], groundBiomes[currentBiomeNum].biomeType);
 	}

@@ -4,7 +4,7 @@
 #include "droppedItem.h"
 #include "item.h"
 #include "EnemyData.h"
-
+#include "Projectile.h"
 class Enemy;
 class Player;
 
@@ -19,7 +19,6 @@ enum AttackMode
 	ATTACKMODE_ATTACKING,
 	ATTACKMODE_FINISH
 };
-
 
 class Enemy
 {
@@ -61,6 +60,7 @@ public:
 	//Moves the Enemy and checks collision
 	void move();
 	void getHit(Player *);
+	void getHitProjectile(Projectile *);
 	void moveAction(int, int);
 	void create(int x, int y, EnemyData *data);
 	bool checkCollision();
@@ -112,7 +112,7 @@ public:
 	int weaponState;
 	int acceleration;
 
-	SDL_Rect rectArray[16];
+	SDL_Rect rectArray[20];
 
 	//Maximum axis velocity of the Player
 	static const int Player_VEL = 7;
