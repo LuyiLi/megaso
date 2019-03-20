@@ -19,7 +19,6 @@ extern int direction;
 //extern Uint32 renderBgChangeCallback(Uint32 interval, void* param);
 extern int mouseState;
 
-
 Player::Player()
 {
 	//Initialize the offsets
@@ -301,7 +300,26 @@ void Player::moveAction(int deltaX, int deltaY)
 	if (acceleration > 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE,6);
+
+		switch (mainPocket.accessories)
+		{
+		case 0:
+			slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+			break;
+		case 1:
+			slime_walking_texture_blue.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+			break;
+		case 2:
+			slime_walking_texture_green.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+			break;
+		case 3:
+			slime_walking_texture_red.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+			break;
+		default:
+			break;
+		}
+
+		
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -311,7 +329,23 @@ void Player::moveAction(int deltaX, int deltaY)
 	else if (acceleration < 0)
 	{
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-		slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL,6);
+		switch (mainPocket.accessories)
+		{
+		case 0:
+			slime_walking_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 6);
+			break;
+		case 1:
+			slime_walking_texture_blue.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 6);
+			break;
+		case 2:
+			slime_walking_texture_green.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 6);
+			break;
+		case 3:
+			slime_walking_texture_red.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 6);
+			break;
+		default:
+			break;
+		}
 		++frame_walk;
 		if (frame_walk / 4 >= 4)
 		{
@@ -323,7 +357,23 @@ void Player::moveAction(int deltaX, int deltaY)
 		if (weaponState == 0)
 		{
 			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-			slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+			switch (mainPocket.accessories)
+			{
+			case 0:
+				slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+				break;
+			case 1:
+				slime_standing_texture_blue.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+				break;
+			case 2:
+				slime_standing_texture_green.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+				break;
+			case 3:
+				slime_standing_texture_red.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+				break;
+			default:
+				break;
+			}
 			++frame_stand;
 			if (frame_stand / 6 >= 6)
 			{
@@ -333,7 +383,23 @@ void Player::moveAction(int deltaX, int deltaY)
 		else if (weaponState == 1)
 		{
 			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-			slime_standing_side_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+			switch (mainPocket.accessories)
+			{
+			case 0:
+				slime_standing_side_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+				break;
+			case 1:
+				slime_standing_side_texture_blue.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+				break;
+			case 2:
+				slime_standing_side_texture_green.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+				break;
+			case 3:
+				slime_standing_side_texture_red.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+				break;
+			default:
+				break;
+			}
 			++frame_stand;
 			if (frame_stand / 6 >= 6)
 			{
@@ -343,7 +409,23 @@ void Player::moveAction(int deltaX, int deltaY)
 		else if (weaponState == 2)
 		{
 			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
-			slime_standing_side_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 6);
+			switch (mainPocket.accessories)
+			{
+			case 0:
+				slime_standing_side_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 6);
+				break;
+			case 1:
+				slime_standing_side_texture_blue.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 6);
+				break;
+			case 2:
+				slime_standing_side_texture_green.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 6);
+				break;
+			case 3:
+				slime_standing_side_texture_red.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 6);
+				break;
+			default:
+				break;
+			}
 			++frame_stand;
 			if (frame_stand / 6 >= 6)
 			{
@@ -357,7 +439,10 @@ void Player::moveAction(int deltaX, int deltaY)
 
 bool Player::loadTexture()
 {
-	if (!slime_walking_texture.loadFromFile("images/slime_walk.png"))
+	if (!slime_walking_texture.loadFromFile("images/slime_walk.png")
+		|| !slime_walking_texture_blue.loadFromFile("images/blue_2.png")
+		|| !slime_walking_texture_green.loadFromFile("images/green_2.png")
+		|| !slime_walking_texture_red.loadFromFile("images/red_2.png"))
 	{
 		printf("Failed to load walking animation texture!\n");
 		return false;
@@ -386,12 +471,18 @@ bool Player::loadTexture()
 		slime_walk_clips[3].h = 304;
 	}
 	//Load sprite sheet texture
-	if (!slime_standing_texture.loadFromFile("images/slime_stand.png"))
+	if (!slime_standing_texture.loadFromFile("images/slime_stand.png")
+		|| !slime_standing_texture_blue.loadFromFile("images/blue_3.png")
+		|| !slime_standing_texture_green.loadFromFile("images/green_3.png")
+		|| !slime_standing_texture_red.loadFromFile("images/red_3.png"))
 	{
 		printf("Failed to load walking animation texture!\n");
 		return false;
 	}
-	if (!slime_standing_side_texture.loadFromFile("images/slime_stand_side.png"))
+	if (!slime_standing_side_texture.loadFromFile("images/slime_stand_side.png")
+		|| !slime_standing_side_texture_blue.loadFromFile("images/blue_1.png")
+		|| !slime_standing_side_texture_green.loadFromFile("images/green_1.png")
+		|| !slime_standing_side_texture_red.loadFromFile("images/red_1.png"))
 	{
 		printf("Failed to load walking animation texture!\n");
 		return false;

@@ -43,6 +43,9 @@ SDL_Rect* CraftTableClip = &pocketUI_clips[5];
 SDL_Rect* AccessoriesClip = &pocketUI_clips[6];
 SDL_Rect* AccessoriesTitleClip = &pocketUI_clips[7];
 
+SDL_Rect accessories_clips[6];
+LTexture accessories_texture;
+
 SDL_Color textColorWhite = { 255, 255, 255 };
 SDL_Color textColorBlack = { 0, 0, 0 };
 LTexture gTextTexture1[80];
@@ -80,6 +83,18 @@ void pocket::mainPocketRender()
 		pocketUI_clips[7].w = 300;
 		pocketUI_clips[7].h = 100;
 	}
+
+	if (accessories_texture.loadFromFile("images/accessories.png"))
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			accessories_clips[i].x = 100*i;
+			accessories_clips[i].y = 0;
+			accessories_clips[i].w = 100;
+			accessories_clips[i].h = 100;
+		}
+	}
+	
 	if (rubbish_texture.loadFromFile("images/rubbish.png"))
 	{
 		rubbish_clips[0].x = 0;
@@ -176,6 +191,10 @@ void pocket::mainPocketRender()
 			SDL_Rect* currentPocketClip = &weapon_clips[pocketData[0][p] - 400];
 			weapon_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 9, SCREEN_HEIGHT - 60 + 9, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 3);
 		}
+		if (pocketData[1][p] && pocketData[0][p] > 700 && pocketData[0][p] <= 800)
+		{
+			accessories_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 5, SCREEN_HEIGHT - 60 + 7, &accessories_clips[pocketData[0][p] - 701], 0, NULL, SDL_FLIP_NONE, 2.5);
+		}
 
 		for (int q = 0; q < 3; q++)
 		{
@@ -185,9 +204,9 @@ void pocket::mainPocketRender()
 			}
 		}
 	}
-	for (int q = 0; q < 3; q++)
+	if (isOpened)
 	{
-		if (isOpened)
+		for (int q = 0; q < 3; q++)
 		{
 			pocketUI_texture.render(20 + 50 * q, 220, MaterialPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
 			for (int i = 0; i < 6; i++)
@@ -199,7 +218,27 @@ void pocket::mainPocketRender()
 			pocketUI_texture.render(700+50*q, 160, AccessoriesClip, 0, NULL, SDL_FLIP_NONE, 2);
 			pocketUI_texture.render(700, 120, AccessoriesTitleClip, 0, NULL, SDL_FLIP_NONE, 2);
 		}
+		switch (accessories)
+		{
+		case 0:
+			accessories_texture.render(704, 166, &accessories_clips[3], 0, NULL, SDL_FLIP_NONE, 2.5);
+			break;
+		case 1:
+			accessories_texture.render(704, 166, &accessories_clips[0], 0, NULL, SDL_FLIP_NONE, 2.5);
+			break;
+		case 2:
+			accessories_texture.render(704, 166, &accessories_clips[1], 0, NULL, SDL_FLIP_NONE, 2.5);
+			break;
+		case 3:
+			accessories_texture.render(704, 166, &accessories_clips[2], 0, NULL, SDL_FLIP_NONE, 2.5);
+			break;
+		default:
+			break;
+		}
+		accessories_texture.render(754, 166, &accessories_clips[4], 0, NULL, SDL_FLIP_NONE, 2.5);
+		accessories_texture.render(805, 168, &accessories_clips[5], 0, NULL, SDL_FLIP_NONE, 2.5);
 	}
+	
 
 	if (pocketNumber > 0 && pocketNumber < 11)
 	{
@@ -229,6 +268,10 @@ void pocket::mainPocketRender()
 				SDL_Rect* currentPocketClip = &weapon_clips[pocketData[0][p] - 400];
 				weapon_texture.render(20 + 50 * (p % 10) + 9, 20 + 50 * (p / 10 - 1) + 9, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 3);
 			}
+			if (pocketData[1][p] && pocketData[0][p] > 700 && pocketData[0][p] <= 800)
+			{
+				accessories_texture.render(20 + 50 * (p % 10) + 5, 20 + 50 * (p / 10 - 1) + 7, &accessories_clips[pocketData[0][p] - 701], 0, NULL, SDL_FLIP_NONE, 2.5);
+			}
 		}
 		for (int i = 0; i < 3; i++)
 		{
@@ -250,6 +293,7 @@ void pocket::mainPocketRender()
 				SDL_Rect* currentmaterialClip = &weapon_clips[materialData[0][i] - 400];
 				weapon_texture.render(20 + 50 * i + 9, 235, currentmaterialClip, 0, NULL, SDL_FLIP_NONE, 3);
 			}
+			
 		}
 		for (int i = 0; i < 6; i++)
 		{
@@ -323,6 +367,13 @@ void pocket::mainPocketRender()
 				mouseState = SDL_GetMouseState(&mouseX, &mouseY);
 				SDL_Rect* currentPocketClip = &weapon_clips[IDWithMouse - 400];
 				weapon_texture.render(mouseX, mouseY, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 3);
+			}
+			else if (IDWithMouse > 700 && IDWithMouse <= 800)
+			{
+				int mouseX, mouseY, mouseState;
+				mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+				SDL_Rect* currentPocketClip = &accessories_clips[IDWithMouse - 701];
+				accessories_texture.render(mouseX, mouseY, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 2.5);
 			}
 		}
 	}
@@ -483,6 +534,8 @@ void pocket::handlePocketEvents(SDL_Event e)
 			{
 				pocketData[0][posInPocket - 1] = IDWithMouse;
 				pocketData[1][posInPocket - 1] = numWithMouse;
+				numWithMouse = 0;
+				IDWithMouse = 0;
 				isTakenUp = 0;
 			}
 		}
@@ -547,13 +600,14 @@ void pocket::handlePocketEvents(SDL_Event e)
 			{
 				pocketData[0][posInPocket - 1] = IDWithMouse;
 				pocketData[1][posInPocket - 1] = numWithMouse;
+				numWithMouse = 0;
+				IDWithMouse = 0;
 				isTakenUp = 0;
 			}
 		}
 		if (mouseX > 20 && mouseX < 170 && mouseY>220 && mouseY < 270 && mouseState == 1)
 		{
 			materialPos = (mouseX - 20) / 50;
-			printf("material %d\n", materialPos);
 			if (materialData[1][materialPos] && !isTakenUp)
 			{
 				isTakenUp = 1;
@@ -623,8 +677,31 @@ void pocket::handlePocketEvents(SDL_Event e)
 
 		if (mouseX > 700 && mouseX < 850 && mouseY>160 && mouseY < 210 && mouseState == 1)
 		{
+			
 			accessoriesPos = (mouseX - 700) / 50;
-			printf("accessories %d\n", accessoriesPos);
+			if (accessoriesPos == 0 && accessories==0 && IDWithMouse > 700&&numWithMouse)
+			{
+				accessories = IDWithMouse - 700;
+				IDWithMouse = 0;
+				numWithMouse = 0;
+				isTakenUp = 0;
+				
+			}
+			else if (accessoriesPos == 0 && accessories && IDWithMouse == 0&&numWithMouse==0)
+			{
+				IDWithMouse = accessories + 700;
+				numWithMouse = 1;
+				accessories = 0;
+				isTakenUp = 1;
+			}
+			else if (accessoriesPos == 0 && accessories && IDWithMouse&&numWithMouse)
+			{
+				int temp = accessories+700;
+				accessories = IDWithMouse - 700;
+				IDWithMouse = temp;
+				numWithMouse = 1;
+				isTakenUp = 1;
+			}
 		}
 	}
 }
@@ -648,7 +725,7 @@ extern Item itemList[500];
 
 void pocket::pocketUpdate()
 {
-	player.currentItem = itemList[pocketData[pocketNumber - 1][0]];
+	player.currentItem = itemList[pocketData[0][pocketNumber - 1]];
 	for (int i = 0; i < 40; i++)
 	{
 		if (pocketData[0][i] == 0 || pocketData[1][i] == 0)

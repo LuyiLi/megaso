@@ -150,11 +150,20 @@ public:
 	//const int standing_frames = 6;
 	SDL_Rect slime_stand_clips[6];
 	LTexture slime_standing_texture;
+	LTexture slime_standing_texture_blue;
+	LTexture slime_standing_texture_green;
+	LTexture slime_standing_texture_red;
 	/*����״̬ͼ����Ƭ*/
 	//const int walking_frames = 4;
 	SDL_Rect slime_walk_clips[4];
 	LTexture slime_walking_texture;
+	LTexture slime_walking_texture_blue;
+	LTexture slime_walking_texture_green;
+	LTexture slime_walking_texture_red;
 
 	SDL_Rect slime_stand_side_clips[6];
 	LTexture slime_standing_side_texture;
+	LTexture slime_standing_side_texture_blue;
+	LTexture slime_standing_side_texture_green;
+	LTexture slime_standing_side_texture_red;
 };
