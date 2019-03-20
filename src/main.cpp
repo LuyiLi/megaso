@@ -107,7 +107,7 @@ int pocketNumber = 1;
 int prevPocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
-int target[4] = {2500,0,100};
+int target[23] = {82500,3000,100, 0, 255,255,255,255,255,255};
 int bgIsChanging=0;
 int mouseX, mouseY, mouseState;
 int crackFlag;
@@ -171,6 +171,15 @@ bool init()
 	player.mCollider.x = target[0];
 	player.mCollider.y = target[1];
 	player.healthPoint = target[2];
+	worldTime = target[3];
+	for (int i = 4; i < 7; i++)
+	{
+		mainMap.bgColor[i-4] = target[i];
+	}
+	for (int i = 7; i < 10; i++)
+	{
+		mainMap.frontBgColor[i - 7] = target[i];
+	}
 	//Initialize currentItem
 	player.currentItem = itemList[mainPocket.pocketData[pocketNumber - 1][0]];
 	//Initialize SDL
@@ -352,10 +361,19 @@ bool loadMedia()
 void close()
 {
 	//Saving last position into saving.txt
-	int data[4] = {0};
+	int data[23] = {0};
 	data[0] = player.mCollider.x;
 	data[1] = player.mCollider.y;
 	data[2] = player.healthPoint;
+	data[3] = worldTime;
+	for (int i = 4; i < 7; i++)
+	{
+		data[i] = mainMap.bgColor[i - 4];
+	}
+	for (int i = 7; i < 10; i++)
+	{
+		data[i] = mainMap.frontBgColor[i - 7];
+	}
 	savingControler.fileWrite(data);
 
 	//Saving last map condition into map.txt
@@ -386,7 +404,6 @@ Uint32 renderBgChangeCallback(Uint32 interval, void* param)
 	}
 	return 0;
 }
-
 
 Uint32 callback(Uint32 interval, void* param)
 {
@@ -420,18 +437,33 @@ Uint32 callback(Uint32 interval, void* param)
 	}
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
-
-	mainMap.renderBg(currentBiome, targetState);
-	mainMap.renderWall(deltaX, deltaY);
-	mainMap.render(deltaX, deltaY);
-	
-
-	//3 Clips for crack effects
 	SDL_Rect* crackClip1 = &crack_clips[0];
 	SDL_Rect* crackClip2 = &crack_clips[1];
 	SDL_Rect* crackClip3 = &crack_clips[2];
 
-	if (crackFlag && mainMap.mapData[blockMouseY][blockMouseX]&& abs(blockMouseX - player.blockPosX) + abs(blockMouseY - player.blockPosY) <= 4 && (!mainMap.mapData[blockMouseY + 1][blockMouseX] || !mainMap.mapData[blockMouseY][blockMouseX + 1] || !mainMap.mapData[blockMouseY - 1][blockMouseX] || !mainMap.mapData[blockMouseY][blockMouseX - 1]))
+
+
+	mainMap.renderBg(currentBiome, targetState);
+	mainMap.renderWall(deltaX, deltaY);
+
+	if (crackFlag && mainMap.wallData[blockMouseY][blockMouseX] && abs(blockMouseX - player.blockPosX) + abs(blockMouseY - player.blockPosY) <= 4 && mainPocket.pocketData[0][pocketNumber - 1] == 305)
+	{
+		switch (crackFlag)
+		{
+		case 1:crack_texture.render(blockMouseX*(33) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip1, 0, NULL, SDL_FLIP_NONE, 3); break;
+		case 2:crack_texture.render(blockMouseX*(100 / 3) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip2, 0, NULL, SDL_FLIP_NONE, 3); break;
+		case 3:crack_texture.render(blockMouseX*(100 / 3) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 3); break;
+		}
+	}
+
+	mainMap.render(deltaX, deltaY);
+	
+
+	//3 Clips for crack effects
+
+	if (crackFlag && mainMap.mapData[blockMouseY][blockMouseX]&& abs(blockMouseX - player.blockPosX) + abs(blockMouseY - player.blockPosY) <= 4 
+		&& (!mainMap.mapData[blockMouseY + 1][blockMouseX] || !mainMap.mapData[blockMouseY][blockMouseX + 1] || !mainMap.mapData[blockMouseY - 1][blockMouseX] || !mainMap.mapData[blockMouseY][blockMouseX - 1])
+		&& mainPocket.pocketData[0][pocketNumber - 1] != 305 && mainPocket.pocketData[0][pocketNumber - 1] != 306 && mainPocket.pocketData[0][pocketNumber - 1] != 307)
 	{
 		switch (crackFlag)
 		{
@@ -663,7 +695,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 				player.currentAngle = -60;
 			}
 			//If the mouse is on the same place
-			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY&&mainPocket.pocketData[0][pocketNumber-1]>300&& mainPocket.pocketData[0][pocketNumber - 1] <= 400)
+			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY && mainPocket.pocketData[0][pocketNumber - 1] > 300 && mainPocket.pocketData[0][pocketNumber - 1] <= 400 && mainPocket.pocketData[0][pocketNumber - 1] != 305 && mainPocket.pocketData[0][pocketNumber - 1] != 306 && mainPocket.pocketData[0][pocketNumber - 1] != 307)
 			{
 				//Break the block if time is enough
 				if (flag == 40)
@@ -678,36 +710,71 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 					//update dropped item's collision box
 					for (int i = 0; i < 200; i++)
 						droppedItemList[i].updateCollisionBox();
-					
+
 					//Reset flags to 0
 					flag = 0;
 					crackFlag = 0;
-					
+
 					//Timer set
 					SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 					return 0;
 				}
-				
+
 				// block is not broken if time is not enough
 				crackFlag = flag / 10;
 				flag++;
-				
+
 				//Timer set
 				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 				return 0;
 			}
-			
-			//If the mouse moved to another block
-			flag = 0;
-			crackFlag = 0;
-			prevBlockMouseX = blockMouseX;
-			prevBlockMouseY = blockMouseY;
+			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY && mainPocket.pocketData[0][pocketNumber - 1] == 305)
+			{
+				printf("using\n");
+				//Break the block if time is enough
+				if (flag == 40)
+				{
+					//Break a block in the map
+					mainMap.breakWall(blockMouseX, blockMouseY);
+					//Update the CollisionBox of the block
+					player.updateCollisionBox();
+					//Add the block into pocket
+					mainPocket.pocketUpdate();
 
-			//Timer set
-			SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
-			return 0;
+					//update dropped item's collision box
+					for (int i = 0; i < 200; i++)
+						droppedItemList[i].updateCollisionBox();
+
+					//Reset flags to 0
+					flag = 0;
+					crackFlag = 0;
+
+					//Timer set
+					SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
+					return 0;
+				}
+				// block is not broken if time is not enough
+				crackFlag = flag / 10;
+				flag++;
+				printf("cut tree");
+				//Timer set
+				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
+				return 0;
+			}
 		}
-		else if (mouseState == 4 && mainPocket.pocketData[0][pocketNumber - 1] <= 300)
+
+		//If the mouse moved to another block
+		flag = 0;
+		crackFlag = 0;
+		prevBlockMouseX = blockMouseX;
+		prevBlockMouseY = blockMouseY;
+
+		//Timer set
+		SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
+		return 0;
+		}
+	
+		else if (mouseState == 4 && mainPocket.pocketData[0][pocketNumber - 1] <= 100)
 		{
 			//keep putting things on the floor
 			if (mainPocket.pocketData[1][pocketNumber - 1])
@@ -737,6 +804,36 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 				return 0;
 			}
 		}
+		else if (mouseState == 4 && mainPocket.pocketData[0][pocketNumber - 1] <= 200)
+		{
+			//keep putting things on the floor
+			if (mainPocket.pocketData[1][pocketNumber - 1])
+			{
+				if (angleForBlock < 70)
+				{
+					angleForBlock += 4;
+				}
+				else
+				{
+					angleForBlock = 0;
+				}
+
+				//mainMap.putBlock(blockMouseX, blockMouseY, pocketNumber);
+				mainMap.putWall (blockMouseX, blockMouseY, mainPocket.pocketData[0][pocketNumber - 1]);
+
+				player.updateCollisionBox();
+				prevBlockMouseX = blockMouseX;
+				prevBlockMouseY = blockMouseY;
+				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
+				return 0;
+			}
+			else
+			{
+				//TImer set
+				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
+				return 0;
+			}
+		}
 		else if (!mouseState)
 		{
 			angleForBlock = 0;
@@ -745,7 +842,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 			return 0;
 		}
 		
-	}
+	
 	flag = 0;
 	crackFlag = 0;
 	prevMouseState = mouseState;
@@ -754,7 +851,6 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 
 	//SDL_TimerID mouseTimer = SDL_AddTimer(10, mouseTimerCallback, (void*)mouseState);
 }
-
 
 Uint32 mainMapUpdate(Uint32 interval, void* param)
 {
@@ -783,31 +879,35 @@ int main(int argc, char* args[])
 			{
 				while (SDL_PollEvent(&e) != 0)
 				{
-					if (e.key.keysym.sym == SDLK_x)
+					if (e.type == SDL_KEYDOWN)
 					{
-						for (int i = 0; i < 10; i++)
+						if (e.key.keysym.sym == SDLK_x)
 						{
-							if (!(enemyList[i].isAlive))
+							for (int i = 0; i < 10; i++)
 							{
-								enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[1]);
-								break;
+								if (!(enemyList[i].isAlive))
+								{
+									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[1]);
+									break;
+								}
 							}
 						}
-					}
-					if (e.key.keysym.sym == SDLK_f)
-					{
-						if (player.magicPoint > 12)
+						if (e.key.keysym.sym == SDLK_f)
 						{
-							if (projectileReady)
+							if (player.magicPoint > 12)
 							{
-								projectileReady = false;
-								SDL_GetMouseState(&mouseX, &mouseY);
-								player.magicPoint -= 12;
-								projectile.create(player.posX, player.posY, mouseX, mouseY, mainPocket.accessories);
-							}
+								if (projectileReady)
+								{
+									projectileReady = false;
+									SDL_GetMouseState(&mouseX, &mouseY);
+									player.magicPoint -= 12;
+									projectile.create(player.posX, player.posY, mouseX, mouseY, mainPocket.accessories);
+								}
 							
+							}
 						}
 					}
+					
 					//User requests quit
 					if (e.type == SDL_QUIT)
 					{

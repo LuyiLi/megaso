@@ -61,7 +61,7 @@ bool Map::loadTexture()
 
 	if (wall_texture.loadFromFile("images/wall.png"))
 	{
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			wall_clips[i].x = i * 100;
 			wall_clips[i].y = 0;
@@ -237,7 +237,27 @@ void Map::renderWall(int deltaX, int deltaY)
 			{
 				lightPoint[num].x = i - player.blockPosX + 20;
 				lightPoint[num].y = j - player.blockPosY + 20;
-				lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
+				if (worldTime >= 0 && worldTime < 600)
+				{
+					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
+				}
+				else if (worldTime < 650)
+				{
+					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255 - (worldTime - 600) * 4;
+				}
+				else if (worldTime >= 650 && worldTime < 1150)
+				{
+					lightBlock[lightPoint[num].x][lightPoint[num].y] = 55;
+				}
+				else if (worldTime >= 1150)
+				{
+					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255 + (worldTime - 1200) * 4;
+				}
+				else
+				{
+					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
+				}
+
 				if (mapData[j + 1][i] || mapData[j - 1][i] || mapData[j][i + 1] || mapData[j][i - 1]|| wallData[j + 1][i] || wallData[j - 1][i] || wallData[j][i + 1] || wallData[j][i - 1])
 				{
 					calculateLight(lightPoint[num].x, lightPoint[num].y);
@@ -354,7 +374,7 @@ void Map::generateBiome()
 	int i = 0;
 	while (currentBlockNumber < xBlockNumber)
 	{
-		temp = 200 + 400 * random01();
+		temp = 200 + 200 * random01();
 		groundBiomes[i].biomeRange.x = currentBlockNumber;
 		groundBiomes[i].biomeRange.y = 0;
 		groundBiomes[i].biomeRange.h = 200;
@@ -381,7 +401,7 @@ void Map::generateBiome()
 			break;
 		}
 		if (currentBlockNumber < 2500 && currentBlockNumber + temp >2500)
-			groundBiomes[i].biomeType = GROUND_BIOME_PLAIN;
+			groundBiomes[i].biomeType = GROUND_BIOME_VOCANIC;
 		currentBlockNumber += temp;
 		i++;
 	}
@@ -396,8 +416,21 @@ void Map::generateGroundSurface()
 	float a = 0, v = 0, y = 150;
 	int x = 1, i = 0;
 	int currentSurfaceBlockID = 1;
-	if (groundBiomes[i].biomeType == GROUND_BIOME_DESERT)
+	switch (groundBiomes[i].biomeType)
+	{
+	case GROUND_BIOME_DESERT:
 		currentSurfaceBlockID = 13;
+		break;
+	case GROUND_BIOME_VOCANIC:
+		currentSurfaceBlockID = 29;
+		break;
+	case GROUND_BIOME_SNOWLAND:
+		currentSurfaceBlockID = 27;
+		break;
+	default:
+		currentSurfaceBlockID = 1;
+		break;
+	}
 	while (x < xBlockNumber)
 	{	
 		if (groundBiomes[i].biomeType == GROUND_BIOME_NULL)
@@ -443,10 +476,7 @@ void Map::generateGroundSurface()
 					y += v;
 					break;
 				}
-				if (groundBiomes[i].biomeType == GROUND_BIOME_DESERT)
-					mapData[(int)y][x] = currentSurfaceBlockID;
-				else
-					mapData[(int)y][x] = currentSurfaceBlockID;
+				mapData[(int)y][x] = currentSurfaceBlockID;
 				wallData[(int)y][x] = 101;
 				//flatten the ground
 				if (mapData[(int)y][x - 3])
@@ -482,11 +512,22 @@ void Map::generateGroundSurface()
 			}
 		}
 		i++;
-
-		if (groundBiomes[i].biomeType == GROUND_BIOME_DESERT)
+		switch (groundBiomes[i].biomeType)
+		{
+		case GROUND_BIOME_DESERT:
 			currentSurfaceBlockID = 13;
-		else
+			break;
+		case GROUND_BIOME_VOCANIC:
+			currentSurfaceBlockID = 29;
+			break;
+		case GROUND_BIOME_SNOWLAND:
+			currentSurfaceBlockID = 27;
+			break;
+		default:
 			currentSurfaceBlockID = 1;
+			break;
+
+		}
 	}
 }
 
@@ -511,10 +552,21 @@ void Map::generateRockSurface()
 		tempY = (int)(temp / 9 + 40);
 		for (int k = tempY; !mapData[k][i]; k--)
 		{
-			if (groundBiomes[currentBiomeNum].biomeType == GROUND_BIOME_DESERT)
+			switch (groundBiomes[currentBiomeNum].biomeType)
+			{
+			case GROUND_BIOME_DESERT:
 				mapData[k][i] = 13;
-			else
+				break;
+			case GROUND_BIOME_VOCANIC:
+				mapData[k][i] = 30;
+				break;
+			case GROUND_BIOME_SNOWLAND:
+				mapData[k][i] = 28;
+				break;
+			default:
 				mapData[k][i] = 2;
+				break;
+			}
 			wallData[k][i] = 101;
 		}
 
@@ -558,7 +610,7 @@ void Map::generateCave()
 	for (int i = 0; i < 50; i++)
 	{
 		int x = 200 + random01() * (xBlockNumber - 400);
-		int y = 200 + random01() * (yBlockNumber - 300);
+		int y = 200 + random01() * (yBlockNumber - 400);
 		float ax, ay, vx = 0, vy = 0;
 		int rBase = random01() * 2 + 2;
 		for (int j = 0; j < 300; j++)
@@ -571,6 +623,10 @@ void Map::generateCave()
 				vy += 0.5;
 			if (y > yBlockNumber - 100)
 				vy -= 0.5;
+			if (x < 100)
+				vx += 1;
+			if (x > xBlockNumber - 100)
+				vx -= 1;
 			y += vy;
 			if (abs(vx) > 2)
 				x += vx;
@@ -607,14 +663,14 @@ int Map::calculateTreeGenerationRate(GroundBiomeTypes biomeType)
 {
 	switch (biomeType)
 	{
-	case GROUND_BIOME_PLAIN:case GROUND_BIOME_SNOWLAND:
+	case GROUND_BIOME_PLAIN:case GROUND_BIOME_SNOWLAND:case GROUND_BIOME_VOCANIC:
 		return 1;
 		break;
-	case GROUND_BIOME_DESERT:case GROUND_BIOME_VOCANIC:
+	case GROUND_BIOME_DESERT:
 		return 0;
 		break;
 	case GROUND_BIOME_MOUNTAIN:
-		return 3;
+		return 2;
 		break;
 	case GROUND_BIOME_FOREST:
 		return 6;
@@ -830,11 +886,28 @@ void Map::biomeRead()
 	}
 }
 
-void Map::plantTree(int x, int y, GroundBiomeTypes)
+void Map::plantTree(int x, int y, GroundBiomeTypes biomeType)
 {
+	
 	int leafID = 105, trunkID = 104;
+	switch (biomeType)
+	{
+	case GROUND_BIOME_VOCANIC:
+		trunkID = random01() * 2 <= 1 ? 106 : 108;
+		break;
+	case GROUND_BIOME_MOUNTAIN:
+		trunkID = random01() * 10 <= 1 ? 106 : 104;
+		break;
+	case GROUND_BIOME_SNOWLAND:
+		trunkID = 110;
+		break;
+	default:
+		trunkID = 104;
+		break;
+	}
+	leafID = trunkID + 1;
 	int treeHeight = random01() * 6 + 7;
-	if (y < 30 || mapData[y][x] != 1)
+	if (y < 30 || (mapData[y][x] != 1 && mapData[y][x] != 27) && mapData[y][x] != 29)
 		return;
 	//check if it is possible to plant trees
 	for (int i = x - 3; i <= x + 3; i++)
@@ -868,7 +941,7 @@ void Map::plantTree(int x, int y, GroundBiomeTypes)
 			wallData[y - i][x] = trunkID;
 		break;
 	}
-	mapData[y][x] = 2;
+	mapData[y][x]++;
 }
 
 void Map::breakBlock(int x, int y)
