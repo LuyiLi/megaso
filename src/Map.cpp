@@ -20,8 +20,10 @@ int preBgAlpha = 255;
 int tarBgAlpha = 0;
 
 double starAlpha = 0;
-double sunAngle=315;
-double moonAngle=315;
+double sunAngle=300;
+double moonAngle=300;
+double sunAlpha = 0;
+double moonAlpha = 0;
 SDL_Point skyCenter;
 
 
@@ -1024,7 +1026,9 @@ void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 	//printf("%lf %lf\n", sunAngle, moonAngle);
 	star_texture.setAlpha(starAlpha);
 	star_texture.render(0, 0, star_clips, 0, NULL, SDL_FLIP_NONE, 2);
+	sun_texture.setAlpha(sunAlpha);
 	sun_texture.render(0, 10, sun_clips, sunAngle, &skyCenter, SDL_FLIP_NONE, 2);
+	moon_texture.setAlpha(moonAlpha);
 	moon_texture.render(0, 10, moon_clips, moonAngle, &skyCenter, SDL_FLIP_NONE, 2);
 	////////////////////////////////////////////////////////////////////////
 
@@ -1136,6 +1140,15 @@ void Map::countFrontBgColor()
 {
 	if (worldTime >= 600)
 	{
+		if (moonAlpha < 255&&worldTime<900)
+		{
+			moonAlpha += 5;
+		}
+		if (moonAlpha > 0 && worldTime > 1148)
+		{
+			moonAlpha -= 5;
+		}
+		
 		moonAngle = (80.0 / 600.0)*(worldTime-600) + 320;
 		if (worldTime < 900)
 		{
@@ -1148,17 +1161,27 @@ void Map::countFrontBgColor()
 	}
 	else
 	{
-		moonAngle = 300;
+		moonAlpha = 0;
+		moonAngle = 270;
 		starAlpha = 0;
 	}
 	if (worldTime<600)
 	{
+		if (worldTime < 200 && sunAlpha < 255)
+		{
+			sunAlpha += 5;
+		}
+		if (worldTime > 548&&sunAlpha>0)
+		{
+			sunAlpha -= 5;
+		}
 		sunAngle = (80.0 / 600.0)*(worldTime) + 320;
 		starAlpha = 0;
 	}
 	else
 	{
-		sunAngle = 300;
+		sunAlpha = 0;
+		sunAngle = 270;
 	}
 	if (worldTime >= 600)
 	{
