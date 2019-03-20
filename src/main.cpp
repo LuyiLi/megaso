@@ -803,7 +803,7 @@ int main(int argc, char* args[])
 								projectileReady = false;
 								SDL_GetMouseState(&mouseX, &mouseY);
 								player.magicPoint -= 12;
-								projectile.create(player.posX, player.posY, mouseX, mouseY);
+								projectile.create(player.posX, player.posY, mouseX, mouseY, mainPocket.accessories);
 							}
 							
 						}

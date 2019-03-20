@@ -141,7 +141,6 @@ void Projectile::moveAction(int deltaX, int deltaY)
 		default:
 			break;
 		}
-		projectile_texture.render((posX + deltaX), (posY + deltaY), &projectile_clips[0], 0, NULL, SDL_FLIP_NONE, 2);
 	}
 }
 

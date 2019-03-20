@@ -18,7 +18,7 @@ public:
 	bool isExitsting;
 	int existTime;
 	int time;
-
+	int color;
 	SDL_Rect rectArray[16];
 
 	//Maximum axis velocity of the Projectile
