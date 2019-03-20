@@ -15,11 +15,13 @@ extern bool intersect(SDL_Rect, SDL_Rect);
 extern droppedItem droppedItemList[200];
 extern Item itemList[100];
 extern pocket mainPocket;
+//set the time
 extern int worldTime;
+//set transparency
 int preBgAlpha = 255;
 int tarBgAlpha = 0;
-
 double starAlpha = 0;
+//the item's angle when moving
 double sunAngle=300;
 double moonAngle=300;
 double sunAlpha = 0;
@@ -35,9 +37,12 @@ Map::Map()
 	int scroll[6] = { 0 };
 	int mapData[yBlockNumber][xBlockNumber] = { 0 };
 	int wallData[yBlockNumber][xBlockNumber] = { 0 };
+	//the output of the red(0) channel ,green(1) channel, blue(2) channel is full
+	//bg is the last picture of the background
 	bgColor[0] = 255;
 	bgColor[1] = 255;
 	bgColor[2] = 255;
+	//all the background picture which is not bg, is fronBg
 	frontBgColor[0] = 255;
 	frontBgColor[1] = 255;
 	frontBgColor[2] = 255;
@@ -69,7 +74,7 @@ bool Map::loadTexture()
 			wall_clips[i].h = 100;
 		}
 	}
-
+	//load the sun picture
 	if (sun_texture.loadFromFile("images/sun.png"))
 	{
 		sun_clips[0].x = 0;
@@ -77,6 +82,7 @@ bool Map::loadTexture()
 		sun_clips[0].w = 1800;
 		sun_clips[0].h = 1200;
 	}
+	//load the moon picture
 	if (moon_texture.loadFromFile("images/moon.png"))
 	{
 		moon_clips[0].x = 0;
@@ -84,6 +90,7 @@ bool Map::loadTexture()
 		moon_clips[0].w = 1800;
 		moon_clips[0].h = 1200;
 	}
+	//load the sun picture
 	if (star_texture.loadFromFile("images/stars.png"))
 	{
 		star_clips[0].x = 0;
@@ -91,8 +98,7 @@ bool Map::loadTexture()
 		star_clips[0].w = 1800;
 		star_clips[0].h = 1200;
 	}
-
-
+	//load the different biome backgrounds
 	if (bg_texture[GROUND_BIOME_PLAIN][5].loadFromFile("images/plain1.png") && bg_texture[GROUND_BIOME_PLAIN][4].loadFromFile("images/plain2.png") && bg_texture[GROUND_BIOME_PLAIN][3].loadFromFile("images/plain3.png")
 		&& bg_texture[GROUND_BIOME_PLAIN][2].loadFromFile("images/plain4.png") && bg_texture[GROUND_BIOME_PLAIN][1].loadFromFile("images/plain5.png") && bg_texture[GROUND_BIOME_PLAIN][0].loadFromFile("images/plain6.png")
 		&& bg_texture[GROUND_BIOME_FOREST][5].loadFromFile("images/forest1.png") && bg_texture[GROUND_BIOME_FOREST][4].loadFromFile("images/forest2.png") && bg_texture[GROUND_BIOME_FOREST][3].loadFromFile("images/forest3.png")
@@ -131,6 +137,7 @@ void Map::render(int deltaX, int deltaY)
 	int beginY = (player.blockPosY-20) * (33);
 	int endX = (player.blockPosX) * (33);
 	int endY = (player.blockPosY) * (33);
+	//render the 20 block around the player
 	for (int i = player.blockPosY-20; i < player.blockPosY+20; i++)
 	{
 		for (int j = player.blockPosX-20; j < player.blockPosX+20; j++)
@@ -152,10 +159,13 @@ void Map::render(int deltaX, int deltaY)
 	
 }
 
+//calculate the effect of light
 void Map::calculateLight(int x, int y)
 {
+	//the value of the light across the block
 	int lightValue = lightBlock[x][y] / 1.3;
 	int diagonalLightValue = lightBlock[x][y] / 1.5;
+	//the value of the light across the air
 	int airLightValue = lightBlock[x][y] / 1.1;
 	int diagonalAirLightValue = lightBlock[x][y] / 1.15;
 
@@ -163,21 +173,25 @@ void Map::calculateLight(int x, int y)
 		return;
 	}
 
+	//the left boundary when the light spreads
 	if (x - 1 < 0)
 		return;
-
+	//the gradual decreasing light
 	if (lightValue > lightBlock[x - 1][y]) {
 		lightBlock[x - 1][y] = mapData[y + player.blockPosY - 20][x + player.blockPosX - 21] ? lightValue : airLightValue;
 		calculateLight(x - 1, y);
 	}
 
+	//the upward boundary
 	if (y - 1 < 0)
 			return;
 	if (lightValue > lightBlock[x][y - 1]) {
+		//judge if the surroundings are air or blocks
 		lightBlock[x][y - 1] = mapData[y + player.blockPosY - 21][x + player.blockPosX - 20] ? lightValue : airLightValue;
+		//calculate the next points's light effect(using recursion)
 		calculateLight(x, y - 1);
 	}
-
+	//the right boundary
 	if (x + 1 > 40)
 		return;
 	if (lightValue > lightBlock[x + 1][y]) {
@@ -185,6 +199,7 @@ void Map::calculateLight(int x, int y)
 		calculateLight(x + 1, y);
 	}
 
+	//the downward boundary
 	if (y + 1 > 40)
 		return;
 	if (lightValue > lightBlock[x][y + 1]) {
@@ -192,27 +207,32 @@ void Map::calculateLight(int x, int y)
 		calculateLight(x, y + 1);
 	}
 
+	//correct the diagonal light value in the direction of bottomright
 	if (diagonalLightValue > lightBlock[x + 1][y + 1]) {
 		lightBlock[x + 1][y + 1] = mapData[y + player.blockPosY - 19][x + player.blockPosX - 19] ? diagonalLightValue : diagonalAirLightValue;
 		calculateLight(x + 1, y + 1);
 	}
 
+	//correct the diagonal light value in the direction of bottomleft
 	if (diagonalLightValue > lightBlock[x - 1][y + 1]) {
 		lightBlock[x - 1][y + 1] = mapData[y + player.blockPosY - 19][x + player.blockPosX - 21] ? diagonalLightValue : diagonalAirLightValue;
 		calculateLight(x - 1, y + 1);
 	}
 
+	//correct the diagonal light value in the direction of topright
 	if (diagonalLightValue > lightBlock[x + 1][y - 1]) {
 		lightBlock[x + 1][y - 1] = mapData[y + player.blockPosY - 21][x + player.blockPosX - 19] ? diagonalLightValue : diagonalAirLightValue;
 		calculateLight(x + 1, y - 1);
 	}
 
+	//correct the diagonal light value in the direction of topleft
 	if (diagonalLightValue > lightBlock[x - 1][y - 1]) {
 		lightBlock[x - 1][y - 1] = mapData[y + player.blockPosY - 21][x + player.blockPosX - 21] ? diagonalLightValue : diagonalAirLightValue;
 		calculateLight(x - 1, y - 1);
 	}
 }
 
+//render the wall
 void Map::renderWall(int deltaX, int deltaY)
 {
 	//Do not touch the value below
@@ -229,6 +249,7 @@ void Map::renderWall(int deltaX, int deltaY)
 			lightBlock[i][j] = 0;
 		}
 	}
+	//light the wall
 	for (int i = player.blockPosX - 20; i < player.blockPosX + 20; i++)
 	{
 		for (int j = player.blockPosY - 20; j < player.blockPosY + 20; j++)
@@ -277,6 +298,7 @@ void Map::renderWall(int deltaX, int deltaY)
 	}
 }
 
+//check if the map.txt exists
 int Map::checkIfExist()
 {
 	FILE *fp;
@@ -292,6 +314,7 @@ int Map::checkIfExist()
 	}
 }
 
+//check if the wall.txt exists
 int Map::checkIfWallExist()
 {
 	FILE *fp;
@@ -307,6 +330,7 @@ int Map::checkIfWallExist()
 	}
 }
 
+//check if the biome.txt exists
 int Map::checkIfBiomeExist()
 {
 	FILE *fp;
@@ -324,6 +348,7 @@ int Map::checkIfBiomeExist()
 
 extern int pocketNumber;
 
+//draw a circle to create holes
 void Map::drawCircle(int x, int y, int r)
 {
 	if (x - r <= 0 || x + r >= xBlockNumber || y - r <= 0 || y + r >= yBlockNumber)
@@ -336,6 +361,7 @@ void Map::drawCircle(int x, int y, int r)
 		}
 }
 
+//generate maps
 void Map::generateMap()
 {
 	srand(time(NULL));
@@ -346,6 +372,7 @@ void Map::generateMap()
 	generateCave();
 	generateTrees();
 }
+
 
 void Map::generateBiome()
 {
@@ -359,6 +386,8 @@ void Map::generateBiome()
 		groundBiomes[i].biomeRange.y = 0;
 		groundBiomes[i].biomeRange.h = 200;
 		groundBiomes[i].biomeRange.w = currentBlockNumber + temp < xBlockNumber ? temp : xBlockNumber - currentBlockNumber;
+		//generate a biome at random
+		//the case is used to distinguish the rate of different biome map
 		switch ((int)(random01() * 14))
 		{
 		case 0:case 1:case 10:case 11:case 12:
@@ -391,6 +420,7 @@ void Map::generateBiome()
 	}
 }
 
+//
 void Map::generateGroundSurface()
 {
 	float a = 0, v = 0, y = 150;
