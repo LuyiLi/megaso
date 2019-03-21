@@ -588,7 +588,7 @@ void pocket::composingTableUpdate()
 	////////////////////////////////////////////////////////////
 	//需要两个块合成的物品
 	////////////////////////////////////////////////////////////
-	else if (sortedData[1][0]==0 && sortedData[1][1] && sortedData[1][2])
+	else if (sortedData[1][0] == 0 && sortedData[1][1] && sortedData[1][2])
 	{
 		//两个木棍合成一个火把
 		if (sortedData[0][0] == 0 && sortedData[0][1] == 207 && sortedData[0][2] == 207)
@@ -619,6 +619,21 @@ void pocket::composingTableUpdate()
 		if (sortedData[0][0] == 0 && sortedData[0][1] == 18 && sortedData[0][2] == 10)
 		{
 			craftData[0][0] = 205;
+		}
+		//一个黑宝石一个绿宝石合成一个蓝紫色饰品
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 201 && sortedData[0][2] == 204)
+		{
+			craftData[0][0] = 701;
+		}
+		//一个银宝石一个绿宝石合成一个黄绿色饰品
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 203 && sortedData[0][2] == 204)
+		{
+			craftData[0][0] = 702;
+		}
+		//一个金宝石一个红宝石合成一个金红色饰品
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 205 && sortedData[0][2] == 202)
+		{
+			craftData[0][0] = 703;
 		}
 	}
 	////////////////////////////////////////////////////////////
