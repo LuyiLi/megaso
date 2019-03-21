@@ -75,10 +75,10 @@ LTexture crack_texture;
 SDL_Rect dead_clips[1];
 LTexture dead_texture;
 
-SDL_Rect tool_clips[10];
+SDL_Rect tool_clips[23];
 LTexture tool_texture;
 
-SDL_Rect weapon_clips[6];
+SDL_Rect weapon_clips[23];
 LTexture weapon_texture;
 
 SDL_Rect hp_clips[2];
@@ -287,7 +287,7 @@ bool loadMedia()
 
 	if (tool_texture.loadFromFile("images/tools.png"))
 	{
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 23; i++)
 		{
 			tool_clips[i].x = 100 * i;
 			tool_clips[i].y = 0;
@@ -298,7 +298,7 @@ bool loadMedia()
 
 	if (weapon_texture.loadFromFile("images/weapons.png"))
 	{
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 23; i++)
 		{
 			weapon_clips[i].x = 100 * i;
 			weapon_clips[i].y = 0;
@@ -921,6 +921,39 @@ int main(int argc, char* args[])
 								if (!(enemyList[i].isAlive))
 								{
 									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[4]);
+									break;
+								}
+							}
+						}
+						if (e.key.keysym.sym == SDLK_n)
+						{
+							for (int i = 0; i < 10; i++)
+							{
+								if (!(enemyList[i].isAlive))
+								{
+									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[5]);
+									break;
+								}
+							}
+						}
+						if (e.key.keysym.sym == SDLK_m)
+						{
+							for (int i = 0; i < 10; i++)
+							{
+								if (!(enemyList[i].isAlive))
+								{
+									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[6]);
+									break;
+								}
+							}
+						}
+						if (e.key.keysym.sym == SDLK_z)
+						{
+							for (int i = 0; i < 10; i++)
+							{
+								if (!(enemyList[i].isAlive))
+								{
+									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[7]);
 									break;
 								}
 							}

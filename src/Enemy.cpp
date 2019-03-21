@@ -464,10 +464,11 @@ void Enemy::changeEnemyBehavior()
 			mVelY = -15;
 		}
 		break;
+
 	case AI_FLYING:
 		acceleration = player.mCollider.x - mCollider.x < 0 ? -1 : 1;
 		accelerationY = player.mCollider.y - mCollider.y < 100 ? -1 : 1;
-		
+
 		break;
 	case AI_PANGOLIN:
 		break;
@@ -475,6 +476,15 @@ void Enemy::changeEnemyBehavior()
 		acceleration = player.mCollider.x - mCollider.x < 0 ? -1 : 1;
 		accelerationY = player.mCollider.y - mCollider.y < 0 ? -1 : 1;
 	default:
+		break;
+
+	case AI_JUMP_WARRIOR:
+		acceleration = player.mCollider.x - mCollider.x < 0 ? -1 : 1;
+		if (canJump == true && !mVelX)
+		{
+			canJump = false;
+			mVelY = -20;
+		}
 		break;
 	}
 }
