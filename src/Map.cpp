@@ -990,13 +990,21 @@ void Map::breakBlock(int x, int y)
 
 void Map::breakWall(int x, int y)
 {
-	for (int i = 0; i < 200; i++)
-		if (droppedItemList[i].item.itemType == ITEM_NULL)
-		{
-			droppedItemList[i].create((33) * x + 15, (33) * y, itemList[wallData[y][x]]);
-			break;
-		}
+	if (wallData[y][x] > 109 || wallData[y][x] < 104)
+		return;
+	if (!(wallData[y][x] % 2))
+		for (int i = 0; i < 200; i++)
+			if (droppedItemList[i].item.itemType == ITEM_NULL)
+			{
+				droppedItemList[i].create((33) * x + 15, (33) * y, itemList[wallData[y][x]]);
+				break;
+			}
 	wallData[y][x] = 0;
+	breakWall(x - 1, y);
+	breakWall(x, y - 1);
+	breakWall(x + 1, y);
+	breakWall(x, y + 1);
+	
 
 }
 //put block into the map, reduce one from your pocket

@@ -15,7 +15,7 @@
 #include "global.h"
 #include <SDL_ttf.h>
 #include <cmath>
-#include"InitEnemyList.h"
+#include "InitEnemyList.h"
 #include "Projectile.h"
 /*
 				   _ooOoo_
