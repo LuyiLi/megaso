@@ -10,7 +10,7 @@ void initEnemyDataList()
 	enemyDataList[1].Enemy_WIDTH = 170;
 	enemyDataList[1].Enemy_HEIGHT = 152;
 	enemyDataList[1].healthLimit = 100;
-	enemyDataList[1].Enemy_VEL;
+	enemyDataList[1].Enemy_VEL=1;
 	enemyDataList[1].damage=10;
 	enemyDataList[1].AI = AI_WARRIOR;
 	strcpy_s(enemyDataList[1].texturePath1, "images/pangolin.png");
@@ -62,6 +62,34 @@ void initEnemyDataList()
 	strcpy_s(enemyDataList[4].texturePath1, "images/dragon.png");
 	strcpy_s(enemyDataList[4].enemyHpPath, "images/enemyHp.png");
 
+	enemyDataList[5].ID = 5;
+	enemyDataList[5].Enemy_WIDTH = 50;
+	enemyDataList[5].Enemy_HEIGHT = 50;
+	enemyDataList[5].healthLimit = 100;
+	enemyDataList[5].Enemy_VEL = 1;
+		
+	enemyDataList[5].damage = 20;
+	enemyDataList[5].AI = AI_WARRIOR;
+	enemyDataList[5].offsetX = 0;
+	enemyDataList[5].offsetY = 0;
+	enemyDataList[5].frame = 4;
+	enemyDataList[5].frameDelay = 5;
+	enemyDataList[5].enemyScale = 1;
+	strcpy_s(enemyDataList[5].texturePath1, "images/snowman.png");
+	strcpy_s(enemyDataList[5].enemyHpPath, "images/enemyHp.png");
 
-	
+	enemyDataList[6].ID = 6;
+	enemyDataList[6].Enemy_WIDTH = 50;
+	enemyDataList[6].Enemy_HEIGHT = 50;
+	enemyDataList[6].healthLimit = 100;
+	enemyDataList[6].Enemy_VEL = 1;
+	enemyDataList[6].damage = 20;
+	enemyDataList[6].AI = AI_WARRIOR;
+	enemyDataList[6].offsetX = 0;
+	enemyDataList[6].offsetY = -13;
+	enemyDataList[6].frame = 4;
+	enemyDataList[6].frameDelay = 5;
+	enemyDataList[6].enemyScale = 1;
+	strcpy_s(enemyDataList[6].texturePath1, "images/cactus.png");
+	strcpy_s(enemyDataList[6].enemyHpPath, "images/enemyHp.png");
 }

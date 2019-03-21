@@ -925,6 +925,28 @@ int main(int argc, char* args[])
 								}
 							}
 						}
+						if (e.key.keysym.sym == SDLK_n)
+						{
+							for (int i = 0; i < 10; i++)
+							{
+								if (!(enemyList[i].isAlive))
+								{
+									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[5]);
+									break;
+								}
+							}
+						}
+						if (e.key.keysym.sym == SDLK_m)
+						{
+							for (int i = 0; i < 10; i++)
+							{
+								if (!(enemyList[i].isAlive))
+								{
+									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[6]);
+									break;
+								}
+							}
+						}
 						if (e.key.keysym.sym == SDLK_f)
 						{
 							if (player.magicPoint > 12)
