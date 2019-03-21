@@ -21,11 +21,12 @@ bool EnemyData::loadTexture()
 		printf("Failed to load walking animation texture!\n");
 		return false;
 	}
-	if (!enemy_walking_texture[1].loadFromFile(texturePath2))
-	{
-		printf("Failed to load walking animation texture!\n");
-		return false;
-	}
+	if(texturePath2[0] != '\0')
+		if (!enemy_walking_texture[1].loadFromFile(texturePath2))
+		{
+			printf("Failed to load walking animation texture!\n");
+			return false;
+		}
 	if (!enemyHp_texture.loadFromFile(enemyHpPath))
 	{
 		printf("Failed to load walking animation texture!\n");

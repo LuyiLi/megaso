@@ -606,6 +606,16 @@ void pocket::composingTableUpdate()
 		{
 			craftData[0][0] = 208;
 		}
+		//两个木块一个木棍合成木剑
+		if (sortedData[0][0] == 207 && sortedData[0][1] == 208 && sortedData[0][2] == 208)
+		{
+			craftData[0][0] = 405;
+		}
+		//一个木块两个木棍合成木镐
+		if (sortedData[0][0] == 207 && sortedData[0][1] == 207 && sortedData[0][2] == 208)
+		{
+			craftData[0][0] = 303;
+		}
 	}
 	////////////////////////////////////////////////////////////
 	//不放物品时清空工作台
