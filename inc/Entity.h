@@ -44,6 +44,7 @@ public:
 	bool canJump;
 	bool canBeKnockedBack;
 	int acceleration;
+	int accelerationY;
 	bool isAlive;
 	int angle = 0;
 	int Enemy_VEL;
@@ -66,7 +67,7 @@ public:
 	bool checkCollision();
 	void getKilled();
 	void updateCollisionBox();
-
+	
 	//Shows the Enemy on the screen
 	void changeEnemyBehavior();
 

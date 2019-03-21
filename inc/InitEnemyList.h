@@ -12,6 +12,7 @@ void initEnemyDataList()
 	enemyDataList[1].healthLimit = 100;
 	enemyDataList[1].Enemy_VEL;
 	enemyDataList[1].damage;
+	enemyDataList[1].AI = AI_FLYING;
 	strcpy_s(enemyDataList[1].texturePath1, "images/pangolin.png");
 	strcpy_s(enemyDataList[1].texturePath2, "images/pangolin_1.png");
 	strcpy_s(enemyDataList[1].enemyHpPath, "images/enemyHp.png");
