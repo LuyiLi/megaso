@@ -5,7 +5,8 @@
 enum EnemyAI
 {
 	AI_WARRIOR,
-	AI_PANGOLIN
+	AI_PANGOLIN,
+	AI_FLYING
 };
 
 class EnemyData

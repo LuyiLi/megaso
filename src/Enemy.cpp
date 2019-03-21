@@ -100,10 +100,18 @@ void Enemy::move()
 	}
 	else
 	{
-		if (abs(mVelY) < 25)
-			mVelY += g;
-		if (mVelY > 5)
-			canJump = false;
+		if (enemyData->AI != AI_FLYING)
+		{
+			if (abs(mVelY) < 25)
+				mVelY += g;
+			if (mVelY > 5)
+				canJump = false;
+		}
+		else
+		{
+			if (abs(mVelY) < 10 || (mVelY == 10 && accelerationY < 0) || (mVelY == -10 && accelerationY > 0))
+				mVelY += accelerationY;
+		}
 	}
 	if (blockPosY != mCollider.y / 33 || blockPosX != mCollider.x / 33)
 	{
@@ -407,6 +415,11 @@ void Enemy::changeEnemyBehavior()
 			canJump = false;
 			mVelY = -15;
 		}
+		break;
+	case AI_FLYING:
+		acceleration = player.mCollider.x - mCollider.x < 0 ? -1 : 1;
+		accelerationY = player.mCollider.y - mCollider.y < 100 ? -1 : 1;
+		
 		break;
 	case AI_PANGOLIN:
 		break;
