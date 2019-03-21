@@ -100,7 +100,7 @@ void Enemy::move()
 	}
 	else
 	{
-		if (enemyData->AI != AI_FLYING)
+		if (enemyData->AI != AI_FLYING && enemyData->AI != AI_THROUGH_WALL)
 		{
 			if (abs(mVelY) < 25)
 				mVelY += g;
@@ -109,11 +109,11 @@ void Enemy::move()
 		}
 		else
 		{
-			if (abs(mVelY) < 10 || (mVelY == 10 && accelerationY < 0) || (mVelY == -10 && accelerationY > 0))
+			if (abs(mVelY) < Enemy_VEL || (mVelY >= Enemy_VEL && accelerationY < 0) || (mVelY <= -Enemy_VEL && accelerationY > 0))
 				mVelY += accelerationY;
 		}
 	}
-	if (blockPosY != mCollider.y / 33 || blockPosX != mCollider.x / 33)
+	if ((blockPosY != mCollider.y / 33 || blockPosX != mCollider.x / 33))
 	{
 		blockPosX = mCollider.x / 33;
 		blockPosY = mCollider.y / 33;
@@ -187,7 +187,8 @@ void Enemy::getKilled()
 
 bool Enemy::checkCollision()
 {
-	
+	if (enemyData->AI == AI_THROUGH_WALL)
+		return false;
 	for (int i = 0; i < 36; i++)
 	{
 		if (rectArray[i].x == 0 && rectArray[i].y == 0)
@@ -404,7 +405,7 @@ void Enemy::moveAction(int deltaX, int deltaY)
 
 		}
 	}
-	else if (enemyData->ID == 2)
+	else if (enemyData->ID >= 2)
 	{
 		int lightX = posX / 33 - player.blockPosX + 20;
 		int lightY = posY / 33 - player.blockPosY + 20;
@@ -413,11 +414,11 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		enemyData->enemy_walking_texture[1].setColor(light, light, light);
 		if (acceleration > 0)
 		{
-			mCollider.h = enemyData->Enemy_HEIGHT;
-			mCollider.w = enemyData->Enemy_WIDTH;
-			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame_walk / 10];
-			enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 1);
-			if ((frame_walk+1) / 10 == 2)
+			mCollider.h = enemyData->Enemy_HEIGHT/enemyData->enemyScale;
+			mCollider.w = enemyData->Enemy_WIDTH/enemyData->enemyScale;
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame_walk / enemyData->frameDelay];
+			enemyData->enemy_walking_texture[0].render((posX + deltaX+enemyData->offsetX), (-33 + posY + deltaY+enemyData->offsetY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, enemyData->enemyScale);
+			if ((frame_walk+1) / enemyData->frameDelay == enemyData->frame)
 			{
 				frame_walk = 0;
 			}
@@ -430,9 +431,9 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		{
 			mCollider.h = enemyData->Enemy_HEIGHT;
 			mCollider.w = enemyData->Enemy_WIDTH;
-			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame_walk / 10];
-			enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 1);
-			if (frame_walk / 10 == 2)
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame_walk /enemyData->frameDelay];
+			enemyData->enemy_walking_texture[0].render((posX + deltaX+enemyData->offsetX), (-33 + posY + deltaY+enemyData->offsetY), currentClip, 0, NULL, SDL_FLIP_NONE, enemyData->enemyScale);
+			if ((frame_walk+1) / enemyData->frameDelay == enemyData->frame)
 			{
 				frame_walk = 0;
 			}
@@ -470,6 +471,9 @@ void Enemy::changeEnemyBehavior()
 		break;
 	case AI_PANGOLIN:
 		break;
+	case AI_THROUGH_WALL:
+		acceleration = player.mCollider.x - mCollider.x < 0 ? -1 : 1;
+		accelerationY = player.mCollider.y - mCollider.y < 0 ? -1 : 1;
 	default:
 		break;
 	}
