@@ -590,10 +590,35 @@ void pocket::composingTableUpdate()
 	////////////////////////////////////////////////////////////
 	else if (sortedData[1][0]==0 && sortedData[1][1] && sortedData[1][2])
 	{
-		//剑合成
-		if (sortedData[0][0] == 0 && sortedData[0][1] == 4 && sortedData[0][2] == 7)
+		//两个木棍合成一个火把
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 207 && sortedData[0][2] == 207)
 		{
-			craftData[0][0] = 401;
+			craftData[0][0] = 307;
+		}
+		//一个银树一个黑矿合成一个黑宝石
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 16 && sortedData[0][2] == 12)
+		{
+			craftData[0][0] = 201;
+		}
+		//一个金树一个红矿合成一个红宝石
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 18 && sortedData[0][2] == 8)
+		{
+			craftData[0][0] = 202;
+		}
+		//一个银树一个银矿合成一个银宝石
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 16 && sortedData[0][2] == 9)
+		{
+			craftData[0][0] = 203;
+		}
+		//一个蓝树一个绿矿合成一个绿宝石
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 20 && sortedData[0][2] == 11)
+		{
+			craftData[0][0] = 204;
+		}
+		//一个金树一个金矿合成一个金宝石
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 18 && sortedData[0][2] == 10)
+		{
+			craftData[0][0] = 205;
 		}
 	}
 	////////////////////////////////////////////////////////////
@@ -615,6 +640,51 @@ void pocket::composingTableUpdate()
 		if (sortedData[0][0] == 207 && sortedData[0][1] == 207 && sortedData[0][2] == 208)
 		{
 			craftData[0][0] = 303;
+		}
+		//两个金树一个金矿合成一个金棍
+		if (sortedData[0][0] == 18 && sortedData[0][1] == 18 && sortedData[0][2] == 10)
+		{
+			craftData[0][0] = 209;
+		}
+		//两个蓝树一个绿矿合成一个蓝棍
+		if (sortedData[0][0] == 20 && sortedData[0][1] == 20 && sortedData[0][2] == 11)
+		{
+			craftData[0][0] = 210;
+		}
+		//一个蓝棍一个银矿一个银宝石合成一个银剑
+		if (sortedData[0][0] == 210 && sortedData[0][1] == 9 && sortedData[0][2] == 203)
+		{
+			craftData[0][0] = 404;
+		}
+		//一个金棍一个红矿一个红宝石合成一个红剑
+		if (sortedData[0][0] == 209 && sortedData[0][1] == 8 && sortedData[0][2] == 202)
+		{
+			craftData[0][0] = 403;
+		}
+		//一个金棍一个金矿一个金宝石合成一个金剑
+		if (sortedData[0][0] == 209 && sortedData[0][1] == 10 && sortedData[0][2] == 205)
+		{
+			craftData[0][0] = 402;
+		}
+		//一个火龙果一个银剑一个金剑合成一个宝剑
+		if (sortedData[0][0] == 212 && sortedData[0][1] == 404 && sortedData[0][2] == 402)
+		{
+			craftData[0][0] = 401;
+		}
+		//一个穿山甲鳞片一个银镐一个金镐合成一个神镐
+		if (sortedData[0][0] == 206 && sortedData[0][1] == 304 && sortedData[0][2] == 302)
+		{
+			craftData[0][0] = 301;
+		}
+		//两个金树一个金宝石合成一个金镐
+		if (sortedData[0][0] == 209 && sortedData[0][1] == 209 && sortedData[0][2] == 205)
+		{
+			craftData[0][0] = 302;
+		}
+		//两个蓝棍一个银宝石合成一个银镐
+		if (sortedData[0][0] == 210 && sortedData[0][1] == 210 && sortedData[0][2] == 203)
+		{
+			craftData[0][0] = 304;
 		}
 	}
 	////////////////////////////////////////////////////////////
