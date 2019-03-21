@@ -824,6 +824,7 @@ void Map::biomeRead()
 					negativeFlag = 0;
 					switch (n)
 					{
+						//store the biome size
 					case 0:
 						groundBiomes[m].biomeRange.x = targetNum; break;
 					case 1:
@@ -835,6 +836,7 @@ void Map::biomeRead()
 					case 4:
 						switch (targetNum)
 						{
+							//store the biometype
 						case 1:
 							groundBiomes[m].biomeType = GROUND_BIOME_PLAIN;
 							break;
@@ -1022,7 +1024,7 @@ void Map::wallWrite()
 	fclose(fp);
 }
 
-//write the 
+//write the biome info to biome.txt
 void Map::biomeWrite()
 {
 	FILE *fp;
@@ -1060,13 +1062,15 @@ void Map::biomeWrite()
 //render different bg
 void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 {
-	//6 different bg layers have different moving speeds
+	//6 different bg layer
 	scroll[0] -= player.mVelX / 6;
 	scroll[1] -= player.mVelX / 5;
 	scroll[2] -= player.mVelX / 4;
 	scroll[3] -= player.mVelX / 3;
 	scroll[4] -= player.mVelX / 2.5;
 	scroll[5] -= player.mVelX / 2;
+
+	//cycle the bg pic
 	for (int i = 0; i < 6; i++)
 	{
 		if (abs(scroll[i]) > 900)
@@ -1074,14 +1078,16 @@ void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 			scroll[i] = 0;
 		}
 	}
-	
+
+	//set the color of pre-background
 	bg_texture[pre][0].setColor(bgColor[0], bgColor[1], bgColor[2]);
 	bg_texture[pre][1].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
 	bg_texture[pre][2].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
 	bg_texture[pre][3].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
 	bg_texture[pre][4].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
 	bg_texture[pre][5].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
-
+	
+	//set the color of the target background
 	bg_texture[tar][0].setColor(bgColor[0], bgColor[1], bgColor[2]);
 	bg_texture[tar][1].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
 	bg_texture[tar][2].setColor(frontBgColor[0], frontBgColor[1], frontBgColor[2]);
@@ -1102,6 +1108,7 @@ void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 
 	////////////////////////////////////////////////////////////////////////
 	//printf("%lf %lf\n", sunAngle, moonAngle);
+	//render the sun star moon texture
 	star_texture.setAlpha(starAlpha);
 	star_texture.render(0, 0, star_clips, 0, NULL, SDL_FLIP_NONE, 2);
 	sun_texture.setAlpha(sunAlpha);
@@ -1110,6 +1117,7 @@ void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 	moon_texture.render(0, 10, moon_clips, moonAngle, &skyCenter, SDL_FLIP_NONE, 2);
 	////////////////////////////////////////////////////////////////////////
 
+	//render the pre and target pic.
 	for (int i = 1; i < 6; i++)
 	{
 		bg_texture[pre][i].setAlpha(preBgAlpha);
@@ -1124,6 +1132,7 @@ void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 	}
 }
 
+//render the changing pic. 
 int Map::renderBgChange(GroundBiomeTypes tar)
 {
 	for (int i = 0; i < 6; i++)
@@ -1148,6 +1157,7 @@ int Map::renderBgChange(GroundBiomeTypes tar)
 	}
 }
 
+//return the current biome
 GroundBiomeTypes Map::currentBiome(int presentPosX)
 {
 	for (int i = 0; i < 25; i++)
@@ -1160,9 +1170,11 @@ GroundBiomeTypes Map::currentBiome(int presentPosX)
 	return GROUND_BIOME_PLAIN;
 }
 
+//according to the time, change the light of the background pic.
 void Map::countBgColor()
 {
 	//printf("%d  %d %d %d\n", worldTime, bgColor[0], bgColor[1], bgColor[2]);
+	//during the night, decrease the light of these background
 	if (worldTime >= 600 && worldTime <= 650)
 	{
 		if (worldTime < 615)
@@ -1193,6 +1205,7 @@ void Map::countBgColor()
 			}
 		}
 	}
+	//during daytime , judge the bgcolor to become the lightest
 	if (worldTime > 0 && worldTime<600)
 	{
 		if(bgColor[0] < 253)
@@ -1214,6 +1227,7 @@ void Map::countBgColor()
 	//printf("%d %d %d ", bgColor[0], bgColor[1], bgColor[2]);
 }
 
+//according to the time, change the light of the front of background pic.
 void Map::countFrontBgColor()
 {
 	if (worldTime >= 600)
@@ -1237,12 +1251,14 @@ void Map::countFrontBgColor()
 			starAlpha = (255.0 / 300.0)*(1200 - worldTime);
 		}
 	}
+	//during the daytime , moon and star should not present
 	else
 	{
 		moonAlpha = 0;
 		moonAngle = 270;
 		starAlpha = 0;
 	}
+	//during the daytime, sun rises, and the light of sun changes as time goes.
 	if (worldTime<600)
 	{
 		if (worldTime < 200 && sunAlpha < 255)
@@ -1261,6 +1277,8 @@ void Map::countFrontBgColor()
 		sunAlpha = 0;
 		sunAngle = 270;
 	}
+
+	//the light of front bg color changes
 	if (worldTime >= 600)
 	{
 		if (worldTime <= 650)

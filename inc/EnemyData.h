@@ -5,7 +5,8 @@
 enum EnemyAI
 {
 	AI_WARRIOR,
-	AI_PANGOLIN
+	AI_PANGOLIN,
+	AI_FLYING
 };
 
 class EnemyData
@@ -20,10 +21,10 @@ public:
 	int healthLimit;
 	int Enemy_VEL;
 	int damage;
-	char texturePath1[30];
-	char texturePath2[30];
+	char texturePath1[30] = { '\0' };
+	char texturePath2[30] = { '\0' };
 	char enemyHpPath[30];
-	int dropID = 1;
+	int dropID = 206;
 	bool loadTexture();
 
 	//Shows the Enemy on the screen
