@@ -25,9 +25,9 @@ extern int pocketNumber;
 extern int isTakenUp;
 extern int IDWithMouse;
 extern int numWithMouse;
-extern SDL_Rect tool_clips[10];
+extern SDL_Rect tool_clips[23];
 extern LTexture tool_texture;
-extern SDL_Rect weapon_clips[6];
+extern SDL_Rect weapon_clips[23];
 extern LTexture weapon_texture;
 
 extern int posInPocket;
