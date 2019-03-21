@@ -30,7 +30,8 @@ Projectile::~Projectile()
 
 void Projectile::create(int x, int y, int mousePosX, int mousePosY, int accessories)
 {
-	if (!isExitsting)
+	//Only create when none exists in screen
+	if (!isExisting)
 	{
 		color = accessories;
 		mCollider.x = x + 20;
@@ -39,33 +40,36 @@ void Projectile::create(int x, int y, int mousePosX, int mousePosY, int accessor
 		posY = mCollider.y;
 		mVelX = (mousePosX - 450) / 8;
 		mVelY = (mousePosY - 300) / 8;
-		isExitsting = true;
+		isExisting = true;
 		existTime = 0;
 	}
 }
 
 void Projectile::move()
 {
-	if (isExitsting)
+	if (isExisting)
 	{
+		//Only fly for limited time, disappear when time is up
 		existTime++;
 		if (existTime > 15)
-			isExitsting = false;
+			isExisting = false;
+
 		mCollider.x += mVelX;
 		posX = mCollider.x - 10;
 
+		//If the Projectile collided in X-dimention
 		if (checkCollision())
 		{
-			isExitsting = false;
+			isExisting = false;
 		}
 
 		mCollider.y += mVelY;
 		posY = mCollider.y;
 
-		//If the Projectile collided
+		//If the Projectile collided in Y-dimention
 		if (checkCollision())
 		{
-			isExitsting = false;
+			isExisting = false;
 		}
 
 		if (blockPosY != mCollider.y / (33) || blockPosX != mCollider.x / (33))
@@ -89,10 +93,12 @@ bool Projectile::checkCollision()
 	}
 	if (mCollider.x <= 0 || mCollider.x >= 165000)
 	{
+		//Consider flying out of the screen as a kind of Collision
 		return true;
 	}
 	return false;
 }
+
 //update the Projectile's surrounding collision box
 void Projectile::updateCollisionBox()
 {
@@ -118,7 +124,7 @@ void Projectile::updateCollisionBox()
 
 void Projectile::moveAction(int deltaX, int deltaY)
 {
-	if (isExitsting)
+	if (isExisting)
 	{
 		SDL_Rect temp = mCollider;
 		temp.x += deltaX;

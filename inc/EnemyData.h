@@ -32,7 +32,6 @@ public:
 	//const int standing_frames = 6;
 	SDL_Rect slime_stand_clips[6];
 	LTexture slime_standing_texture;
-	/*����״̬ͼ����Ƭ*/
 	//const int walking_frames = 4;
 	SDL_Rect enemy_walk_clips[50][50];
 	LTexture enemy_walking_texture[50];

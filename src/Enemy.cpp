@@ -36,6 +36,7 @@ Enemy::Enemy()
 
 void Enemy::create(int x, int y, EnemyData *data)
 {
+	//Create an enemy at position x,y
 	enemyData = data;
 	Enemy_VEL = enemyData->Enemy_VEL;
 	mCollider.w = enemyData->Enemy_WIDTH;
@@ -65,9 +66,9 @@ void Enemy::move()
 	if (!isAlive)
 		return;
 	changeEnemyBehavior();
+
 	mCollider.x += mVelX;
 	posX = mCollider.x - 10;
-
 	if (checkCollision())
 	{
 		//Move back
@@ -84,12 +85,8 @@ void Enemy::move()
 		mVelX -= acceleration;
 	}
 
-
-	//If the Player collided
 	mCollider.y += mVelY;
 	posY = mCollider.y;
-
-	//If the Player collided
 	if (checkCollision())
 	{
 		//Move back
@@ -105,12 +102,16 @@ void Enemy::move()
 		if (mVelY > 5)
 			canJump = false;
 	}
+
+	//Update collision box of the enemy
 	if (blockPosY != mCollider.y / 33 || blockPosX != mCollider.x / 33)
 	{
 		blockPosX = mCollider.x / 33;
 		blockPosY = mCollider.y / 33;
 		updateCollisionBox();
 	}
+
+	//
 	if (!canBeHit)
 	{
 		hitFlag++;
@@ -121,6 +122,7 @@ void Enemy::move()
 
 void Enemy::getHit(Player *player)
 {
+	//Deal with: player hit enemy by weapons
 	if (!isAlive)
 		return;
 	if (canBeHit)
@@ -131,6 +133,7 @@ void Enemy::getHit(Player *player)
 				healthPoint -= player->currentItem.weaponDamage;
 				if (canBeKnockedBack)
 				{
+					//Knocking the enemy back
 					mVelX = player->mCollider.x < mCollider.x ? 10 : -10;
 					if (mVelY > -2)
 						mVelY -= 9;
@@ -146,13 +149,17 @@ void Enemy::getHit(Player *player)
 
 void Enemy::getHitProjectile(Projectile *projectile)
 {
-	if (isAlive && projectile->isExitsting)
+	//Deal with: hit by projectile
+	if (isAlive && projectile->isExisting)
 		if (intersect(mCollider, projectile->mCollider))
 		{
-			projectile->isExitsting = false;
+			//projectile vanish
+			projectile->isExisting = false;
+			//Damage of a projectile is 5
 			healthPoint -= 5;
 			if (canBeKnockedBack)
 			{
+				//Knocking the enemy back
 				mVelX = projectile->mVelX > 0 ? 10 : -10;
 				if (mVelY > -2)
 					mVelY -= 9;
@@ -166,6 +173,7 @@ void Enemy::getHitProjectile(Projectile *projectile)
 
 void Enemy::getKilled()
 {
+	//Enemy get killed drops something
 	for (int i = 0; i < 200; i++)
 		if (droppedItemList[i].item.itemType == ITEM_NULL)
 		{
@@ -179,16 +187,13 @@ void Enemy::getKilled()
 
 bool Enemy::checkCollision()
 {
-	
 	for (int i = 0; i < 36; i++)
 	{
 		if (rectArray[i].x == 0 && rectArray[i].y == 0)
 			continue;
 		if (intersect(mCollider, rectArray[i]))
 			return true;
-		
 	}
-
 	return false;
 }
 
@@ -216,6 +221,7 @@ void Enemy::updateCollisionBox()
 
 void Enemy::moveAction(int deltaX, int deltaY)
 {
+	//Deal with: Motions of enemy during its moving, varies from attackMode to attackMode
 	if (!isAlive)
 		return;
 
@@ -233,7 +239,6 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		{
 			frame++;
 			frameFlag = 0;
-
 		}
 		if (frame == 5)
 		{
@@ -247,7 +252,6 @@ void Enemy::moveAction(int deltaX, int deltaY)
 			
 		}
 	}
-
 	if (acceleration < 0 && attackMode == ATTACKMODE_PREPARE)
 	{
 		frameFlag++;
@@ -255,7 +259,6 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		{
 			frame++;
 			frameFlag = 0;
-
 		}
 		if (frame == 5)
 		{
@@ -277,7 +280,6 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		{
 			frame++;
 			frameFlag = 0;
-
 		}
 		if (frame == 5)
 		{
@@ -291,7 +293,6 @@ void Enemy::moveAction(int deltaX, int deltaY)
 			
 		}
 	}
-
 	if (acceleration > 0 && attackMode == ATTACKMODE_FINISH)
 	{
 		frameFlag++;
@@ -386,6 +387,8 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		}
 		
 	}
+
+	//Display enemy's HP after it gets hit
 	if (healthPoint < enemyData->healthLimit)
 	{
 		double percentage = (double)healthPoint / (double)enemyData->healthLimit;

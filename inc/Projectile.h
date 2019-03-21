@@ -12,12 +12,14 @@ public:
 	//The position of the Projectile
 	int posX;
 	int posY;
+
 	//the position of the block's boundary of the Projectile 
 	int blockPosX;
 	int blockPosY;
-	bool isExitsting;
+
+	bool isExisting;
 	int existTime;
-	int time;
+	int time;//It seems that you didn't use this?
 	int color;
 	SDL_Rect rectArray[16];
 
