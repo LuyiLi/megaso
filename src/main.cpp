@@ -859,7 +859,7 @@ Uint32 mainMapUpdate(Uint32 interval, void* param)
 	mainMap.countBgColor();
 	mainMap.countFrontBgColor();
 	worldTime++;
-	SDL_TimerID mainTimer = SDL_AddTimer(25, mainMapUpdate, (void*)"a");
+	SDL_TimerID mainTimer = SDL_AddTimer(250, mainMapUpdate, (void*)"a");
 	return 0;
 }
 
@@ -887,7 +887,7 @@ int main(int argc, char* args[])
 							{
 								if (!(enemyList[i].isAlive))
 								{
-									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[1]);
+									enemyList[i].create(player.mCollider.x, player.mCollider.y - 200, &enemyDataList[1]);
 									break;
 								}
 							}
@@ -909,7 +909,7 @@ int main(int argc, char* args[])
 							{
 								if (!(enemyList[i].isAlive))
 								{
-									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[3]);
+									enemyList[i].create(player.mCollider.x + 400, player.mCollider.y + 300, &enemyDataList[3]);
 									break;
 								}
 							}

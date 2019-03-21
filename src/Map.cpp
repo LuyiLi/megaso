@@ -430,7 +430,7 @@ void Map::generateBiome()
 			break;
 		}
 		if (currentBlockNumber < 2500 && currentBlockNumber + temp >2500)
-			groundBiomes[i].biomeType = GROUND_BIOME_VOCANIC;
+			groundBiomes[i].biomeType = GROUND_BIOME_FOREST;
 		currentBlockNumber += temp;
 		i++;
 	}
