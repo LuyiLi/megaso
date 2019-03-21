@@ -169,7 +169,7 @@ void Enemy::getKilled()
 	for (int i = 0; i < 200; i++)
 		if (droppedItemList[i].item.itemType == ITEM_NULL)
 		{
-			droppedItemList[i].create(mCollider.x + 15, mCollider.y, itemList[1]);
+			droppedItemList[i].create(mCollider.x + 15, mCollider.y, itemList[enemyData->dropID]);
 			break;
 		}
 	isAlive = false;

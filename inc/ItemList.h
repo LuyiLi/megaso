@@ -24,6 +24,26 @@ void initItemList()
 		itemList[i].ID = i;
 		itemList[i].itemType = ITEM_BLOCK;
 	}
+
+	for (int i = 101; i < 201; i++)
+	{
+		itemList[i].ID = i;
+		itemList[i].itemType = ITEM_WALL;
+	}
+
+	for (int i = 201; i < 301; i++)
+	{
+		itemList[i].ID = i;
+		itemList[i].itemType = ITEM_MATERIAL;
+	}
+
+
+	for (int i = 301; i < 401; i++)
+	{
+		itemList[i].ID = i;
+		itemList[i].itemType = ITEM_TOOL;
+	}
+
 	//ID 401-500 is weapon
 	for (int i = 401; i < 500; i++)
 	{

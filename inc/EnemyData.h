@@ -23,7 +23,7 @@ public:
 	char texturePath1[30];
 	char texturePath2[30];
 	char enemyHpPath[30];
-	int dropID = 1;
+	int dropID = 206;
 	bool loadTexture();
 
 	//Shows the Enemy on the screen

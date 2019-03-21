@@ -8,11 +8,15 @@
 #include "Camera.h"
 #include "Map.h"
 #include "entity.h"
+#include "pocket.h"
 
 extern Map mainMap;
+extern pocket mainPocket;
 extern const int g;
 extern Item itemList[100];
 extern Player player;
+extern SDL_Rect material_clips[23];
+extern LTexture material_texture;
 //extern LTexture newMap_texture;
 
 droppedItem::droppedItem()
@@ -116,12 +120,40 @@ void droppedItem::render(int deltaX, int deltaY)
 		
 		//todo: change the texture
 		SDL_Rect* currentDroppedItemClip = &mainMap.newMap_clips[item.ID];
+		if (item.ID <= 100)
+		{
+			currentDroppedItemClip = &mainMap.newMap_clips[item.ID];
+		}
+		else if(item.ID <= 200)
+		{
+			currentDroppedItemClip = &mainMap.wall_clips[item.ID-100];
+		}
+		else if (item.ID <= 300)
+		{
+			currentDroppedItemClip = &material_clips[item.ID - 200];
+		}
 		int blockLightX = mCollider.x / 33 - player.blockPosX + 20;
 		int blockLightY = mCollider.y / 33 - player.blockPosY + 20;
-		mainMap.newMap_texture.setColor(mainMap.lightBlock[blockLightX][blockLightY],mainMap.lightBlock[blockLightX][blockLightY],mainMap.lightBlock[blockLightX][blockLightY]);
-		mainMap.newMap_texture.render(mCollider.x+deltaX,mCollider.y+deltaY, currentDroppedItemClip, 0, NULL, SDL_FLIP_NONE, 6);
-		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
-		SDL_RenderDrawRect(gRenderer, &tempRect);
-		//SDL_RenderDrawRect(gRenderer, &tempRect2);
+		
+		if (item.ID <= 100)
+		{
+			mainMap.newMap_texture.setColor(mainMap.lightBlock[blockLightX][blockLightY], mainMap.lightBlock[blockLightX][blockLightY], mainMap.lightBlock[blockLightX][blockLightY]);
+			mainMap.newMap_texture.render(mCollider.x + deltaX, mCollider.y + deltaY, currentDroppedItemClip, 0, NULL, SDL_FLIP_NONE, 6);
+		}
+		else if(item.ID <= 200)
+		{
+			mainMap.wall_texture.setColor(mainMap.lightBlock[blockLightX][blockLightY], mainMap.lightBlock[blockLightX][blockLightY], mainMap.lightBlock[blockLightX][blockLightY]);
+			mainMap.wall_texture.render(mCollider.x + deltaX, mCollider.y + deltaY, currentDroppedItemClip, 0, NULL, SDL_FLIP_NONE, 6);
+		}
+		else if (item.ID <= 300)
+		{
+			material_texture.setColor(mainMap.lightBlock[blockLightX][blockLightY], mainMap.lightBlock[blockLightX][blockLightY], mainMap.lightBlock[blockLightX][blockLightY]);
+			material_texture.render(mCollider.x + deltaX, mCollider.y + deltaY, currentDroppedItemClip, 0, NULL, SDL_FLIP_NONE, 6);
+		}
+		if (item.ID <= 200)
+		{
+			SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+			SDL_RenderDrawRect(gRenderer, &tempRect);
+		}
 	}
 }
