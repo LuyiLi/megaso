@@ -520,6 +520,7 @@ void Map::generateGroundSurface()
 	}
 }
 
+//generate rock surface in different biome
 void Map::generateRockSurface()
 {
 	float temp;
@@ -557,6 +558,7 @@ void Map::generateRockSurface()
 	}
 }
 
+//generate mineral
 void Map::generateOre()
 {
 	int x, y;
@@ -583,6 +585,7 @@ void Map::generateOre()
 		}
 }
 
+//generate caves at random
 void Map::generateCave()
 {
 	for (int i = 0; i < 50; i++)
@@ -616,6 +619,7 @@ void Map::generateCave()
 	}
 }
 
+//generate trees according to different biomes
 void Map::generateTrees()
 {
 	int currentBiomeNum = 0;
@@ -633,6 +637,7 @@ void Map::generateTrees()
 	}
 }
 
+//the tree generation rate
 int Map::calculateTreeGenerationRate(GroundBiomeTypes biomeType)
 {
 	switch (biomeType)
@@ -655,6 +660,7 @@ int Map::calculateTreeGenerationRate(GroundBiomeTypes biomeType)
 	}
 }
 
+//read map.txt
 void Map::mapRead()
 {
 	FILE *fp;
@@ -714,6 +720,7 @@ void Map::mapRead()
 	}
 }
 
+//read info from the wal.txt
 void Map::wallRead()
 {
 	FILE *fp;
@@ -769,6 +776,7 @@ void Map::wallRead()
 	}
 }
 
+//read boime info from the biome.txt
 void Map::biomeRead()
 {
 	FILE *fp;
@@ -860,6 +868,7 @@ void Map::biomeRead()
 	}
 }
 
+
 void Map::plantTree(int x, int y, GroundBiomeTypes)
 {
 	int leafID = 105, trunkID = 104;
@@ -901,6 +910,7 @@ void Map::plantTree(int x, int y, GroundBiomeTypes)
 	mapData[y][x] = 2;
 }
 
+//break the block and create dropped items
 void Map::breakBlock(int x, int y)
 {
 	if (abs(x - player.blockPosX) + abs(y - player.blockPosY) <= 4 && (!mapData[y+1][x] || !mapData[y][x+1] || !mapData[y-1][x] || !mapData[y][x-1]))
@@ -915,6 +925,7 @@ void Map::breakBlock(int x, int y)
 	}
 }
 
+//break the wall and create dropped items
 void Map::breakWall(int x, int y)
 {
 	for (int i = 0; i < 200; i++)
@@ -926,6 +937,7 @@ void Map::breakWall(int x, int y)
 	wallData[y][x] = 0;
 
 }
+
 //put block into the map, reduce one from your pocket
 void Map::putBlock(int x, int y, int ID)
 {
@@ -946,6 +958,7 @@ void Map::putBlock(int x, int y, int ID)
 	}
 }
 
+//put block into the map, reduce one from your pocket
 void Map::putWall(int x, int y, int ID)
 {
 	SDL_Rect tempRect;
@@ -965,6 +978,7 @@ void Map::putWall(int x, int y, int ID)
 	}
 }
 
+//write the map info to map.txt
 void Map::mapWrite()
 {
 	FILE *fp;
@@ -986,6 +1000,7 @@ void Map::mapWrite()
 	fclose(fp);
 }
 
+//write the map info to wall.txt
 void Map::wallWrite()
 {
 	FILE *fp;
@@ -1007,6 +1022,7 @@ void Map::wallWrite()
 	fclose(fp);
 }
 
+//write the 
 void Map::biomeWrite()
 {
 	FILE *fp;
@@ -1041,8 +1057,10 @@ void Map::biomeWrite()
 	fclose(fp);
 }
 
+//render different bg
 void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 {
+	//6 different bg layers have different moving speeds
 	scroll[0] -= player.mVelX / 6;
 	scroll[1] -= player.mVelX / 5;
 	scroll[2] -= player.mVelX / 4;

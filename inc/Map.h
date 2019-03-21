@@ -43,6 +43,7 @@ public:
 	int lightBlock[40][40];
 	static const int xBlockNumber = 5000;
 	static const int yBlockNumber = 1000;
+	//store the ID of the blocks
 	int mapData[yBlockNumber][xBlockNumber];
 	int wallData[yBlockNumber][xBlockNumber];
 	void drawCircle(int x, int y, int r);
