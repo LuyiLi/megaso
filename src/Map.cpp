@@ -430,7 +430,7 @@ void Map::generateBiome()
 			break;
 		}
 		if (currentBlockNumber < 2500 && currentBlockNumber + temp >2500)
-			groundBiomes[i].biomeType = GROUND_BIOME_FOREST;
+			groundBiomes[i].biomeType = GROUND_BIOME_MOUNTAIN;
 		currentBlockNumber += temp;
 		i++;
 	}
@@ -613,7 +613,7 @@ void Map::generateOre()
 {
 	int x, y;
 	for (int i = 0; i < 6; i ++)
-		for (int j = 0; j < 700; j++)
+		for (int j = 0; j < 1300; j++)
 		{
 			x = random01() * xBlockNumber;
 			y = random01() * yBlockNumber;
