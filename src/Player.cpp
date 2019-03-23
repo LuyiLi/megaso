@@ -58,7 +58,7 @@ void Player::handleEvent(SDL_Event& e)
 			if (canJump)
 			{
 				mVelY = -15;
-				//canJump = false;
+				canJump = false;
 			}
 		}
 		else if (e.key.keysym.sym == SDLK_a)
