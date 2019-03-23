@@ -920,7 +920,7 @@ Uint32 mainMapUpdate(Uint32 interval, void* param)
 		}
 	}
 	else
-		generateFlag--;
+		worldTime > 600 ? generateFlag -= 3 : generateFlag--;
 	mainMap.countBgColor();
 	mainMap.countFrontBgColor();
 	worldTime++;

@@ -622,8 +622,8 @@ void pocket::composingTableUpdate()
 		{
 			craftData[0][0] = 205;
 		}
-		//一个黑宝石一个绿宝石合成一个蓝紫色饰品
-		if (sortedData[0][0] == 0 && sortedData[0][1] == 201 && sortedData[0][2] == 204)
+		//一个蓝木一个绿宝石合成一个蓝紫色饰品
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 110 && sortedData[0][2] == 204)
 		{
 			craftData[0][0] = 701;
 		}
@@ -632,11 +632,7 @@ void pocket::composingTableUpdate()
 		{
 			craftData[0][0] = 702;
 		}
-		//一个金宝石一个红宝石合成一个金红色饰品
-		if (sortedData[0][0] == 0 && sortedData[0][1] == 202 && sortedData[0][2] == 205)
-		{
-			craftData[0][0] = 703;
-		}
+
 	}
 	////////////////////////////////////////////////////////////
 	//需要三个块合成的物品
@@ -702,6 +698,11 @@ void pocket::composingTableUpdate()
 		if (sortedData[0][0] == 203 && sortedData[0][1] == 210 && sortedData[0][2] == 210)
 		{
 			craftData[0][0] = 304;
+		}
+		//一个金宝石一个红宝石一个黑宝石合成一个金红色饰品
+		if (sortedData[0][0] == 201 && sortedData[0][1] == 202 && sortedData[0][2] == 205)
+		{
+			craftData[0][0] = 703;
 		}
 	}
 	////////////////////////////////////////////////////////////
