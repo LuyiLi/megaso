@@ -66,6 +66,10 @@ SDL_Window* gWindow = NULL;
 SDL_Rect heart_clips[8];
 LTexture heart_texture;
 
+SDL_Rect* crackClip1;
+SDL_Rect* crackClip2;
+SDL_Rect* crackClip3;
+
 SDL_Rect magic_clips[8];
 LTexture magic_texture;
 
@@ -358,6 +362,10 @@ bool loadMedia()
 	{
 		success = false;
 	}
+	crackClip1 = &crack_clips[0];
+	crackClip2 = &crack_clips[1];
+	crackClip3 = &crack_clips[2];
+
 	return success;
 }
 
@@ -402,76 +410,8 @@ Uint32 renderBgChangeCallback(Uint32 interval, void* param)
 
 Uint32 callback(Uint32 interval, void* param)
 {
-	if (mainPocket.accessories>0)
-	{
-		player.haveLight = 1;
-	}
-	else if (mainPocket.pocketData[0][pocketNumber - 1] == 307)
-	{
-		player.haveLight = 1;
-	}
-	else if (pocketNumber == 1)
-	{
-		if (mainPocket.pocketData[0][1] == 307)
-		{
-			player.haveLight = 1;
-		}
-		else
-		{
-			player.haveLight = 0;
-		}
-	}
-	else if (pocketNumber > 1)
-	{
-		if (mainPocket.pocketData[0][pocketNumber] == 307 || mainPocket.pocketData[0][pocketNumber - 2] == 307)
-		{
-			player.haveLight = 1;
-		}
-		else
-		{
-			player.haveLight = 0;
-		}
-	}
-	else
-	{
-		player.haveLight = 0;
-	}
-	targetState = mainMap.currentBiome(player.blockPosX);
-	if (targetState != currentBiome&& !bgIsChanging)
-	{
-		backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
-	}
-	for (int i = 0; i < 200; i++)
-	{
-		player.pickUpItem(&droppedItemList[i]);
-		droppedItemList[i].move();
-	}
-
-	//Reimu-Rubo moves
-	player.move();
-	projectile.move();
-	if (!projectileReady)
-	{
-		projectileFlag++;
-		if (projectileFlag > 10)
-		{
-			projectileReady = true;
-			projectileFlag = 0;
-		}
-	}
-	for (int i = 0; i < 20; i++)
-	{
-		enemyList[i].move();
-		player.getHit(&enemyList[i]);
-	}
 	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
-	SDL_Rect* crackClip1 = &crack_clips[0];
-	SDL_Rect* crackClip2 = &crack_clips[1];
-	SDL_Rect* crackClip3 = &crack_clips[2];
-
-
-
 	mainMap.renderBg(currentBiome, targetState);
 	mainMap.renderWall(deltaX, deltaY);
 
@@ -693,7 +633,74 @@ Uint32 callback(Uint32 interval, void* param)
 
 	
 
-	SDL_TimerID timerID1 = SDL_AddTimer(20, callback, (void*)"ad");
+	SDL_TimerID timerID1 = SDL_AddTimer(15, callback, (void*)"ad");
+	return 0;
+}
+
+Uint32 movementCallback(Uint32 interval, void* param)
+{
+	//Reimu-Rubo moves
+	player.move();
+	projectile.move();
+	if (!projectileReady)
+	{
+		projectileFlag++;
+		if (projectileFlag > 10)
+		{
+			projectileReady = true;
+			projectileFlag = 0;
+		}
+	}
+	for (int i = 0; i < 20; i++)
+	{
+		enemyList[i].move();
+		player.getHit(&enemyList[i]);
+	}
+	if (mainPocket.accessories > 0)
+	{
+		player.haveLight = 1;
+	}
+	else if (mainPocket.pocketData[0][pocketNumber - 1] == 307)
+	{
+		player.haveLight = 1;
+	}
+	else if (pocketNumber == 1)
+	{
+		if (mainPocket.pocketData[0][1] == 307)
+		{
+			player.haveLight = 1;
+		}
+		else
+		{
+			player.haveLight = 0;
+		}
+	}
+	else if (pocketNumber > 1)
+	{
+		if (mainPocket.pocketData[0][pocketNumber] == 307 || mainPocket.pocketData[0][pocketNumber - 2] == 307)
+		{
+			player.haveLight = 1;
+		}
+		else
+		{
+			player.haveLight = 0;
+		}
+	}
+	else
+	{
+		player.haveLight = 0;
+	}
+	targetState = mainMap.currentBiome(player.blockPosX);
+	if (targetState != currentBiome && !bgIsChanging)
+	{
+		backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
+	}
+	for (int i = 0; i < 200; i++)
+	{
+		player.pickUpItem(&droppedItemList[i]);
+		droppedItemList[i].move();
+	}
+	SDL_TimerID movementTimer = SDL_AddTimer(18, movementCallback, (void*)"a");
 	return 0;
 }
 
@@ -888,7 +895,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 
 Uint32 mainMapUpdate(Uint32 interval, void* param)
 {
-	int generationTries = (worldTime > 600 ? 3 : 2);
+	int generationTries = (worldTime > 600 ? 2 : 1);
 	int blockX, blockY;
 	static int generateFlag = 500;
 	bool generationFlag;
@@ -920,7 +927,7 @@ Uint32 mainMapUpdate(Uint32 interval, void* param)
 		}
 	}
 	else
-		worldTime > 600 ? generateFlag -= 3 : generateFlag--;
+		worldTime > 600 ? generateFlag -= 2 : generateFlag--;
 	mainMap.countBgColor();
 	mainMap.countFrontBgColor();
 	worldTime++;
@@ -973,6 +980,7 @@ int main(int argc, char* args[])
 				bool quit = false;
 				SDL_Event e;
 				SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
+				SDL_TimerID movementTimer = SDL_AddTimer(16, movementCallback, (void*)"a");
 				SDL_TimerID mainTimer = SDL_AddTimer(1000, mainMapUpdate, (void*)"a");
 				while (!quit)
 				{
@@ -1095,7 +1103,7 @@ int main(int argc, char* args[])
 						}
 						player.handleEvent(e);
 					}
-					//SDL_Delay(10);
+					//SDL_Delay(1);
 				}
 			}
 			return 0;
