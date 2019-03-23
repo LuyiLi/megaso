@@ -33,5 +33,8 @@ public:
 	//The following contents are for materials only
 	
 	//The following contents are for weapons only
+	int breakTime = 40;
+
+	//The following contents are for weapons only
 	int weaponDamage;
 };

@@ -693,7 +693,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY && mainPocket.pocketData[0][pocketNumber - 1] > 300 && mainPocket.pocketData[0][pocketNumber - 1] <= 400 && mainPocket.pocketData[0][pocketNumber - 1] != 305 && mainPocket.pocketData[0][pocketNumber - 1] != 306 && mainPocket.pocketData[0][pocketNumber - 1] != 307)
 			{
 				//Break the block if time is enough
-				if (flag == 40)
+				if (flag == player.currentItem.breakTime)
 				{
 					//Break a block in the map
 					mainMap.breakBlock(blockMouseX, blockMouseY);
@@ -716,7 +716,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 				}
 
 				// block is not broken if time is not enough
-				crackFlag = flag / 10;
+				crackFlag = 4 * flag / player.currentItem.breakTime;
 				flag++;
 
 				//Timer set
