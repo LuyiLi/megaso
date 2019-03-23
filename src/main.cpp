@@ -436,7 +436,6 @@ Uint32 callback(Uint32 interval, void* param)
 	{
 		player.haveLight = 0;
 	}
-	printf("light %d\n", player.haveLight);
 	targetState = mainMap.currentBiome(player.blockPosX);
 	if (targetState != currentBiome&& !bgIsChanging)
 	{

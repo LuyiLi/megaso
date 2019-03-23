@@ -13,7 +13,7 @@ void initEnemyDataList()
 	enemyDataList[1].Enemy_VEL=1;
 	enemyDataList[1].damage=10;
 	enemyDataList[1].AI = AI_WARRIOR;
-	enemyDataList[1].dropChance = 1; //todo
+	enemyDataList[1].dropChance = 0.3; //todo
 	enemyDataList[1].dropID = 206; //todo
 	strcpy_s(enemyDataList[1].texturePath1, "images/pangolin.png");
 	strcpy_s(enemyDataList[1].texturePath2, "images/pangolin_1.png");
@@ -31,6 +31,8 @@ void initEnemyDataList()
 	enemyDataList[2].frame = 2;
 	enemyDataList[2].frameDelay = 10;
 	enemyDataList[2].enemyScale = 1;
+	enemyDataList[2].dropChance = 0.3; 
+	enemyDataList[2].dropID = 211;
 	strcpy_s(enemyDataList[2].texturePath1, "images/stump.png");
 	strcpy_s(enemyDataList[2].enemyHpPath, "images/enemyHp.png");
 
@@ -46,6 +48,8 @@ void initEnemyDataList()
 	enemyDataList[3].frame = 4;
 	enemyDataList[3].frameDelay = 5;
 	enemyDataList[3].enemyScale = 1;
+	enemyDataList[3].dropChance = 0.3;
+	enemyDataList[3].dropID = 203;
 	strcpy_s(enemyDataList[3].texturePath1, "images/crystal.png");
 	strcpy_s(enemyDataList[3].enemyHpPath, "images/enemyHp.png");
 
@@ -61,6 +65,8 @@ void initEnemyDataList()
 	enemyDataList[4].frame = 8;
 	enemyDataList[4].frameDelay = 5;
 	enemyDataList[4].enemyScale = 0.75;
+	enemyDataList[4].dropChance = 0.3;
+	enemyDataList[4].dropID = 212;
 	strcpy_s(enemyDataList[4].texturePath1, "images/dragon.png");
 	strcpy_s(enemyDataList[4].enemyHpPath, "images/enemyHp.png");
 
@@ -76,6 +82,8 @@ void initEnemyDataList()
 	enemyDataList[5].frame = 4;
 	enemyDataList[5].frameDelay = 5;
 	enemyDataList[5].enemyScale = 1;
+	enemyDataList[5].dropChance = 0.3;
+	enemyDataList[5].dropID = 210;
 	strcpy_s(enemyDataList[5].texturePath1, "images/snowman.png");
 	strcpy_s(enemyDataList[5].enemyHpPath, "images/enemyHp.png");
 
@@ -91,6 +99,8 @@ void initEnemyDataList()
 	enemyDataList[6].frame = 4;
 	enemyDataList[6].frameDelay = 5;
 	enemyDataList[6].enemyScale = 1;
+	enemyDataList[6].dropChance = 0.3;
+	enemyDataList[6].dropID = 204;
 	strcpy_s(enemyDataList[6].texturePath1, "images/cactus.png");
 	strcpy_s(enemyDataList[6].enemyHpPath, "images/enemyHp.png");
 
@@ -106,6 +116,8 @@ void initEnemyDataList()
 	enemyDataList[7].frame = 2;
 	enemyDataList[7].frameDelay = 5;
 	enemyDataList[7].enemyScale = 1;
+	enemyDataList[7].dropChance = 0.3;
+	enemyDataList[7].dropID = 205;
 	strcpy_s(enemyDataList[7].texturePath1, "images/yellow.png");
 	strcpy_s(enemyDataList[7].enemyHpPath, "images/enemyHp.png");
 }
