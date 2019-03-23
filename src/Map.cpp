@@ -291,7 +291,11 @@ void Map::renderWall(int deltaX, int deltaY)
 	}
 	//lightBlock[20][20] = 255;
 	//lightBlock[21][20] = 255;
-	lightBlock[21][21] = 255;
+	if (player.haveLight)
+	{
+		lightBlock[21][21] = 255;
+	}
+	
 	//lightBlock[20][21] = 255;
 	//calculateLight(20, 20);
 	//calculateLight(21, 20);
