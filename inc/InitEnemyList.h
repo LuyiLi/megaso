@@ -24,7 +24,7 @@ void initEnemyDataList()
 	enemyDataList[2].Enemy_HEIGHT = 50;
 	enemyDataList[2].healthLimit = 100;
 	enemyDataList[2].Enemy_VEL = 2;
-	enemyDataList[2].damage=5;
+	enemyDataList[2].damage = 15;
 	enemyDataList[2].AI = AI_WARRIOR;
 	enemyDataList[2].offsetX = 0;
 	enemyDataList[2].offsetY = 5;
@@ -38,7 +38,7 @@ void initEnemyDataList()
 	enemyDataList[3].Enemy_WIDTH = 50;
 	enemyDataList[3].Enemy_HEIGHT = 50;
 	enemyDataList[3].healthLimit = 100;
-	enemyDataList[3].Enemy_VEL = 1;
+	enemyDataList[3].Enemy_VEL = 5;
 	enemyDataList[3].damage=10;
 	enemyDataList[3].AI = AI_THROUGH_WALL;
 	enemyDataList[3].offsetX = 0;
@@ -68,7 +68,7 @@ void initEnemyDataList()
 	enemyDataList[5].Enemy_WIDTH = 70;
 	enemyDataList[5].Enemy_HEIGHT = 90;
 	enemyDataList[5].healthLimit = 100;
-	enemyDataList[5].Enemy_VEL = 1;
+	enemyDataList[5].Enemy_VEL = 2;
 	enemyDataList[5].damage = 20;
 	enemyDataList[5].AI = AI_WARRIOR;
 	enemyDataList[5].offsetX = -10;
@@ -83,8 +83,8 @@ void initEnemyDataList()
 	enemyDataList[6].Enemy_WIDTH = 50;
 	enemyDataList[6].Enemy_HEIGHT = 90;
 	enemyDataList[6].healthLimit = 100;
-	enemyDataList[6].Enemy_VEL = 1;
-	enemyDataList[6].damage = 5;
+	enemyDataList[6].Enemy_VEL = 2;
+	enemyDataList[6].damage = 15;
 	enemyDataList[6].AI = AI_WARRIOR;
 	enemyDataList[6].offsetX = -15;
 	enemyDataList[6].offsetY = 30;
@@ -98,8 +98,8 @@ void initEnemyDataList()
 	enemyDataList[7].Enemy_WIDTH = 80;
 	enemyDataList[7].Enemy_HEIGHT = 80;
 	enemyDataList[7].healthLimit = 100;
-	enemyDataList[7].Enemy_VEL = 1;
-	enemyDataList[7].damage = 5;
+	enemyDataList[7].Enemy_VEL = 3;
+	enemyDataList[7].damage = 15;
 	enemyDataList[7].AI = AI_JUMP_WARRIOR;
 	enemyDataList[7].offsetX = 0;
 	enemyDataList[7].offsetY = 20;

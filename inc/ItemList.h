@@ -255,13 +255,13 @@ void initItemList()
 	strcpy_s(itemList[401].itemName, "Wooden sword");
 	strcpy_s(itemList[401].itemDescription, "\0");
 	itemList[401].maxStack = 1;
-	itemList[401].weaponDamage = 1;
+	itemList[401].weaponDamage = 21;
 
 	//ID=402
 	strcpy_s(itemList[402].itemName, "Bronze sword");
 	strcpy_s(itemList[402].itemDescription, "Harder than wooden sword.");
 	itemList[402].maxStack = 1;
-	itemList[402].weaponDamage = 2;
+	itemList[402].weaponDamage = 11;
 
 
 	//ID=403
@@ -270,7 +270,15 @@ void initItemList()
 	itemList[403].maxStack = 1;
 	itemList[403].weaponDamage = 6;
 
+	//ID = 404
+	itemList[404].maxStack = 1;
+	itemList[404].weaponDamage = 12;
 
+	//ID = 405
+	itemList[405].maxStack = 1;
+	itemList[405].weaponDamage = 3;
+
+	/*
 	//ID=404
 	strcpy_s(itemList[404].itemName, "Gold sword");
 	strcpy_s(itemList[404].itemDescription, "The hardest sword.");
@@ -384,4 +392,5 @@ void initItemList()
 	strcpy_s(itemList[422].itemDescription, "The hardest shield.");
 	itemList[422].maxStack = 1;
 	itemList[422].weaponDamage = 15;
+	*/
 }
