@@ -58,7 +58,7 @@ void Player::handleEvent(SDL_Event& e)
 			if (canJump)
 			{
 				mVelY = -15;
-				//canJump = false;
+				canJump = false;
 			}
 		}
 		else if (e.key.keysym.sym == SDLK_a)
@@ -155,8 +155,8 @@ void Player::move()
 		//block drops
 		if (abs(mVelY) < 25)
 			mVelY += g;
-		//if (mVelY > 5)
-			//canJump = false;
+		if (mVelY > 5)
+			canJump = false;
 	}
 	
 	if (blockPosY != mCollider.y / (33) || blockPosX != mCollider.x / (33))
