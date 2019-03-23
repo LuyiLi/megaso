@@ -188,13 +188,13 @@ void pocket::mainPocketRender()
 	/////////////////////////////////////////////////////////////////////////////////////////
 	for (int p = 0; p < 10; p++)
 	{
-		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
+		pocketUI_texture.render(SCREEN_WIDTH / 2 - 200 * p, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
 
 		if (pocketData[1][p] && pocketData[0][p] <= 100)
 		{
 			mainMap.newMap_texture.setColor(255, 255, 255);
 			SDL_Rect* currentPocketClip = &mainMap.newMap_clips[pocketData[0][p]];
-			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
+			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 200 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 		}
 		if (pocketData[1][p] && pocketData[0][p] <= 100)
 		{
@@ -205,7 +205,7 @@ void pocket::mainPocketRender()
 		{
 			mainMap.wall_texture.setColor(255, 255, 255);
 			SDL_Rect* currentPocketClip = &mainMap.wall_clips[pocketData[0][p] - 100];
-			mainMap.wall_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
+			mainMap.wall_texture.render(SCREEN_WIDTH / 2 - 200 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 		}
 		if (pocketData[1][p] && pocketData[0][p] > 100 && pocketData[0][p] <= 200)
 		{
@@ -598,27 +598,27 @@ void pocket::composingTableUpdate()
 			craftData[0][0] = 307;
 		}
 		//一个银树一个黑矿合成一个黑宝石
-		if (sortedData[0][0] == 0 && sortedData[0][1] == 12 && sortedData[0][2] == 16)
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 12 && sortedData[0][2] == 106)
 		{
 			craftData[0][0] = 201;
 		}
 		//一个金树一个红矿合成一个红宝石
-		if (sortedData[0][0] == 0 && sortedData[0][1] == 8 && sortedData[0][2] == 18)
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 8 && sortedData[0][2] == 108)
 		{
 			craftData[0][0] = 202;
 		}
 		//一个银树一个银矿合成一个银宝石
-		if (sortedData[0][0] == 0 && sortedData[0][1] == 9 && sortedData[0][2] == 16)
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 9 && sortedData[0][2] == 106)
 		{
 			craftData[0][0] = 203;
 		}
 		//一个蓝树一个绿矿合成一个绿宝石
-		if (sortedData[0][0] == 0 && sortedData[0][1] == 11 && sortedData[0][2] == 20)
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 11 && sortedData[0][2] == 110)
 		{
 			craftData[0][0] = 204;
 		}
 		//一个金树一个金矿合成一个金宝石
-		if (sortedData[0][0] == 0 && sortedData[0][1] == 10 && sortedData[0][2] == 18)
+		if (sortedData[0][0] == 0 && sortedData[0][1] == 10 && sortedData[0][2] == 108)
 		{
 			craftData[0][0] = 205;
 		}
@@ -655,12 +655,12 @@ void pocket::composingTableUpdate()
 			craftData[0][0] = 303;
 		}
 		//两个金树一个金矿合成一个金棍
-		if (sortedData[0][0] == 10 && sortedData[0][1] == 18 && sortedData[0][2] == 18)
+		if (sortedData[0][0] == 10 && sortedData[0][1] == 108 && sortedData[0][2] == 108)
 		{
 			craftData[0][0] = 209;
 		}
 		//两个蓝树一个绿矿合成一个蓝棍
-		if (sortedData[0][0] == 11 && sortedData[0][1] == 20 && sortedData[0][2] == 20)
+		if (sortedData[0][0] == 11 && sortedData[0][1] == 110 && sortedData[0][2] == 110)
 		{
 			craftData[0][0] = 210;
 		}

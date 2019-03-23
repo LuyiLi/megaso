@@ -479,9 +479,9 @@ Uint32 callback(Uint32 interval, void* param)
 	{
 		switch (crackFlag)
 		{
-		case 1:crack_texture.render(blockMouseX*(33) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip1, 0, NULL, SDL_FLIP_NONE, 3); break;
-		case 2:crack_texture.render(blockMouseX*(100 / 3) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip2, 0, NULL, SDL_FLIP_NONE, 3); break;
-		case 3:crack_texture.render(blockMouseX*(100 / 3) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 3); break;
+		case 1:crack_texture.render(blockMouseX*33 + deltaX, blockMouseY*33 + deltaY, crackClip1, 0, NULL, SDL_FLIP_NONE, 3); break;
+		case 2:crack_texture.render(blockMouseX*33 + deltaX, blockMouseY*33 + deltaY, crackClip2, 0, NULL, SDL_FLIP_NONE, 3); break;
+		case 3:crack_texture.render(blockMouseX*33 + deltaX, blockMouseY*33 + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 3); break;
 		}
 	}
 
@@ -496,9 +496,9 @@ Uint32 callback(Uint32 interval, void* param)
 	{
 		switch (crackFlag)
 		{
-		case 1:crack_texture.render(blockMouseX*(33) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip1, 0, NULL, SDL_FLIP_NONE, 3); break;
-		case 2:crack_texture.render(blockMouseX*(100 / 3) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip2, 0, NULL, SDL_FLIP_NONE, 3); break;
-		case 3:crack_texture.render(blockMouseX*(100 / 3) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 3); break;
+		case 1:crack_texture.render(blockMouseX*(33) + deltaX, blockMouseY*(33) + deltaY, crackClip1, 0, NULL, SDL_FLIP_NONE, 3); break;
+		case 2:crack_texture.render(blockMouseX*(33) + deltaX, blockMouseY*(33) + deltaY, crackClip2, 0, NULL, SDL_FLIP_NONE, 3); break;
+		case 3:crack_texture.render(blockMouseX*(33) + deltaX, blockMouseY*(33) + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 3); break;
 		}
 	}
 
@@ -512,9 +512,9 @@ Uint32 callback(Uint32 interval, void* param)
 	mainPocket.mainPocketRender();
 
 	double percentage = (double)player.healthPoint / (double)player.healthLimit;
-	hp_texture.renderWithScale(SCREEN_WIDTH / 2 + 130 + 30, 25, &heart_clips[0], 0, NULL, SDL_FLIP_NONE,0.4,2,percentage);
+	hp_texture.renderWithScale(SCREEN_WIDTH / 2 + 160, 25, &heart_clips[0], 0, NULL, SDL_FLIP_NONE,0.4,2,percentage);
 
-	hp_texture.render(int(SCREEN_WIDTH / 2 + 130+30+(250*percentage)), 25, &heart_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
+	hp_texture.render(int(SCREEN_WIDTH / 2 + 160+(250*percentage)), 25, &heart_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
 
 	SDL_Rect* currentHeartClip = &heart_clips[heartFrame / 8];
 	heart_texture.render(SCREEN_WIDTH/2+130, 25, currentHeartClip, 0, NULL, SDL_FLIP_NONE, 2);
@@ -525,9 +525,9 @@ Uint32 callback(Uint32 interval, void* param)
 	}
 
 	double mpPercentage = (double)player.magicPoint / (double)player.magicLimit;
-	mp_texture.renderWithScale(SCREEN_WIDTH / 2 + 130 + 30, 75, &magic_clips[0], 0, NULL, SDL_FLIP_NONE, 0.4, 2, mpPercentage);
+	mp_texture.renderWithScale(SCREEN_WIDTH / 2 + 160, 75, &magic_clips[0], 0, NULL, SDL_FLIP_NONE, 0.4, 2, mpPercentage);
 
-	mp_texture.render(int(SCREEN_WIDTH / 2 + 130 + 30 + (250 * mpPercentage)), 75, &magic_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
+	mp_texture.render(int(SCREEN_WIDTH / 2 + 160 + (250 * mpPercentage)), 75, &magic_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
 
 
 	SDL_Rect* currentMagicClip = &magic_clips[magicFrame / 8];
