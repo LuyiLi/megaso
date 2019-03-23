@@ -430,7 +430,7 @@ void Map::generateBiome()
 			break;
 		}
 		if (currentBlockNumber < 2500 && currentBlockNumber + temp >2500)
-			groundBiomes[i].biomeType = GROUND_BIOME_MOUNTAIN;
+			groundBiomes[i].biomeType = GROUND_BIOME_PLAIN;
 		currentBlockNumber += temp;
 		i++;
 	}

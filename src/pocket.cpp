@@ -18,6 +18,8 @@ void pocket::pocketGenerate()
 			pocketData[j][i] = 0;
 		}
 	}
+	pocketData[0][0] = 305;
+	pocketData[1][0] = 1;
 }
 
 extern Map mainMap;

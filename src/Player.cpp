@@ -155,8 +155,8 @@ void Player::move()
 		//block drops
 		if (abs(mVelY) < 25)
 			mVelY += g;
-		//if (mVelY > 5)
-			//canJump = false;
+		if (mVelY > 5)
+			canJump = false;
 	}
 	
 	if (blockPosY != mCollider.y / (33) || blockPosX != mCollider.x / (33))
