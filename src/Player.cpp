@@ -237,7 +237,7 @@ void Player::getKilled()
 {
 	isDead = 1;
 	
-	mCollider.x = 2500;
+	mCollider.x = 82500;
 	mCollider.y = 4000;
 	mVelX = 0;
 	mVelY = 0;
