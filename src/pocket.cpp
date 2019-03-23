@@ -62,7 +62,6 @@ SDL_Rect rubbish_clips[1];
 LTexture rubbish_texture;
 
 
-
 void pocket::mainPocketRender()
 {
 	composingTableUpdate();
@@ -95,13 +94,13 @@ void pocket::mainPocketRender()
 	{
 		for (int i = 0; i < 6; i++)
 		{
-			accessories_clips[i].x = 100*i;
+			accessories_clips[i].x = 100 * i;
 			accessories_clips[i].y = 0;
 			accessories_clips[i].w = 100;
 			accessories_clips[i].h = 100;
 		}
 	}
-	
+
 	if (material_texture.loadFromFile("images/material.png"))
 	{
 		for (int i = 0; i < 23; i++)
@@ -144,7 +143,7 @@ void pocket::mainPocketRender()
 	for (int pocketPos = 40; pocketPos < 43; pocketPos++)
 	{
 		char str1[23];
-		if (materialData[1][pocketPos-40] < 10)
+		if (materialData[1][pocketPos - 40] < 10)
 		{
 			_itoa_s(materialData[1][pocketPos - 40], str1, 10);
 			char newStr1[23] = " ";
@@ -188,13 +187,13 @@ void pocket::mainPocketRender()
 	/////////////////////////////////////////////////////////////////////////////////////////
 	for (int p = 0; p < 10; p++)
 	{
-		pocketUI_texture.render(SCREEN_WIDTH / 2 - 200 * p, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
+		pocketUI_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p, SCREEN_HEIGHT - 60, generalPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
 
 		if (pocketData[1][p] && pocketData[0][p] <= 100)
 		{
 			mainMap.newMap_texture.setColor(255, 255, 255);
 			SDL_Rect* currentPocketClip = &mainMap.newMap_clips[pocketData[0][p]];
-			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 200 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
+			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 		}
 		if (pocketData[1][p] && pocketData[0][p] <= 100)
 		{
@@ -205,7 +204,7 @@ void pocket::mainPocketRender()
 		{
 			mainMap.wall_texture.setColor(255, 255, 255);
 			SDL_Rect* currentPocketClip = &mainMap.wall_clips[pocketData[0][p] - 100];
-			mainMap.wall_texture.render(SCREEN_WIDTH / 2 - 200 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
+			mainMap.wall_texture.render(SCREEN_WIDTH / 2 - 250 + 50 * p + 12, SCREEN_HEIGHT - 60 + 12, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 		}
 		if (pocketData[1][p] && pocketData[0][p] > 100 && pocketData[0][p] <= 200)
 		{
@@ -263,7 +262,7 @@ void pocket::mainPocketRender()
 				pocketUI_texture.render(20 + 50 * i, 330, CraftPocketClip, 0, NULL, SDL_FLIP_NONE, 2);
 			}
 			pocketUI_texture.render(20, 180, CraftTableClip, 0, NULL, SDL_FLIP_NONE, 2);
-			pocketUI_texture.render(700+50*q, 160, AccessoriesClip, 0, NULL, SDL_FLIP_NONE, 2);
+			pocketUI_texture.render(700 + 50 * q, 160, AccessoriesClip, 0, NULL, SDL_FLIP_NONE, 2);
 			pocketUI_texture.render(700, 120, AccessoriesTitleClip, 0, NULL, SDL_FLIP_NONE, 2);
 		}
 		switch (accessories)
@@ -286,7 +285,7 @@ void pocket::mainPocketRender()
 		accessories_texture.render(754, 166, &accessories_clips[4], 0, NULL, SDL_FLIP_NONE, 2.5);
 		accessories_texture.render(805, 168, &accessories_clips[5], 0, NULL, SDL_FLIP_NONE, 2.5);
 	}
-	
+
 
 	if (pocketNumber > 0 && pocketNumber < 11)
 	{
@@ -343,9 +342,9 @@ void pocket::mainPocketRender()
 		}
 
 
-	/////////////////////////////////////////////////////////////////////////////////////////
-	//材料栏内物品渲染
-	/////////////////////////////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////////////
+		//材料栏内物品渲染
+		/////////////////////////////////////////////////////////////////////////////////////////
 		for (int i = 0; i < 3; i++)
 		{
 			if (materialData[1][i] && materialData[0][i] <= 100)
@@ -353,13 +352,13 @@ void pocket::mainPocketRender()
 				mainMap.newMap_texture.setColor(255, 255, 255);
 				SDL_Rect* currentmaterialClip = &mainMap.newMap_clips[materialData[0][i]];
 				mainMap.newMap_texture.render(20 + 50 * i + 12, 235, currentmaterialClip, 0, NULL, SDL_FLIP_NONE, 4);
-				gTextTexture1[i+40].render(20 + 26 + 50 * i, 235, 0, 0, NULL, SDL_FLIP_NONE, 1);
-				gTextTexture2[i+40].render(20 + 24 + 50 * i, 235, 0, 0, NULL, SDL_FLIP_NONE, 1);
+				gTextTexture1[i + 40].render(20 + 26 + 50 * i, 235, 0, 0, NULL, SDL_FLIP_NONE, 1);
+				gTextTexture2[i + 40].render(20 + 24 + 50 * i, 235, 0, 0, NULL, SDL_FLIP_NONE, 1);
 			}
 			if (materialData[1][i] && materialData[0][i] > 100 && materialData[0][i] <= 200)
 			{
 				mainMap.wall_texture.setColor(255, 255, 255);
-				SDL_Rect* currentmaterialClip = &mainMap.wall_clips[materialData[0][i]-100];
+				SDL_Rect* currentmaterialClip = &mainMap.wall_clips[materialData[0][i] - 100];
 				mainMap.wall_texture.render(20 + 50 * i + 12, 235, currentmaterialClip, 0, NULL, SDL_FLIP_NONE, 4);
 				gTextTexture1[i + 40].render(20 + 26 + 50 * i, 235, 0, 0, NULL, SDL_FLIP_NONE, 1);
 				gTextTexture2[i + 40].render(20 + 24 + 50 * i, 235, 0, 0, NULL, SDL_FLIP_NONE, 1);
@@ -383,7 +382,7 @@ void pocket::mainPocketRender()
 				SDL_Rect* currentmaterialClip = &weapon_clips[materialData[0][i] - 400];
 				weapon_texture.render(20 + 50 * i + 9, 235, currentmaterialClip, 0, NULL, SDL_FLIP_NONE, 3);
 			}
-			
+
 		}
 		for (int i = 0; i < 6; i++)
 		{
@@ -393,10 +392,10 @@ void pocket::mainPocketRender()
 				SDL_Rect* currentcraftClip = &mainMap.newMap_clips[craftData[0][i]];
 				mainMap.newMap_texture.render(20 + 50 * i + 12, 292, currentcraftClip, 0, NULL, SDL_FLIP_NONE, 4);
 			}
-			if (craftData[0][i] && craftData[0][i] > 100&& craftData[0][i] && craftData[0][i] <= 200)
+			if (craftData[0][i] && craftData[0][i] > 100 && craftData[0][i] && craftData[0][i] <= 200)
 			{
 				mainMap.wall_texture.setColor(255, 255, 255);
-				SDL_Rect* currentcraftClip = &mainMap.wall_clips[craftData[0][i]-100];
+				SDL_Rect* currentcraftClip = &mainMap.wall_clips[craftData[0][i] - 100];
 				mainMap.wall_texture.render(20 + 50 * i + 12, 292, currentcraftClip, 0, NULL, SDL_FLIP_NONE, 4);
 			}
 			if (craftData[0][i] && craftData[0][i] > 200 && craftData[0][i] && craftData[0][i] <= 300)
@@ -415,7 +414,7 @@ void pocket::mainPocketRender()
 				SDL_Rect* currentcraftClip = &weapon_clips[craftData[0][i] - 400];
 				weapon_texture.render(20 + 50 * i + 9, 290, currentcraftClip, 0, NULL, SDL_FLIP_NONE, 3);
 			}
-			
+
 		}
 		rubbish_texture.render(20 + 50 * 9 + 9, 20 + 50 * 3 + 9, rubbish_clips, 0, NULL, SDL_FLIP_NONE, 3);
 		if (isTakenUp)
@@ -455,11 +454,11 @@ void pocket::mainPocketRender()
 				gTextTextureTwo.render(mouseX + 7, mouseY + 7, 0, 0, NULL, SDL_FLIP_NONE, 1);
 
 			}
-			else if (IDWithMouse > 100&& IDWithMouse <= 200)
+			else if (IDWithMouse > 100 && IDWithMouse <= 200)
 			{
 				int mouseX, mouseY, mouseState;
 				mouseState = SDL_GetMouseState(&mouseX, &mouseY);
-				SDL_Rect* currentPocketClip = &mainMap.newMap_clips[IDWithMouse-100];
+				SDL_Rect* currentPocketClip = &mainMap.newMap_clips[IDWithMouse - 100];
 				mainMap.wall_texture.setColor(255, 255, 255);
 				mainMap.wall_texture.render(mouseX, mouseY, currentPocketClip, 0, NULL, SDL_FLIP_NONE, 4);
 
