@@ -48,8 +48,8 @@ void initEnemyDataList()
 	strcpy_s(enemyDataList[3].enemyHpPath, "images/enemyHp.png");
 
 	enemyDataList[4].ID = 4;
-	enemyDataList[4].Enemy_WIDTH = 50;
-	enemyDataList[4].Enemy_HEIGHT = 50;
+	enemyDataList[4].Enemy_WIDTH = 120;
+	enemyDataList[4].Enemy_HEIGHT = 20;
 	enemyDataList[4].healthLimit = 100;
 	enemyDataList[4].Enemy_VEL = 10;
 	enemyDataList[4].damage = 20;
@@ -63,15 +63,14 @@ void initEnemyDataList()
 	strcpy_s(enemyDataList[4].enemyHpPath, "images/enemyHp.png");
 
 	enemyDataList[5].ID = 5;
-	enemyDataList[5].Enemy_WIDTH = 50;
-	enemyDataList[5].Enemy_HEIGHT = 50;
+	enemyDataList[5].Enemy_WIDTH = 70;
+	enemyDataList[5].Enemy_HEIGHT = 90;
 	enemyDataList[5].healthLimit = 100;
 	enemyDataList[5].Enemy_VEL = 1;
-		
 	enemyDataList[5].damage = 20;
 	enemyDataList[5].AI = AI_WARRIOR;
-	enemyDataList[5].offsetX = 0;
-	enemyDataList[5].offsetY = 0;
+	enemyDataList[5].offsetX = -10;
+	enemyDataList[5].offsetY = 36;
 	enemyDataList[5].frame = 4;
 	enemyDataList[5].frameDelay = 5;
 	enemyDataList[5].enemyScale = 1;
@@ -80,13 +79,13 @@ void initEnemyDataList()
 
 	enemyDataList[6].ID = 6;
 	enemyDataList[6].Enemy_WIDTH = 50;
-	enemyDataList[6].Enemy_HEIGHT = 50;
+	enemyDataList[6].Enemy_HEIGHT = 90;
 	enemyDataList[6].healthLimit = 100;
 	enemyDataList[6].Enemy_VEL = 1;
 	enemyDataList[6].damage = 5;
 	enemyDataList[6].AI = AI_WARRIOR;
-	enemyDataList[6].offsetX = 0;
-	enemyDataList[6].offsetY = -13;
+	enemyDataList[6].offsetX = -15;
+	enemyDataList[6].offsetY = 30;
 	enemyDataList[6].frame = 4;
 	enemyDataList[6].frameDelay = 5;
 	enemyDataList[6].enemyScale = 1;
@@ -94,14 +93,14 @@ void initEnemyDataList()
 	strcpy_s(enemyDataList[6].enemyHpPath, "images/enemyHp.png");
 
 	enemyDataList[7].ID = 7;
-	enemyDataList[7].Enemy_WIDTH = 50;
-	enemyDataList[7].Enemy_HEIGHT = 50;
+	enemyDataList[7].Enemy_WIDTH = 80;
+	enemyDataList[7].Enemy_HEIGHT = 80;
 	enemyDataList[7].healthLimit = 100;
 	enemyDataList[7].Enemy_VEL = 1;
 	enemyDataList[7].damage = 5;
 	enemyDataList[7].AI = AI_JUMP_WARRIOR;
 	enemyDataList[7].offsetX = 0;
-	enemyDataList[7].offsetY = 0;
+	enemyDataList[7].offsetY = 20;
 	enemyDataList[7].frame = 2;
 	enemyDataList[7].frameDelay = 5;
 	enemyDataList[7].enemyScale = 1;

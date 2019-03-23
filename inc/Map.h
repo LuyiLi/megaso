@@ -49,7 +49,7 @@ public:
 	void render(int deltaX, int deltaY);
 	bool loadTexture();
 	void generateMap();
-
+	int calculateEnemyGenerationRate(int, int);
 	void generateGroundSurface();
 	void generateRockSurface();
 	void generateCave();

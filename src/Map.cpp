@@ -1122,6 +1122,36 @@ void Map::biomeWrite()
 	fclose(fp);
 }
 
+int Map::calculateEnemyGenerationRate(int blockPosx, int blockPosy)
+{
+	GroundBiomeTypes currentBiome = this->currentBiome(blockPosx);
+	if (blockPosy > 250)
+		return 3;
+	switch (currentBiome)
+	{
+	case GROUND_BIOME_DESERT:
+		return 6;
+		break;
+	case GROUND_BIOME_VOCANIC:
+		return 4;
+		break;
+	case GROUND_BIOME_SNOWLAND:
+		return 5;
+		break;
+	case GROUND_BIOME_MOUNTAIN:
+		return 7;
+		break;
+	case GROUND_BIOME_PLAIN:
+		return 1;
+		break;
+	case GROUND_BIOME_FOREST:
+		return 2;
+		break;
+	default:
+		break;
+	}
+}
+
 void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 {
 	scroll[0] -= player.mVelX / 6;

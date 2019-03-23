@@ -854,8 +854,39 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 
 Uint32 mainMapUpdate(Uint32 interval, void* param)
 {
+	int generationTries = 1;
+	int blockX, blockY;
+	static int generateFlag;
+	bool generationFlag;
 	if (worldTime >= 1200)
 		worldTime = 0;
+	if (!generateFlag)
+	{
+		generateFlag = random01() * 100;
+		for (int i = 0; i < generationTries; i++)
+		{
+			blockX = (random01() * 20 + 20) * (random01() * 2 < 1 ? 1 : -1) + player.blockPosX;
+			blockY = (random01() * 20) * (random01() * 2 < 1 ? 1 : -1) + player.blockPosY;
+			generationFlag = true;
+			for (int j = 0; j < 4; j++)
+				for (int k = 0; k < 4; k++)
+				{
+					if (mainMap.mapData[blockY + j][blockX + k])
+						generationFlag = false;
+				}
+			if (generationFlag || blockY > 300)
+				for (int i = 0; i < 10; i++)
+				{
+					if (!(enemyList[i].isAlive))
+					{
+						enemyList[i].create(33 * blockX + 10, 33 * blockY + 20, &enemyDataList[mainMap.calculateEnemyGenerationRate(blockX, blockY)]);
+						break;
+					}
+				}
+		}
+	}
+	else
+		generateFlag--;
 	mainMap.countBgColor();
 	mainMap.countFrontBgColor();
 	worldTime++;
