@@ -888,13 +888,13 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 
 Uint32 mainMapUpdate(Uint32 interval, void* param)
 {
-	int generationTries = (worldTime > 600 ? 2 : 1);
+	int generationTries = (worldTime > 600 ? 3 : 2);
 	int blockX, blockY;
 	static int generateFlag = 500;
 	bool generationFlag;
 	if (worldTime >= 1200)
 		worldTime = 0;
-	if (!generateFlag)
+	if (generateFlag <= 0)
 	{
 		generateFlag = random01() * 300 + 200;
 		for (int i = 0; i < generationTries; i++)

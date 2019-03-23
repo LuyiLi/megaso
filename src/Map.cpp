@@ -994,7 +994,7 @@ void Map::breakBlock(int x, int y)
 
 void Map::breakWall(int x, int y)
 {
-	if (wallData[y][x] > 109 || wallData[y][x] < 104)
+	if (wallData[y][x] > 111 || wallData[y][x] < 104)
 		return;
 	if (!(wallData[y][x] % 2))
 		for (int i = 0; i < 200; i++)
