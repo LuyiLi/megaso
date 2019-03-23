@@ -31,7 +31,7 @@ Player::Player()
 	magicPoint = 100;
 	magicLimit = 100;
 	isDead = 0;
-
+	haveLight;
 	//Initialize the velocity
 	mVelX = 0;
 	mVelY = 0;
