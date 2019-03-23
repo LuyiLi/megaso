@@ -13,6 +13,8 @@ void initEnemyDataList()
 	enemyDataList[1].Enemy_VEL=1;
 	enemyDataList[1].damage=10;
 	enemyDataList[1].AI = AI_WARRIOR;
+	enemyDataList[1].dropChance = 1; //todo
+	enemyDataList[1].dropID = 206; //todo
 	strcpy_s(enemyDataList[1].texturePath1, "images/pangolin.png");
 	strcpy_s(enemyDataList[1].texturePath2, "images/pangolin_1.png");
 	strcpy_s(enemyDataList[1].enemyHpPath, "images/enemyHp.png");

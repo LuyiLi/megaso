@@ -217,19 +217,20 @@ void initItemList()
 //ID 301-400 is tools
 
 	//ID=301
-	strcpy_s(itemList[301].itemName, "Wooden Pickaxe");
-	strcpy_s(itemList[301].itemDescription, "\0");
+	strcpy_s(itemList[301].itemName, "Gold Pickaxe");
+	strcpy_s(itemList[301].itemDescription, "The hardest pickaxe.");
 	itemList[301].maxStack = 1;
+	itemList[301].breakTime = 10;
 
 	//ID=302
 	strcpy_s(itemList[302].itemName, "Iron Pickaxe");
 	strcpy_s(itemList[302].itemDescription, "Harder than Wooden Pickaxe.");
-	itemList[302].maxStack = 1;
+	itemList[302].breakTime = 30;
 
 	//ID=303
-	strcpy_s(itemList[303].itemName, "Gold Pickaxe");
-	strcpy_s(itemList[303].itemDescription, "The hardest pickaxe.");
-	itemList[303].maxStack = 1;
+	strcpy_s(itemList[303].itemName, "Wooden Pickaxe");
+	strcpy_s(itemList[303].itemDescription, "\0");
+	itemList[303].breakTime = 50;
 
 	//ID=304
 	strcpy_s(itemList[304].itemName, "ax");

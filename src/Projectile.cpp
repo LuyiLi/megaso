@@ -32,7 +32,7 @@ void Projectile::create(int x, int y, int mousePosX, int mousePosY, int accessor
 {
 	if (!isExitsting)
 	{
-		damage = 5 + 4 * accessories;
+		damage = 5 + 7 * accessories;
 		color = accessories;
 		mCollider.x = x + 20;
 		mCollider.y = y + 10;

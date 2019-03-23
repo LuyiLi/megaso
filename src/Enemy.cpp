@@ -174,12 +174,13 @@ void Enemy::getHitProjectile(Projectile *projectile)
 
 void Enemy::getKilled()
 {
-	for (int i = 0; i < 200; i++)
-		if (droppedItemList[i].item.itemType == ITEM_NULL)
-		{
-			droppedItemList[i].create(mCollider.x + 15, mCollider.y, itemList[enemyData->dropID]);
-			break;
-		}
+	if (random01() <= enemyData->dropChance)
+		for (int i = 0; i < 200; i++)
+			if (droppedItemList[i].item.itemType == ITEM_NULL)
+			{
+				droppedItemList[i].create(mCollider.x + 15, mCollider.y, itemList[enemyData->dropID]);
+				break;
+			}
 	isAlive = false;
 	mCollider.x = 0;
 	mCollider.y = 0;
