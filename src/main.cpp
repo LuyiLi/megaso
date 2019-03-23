@@ -103,7 +103,7 @@ bool quit = false;
 bool init();
 bool loadMedia();
 void close();
-
+int haveTorch = 0;
 bool projectileReady = true;
 int projectileFlag = 0;
 int pocketNumber = 1;
@@ -402,6 +402,41 @@ Uint32 renderBgChangeCallback(Uint32 interval, void* param)
 
 Uint32 callback(Uint32 interval, void* param)
 {
+	if (mainPocket.accessories>0)
+	{
+		player.haveLight = 1;
+	}
+	else if (mainPocket.pocketData[0][pocketNumber - 1] == 307)
+	{
+		player.haveLight = 1;
+	}
+	else if (pocketNumber == 1)
+	{
+		if (mainPocket.pocketData[0][1] == 307)
+		{
+			player.haveLight = 1;
+		}
+		else
+		{
+			player.haveLight = 0;
+		}
+	}
+	else if (pocketNumber > 1)
+	{
+		if (mainPocket.pocketData[0][pocketNumber] == 307 || mainPocket.pocketData[0][pocketNumber - 2] == 307)
+		{
+			player.haveLight = 1;
+		}
+		else
+		{
+			player.haveLight = 0;
+		}
+	}
+	else
+	{
+		player.haveLight = 0;
+	}
+	printf("light %d\n", player.haveLight);
 	targetState = mainMap.currentBiome(player.blockPosX);
 	if (targetState != currentBiome&& !bgIsChanging)
 	{

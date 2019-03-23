@@ -90,6 +90,8 @@ public:
 	int posX;
 	int posY;
 
+	int haveLight;
+
 	SDL_Point weaponCollisionPoints[5];
 
 	int blockPosX;
