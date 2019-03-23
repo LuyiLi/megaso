@@ -436,7 +436,6 @@ Uint32 callback(Uint32 interval, void* param)
 	{
 		player.haveLight = 0;
 	}
-	printf("light %d\n", player.haveLight);
 	targetState = mainMap.currentBiome(player.blockPosX);
 	if (targetState != currentBiome&& !bgIsChanging)
 	{
@@ -548,9 +547,11 @@ Uint32 callback(Uint32 interval, void* param)
 	centralPoint[3].x = 100 * 2 / 3;
 	centralPoint[3].y = 100 * 2 / 3;
 	
-	
+	int R = mainMap.lightBlock[21][21], G = mainMap.lightBlock[21][21], B = mainMap.lightBlock[21][21];
 	if (mainPocket.pocketData[0][pocketNumber - 1] > 0 && mainPocket.pocketData[0][pocketNumber - 1] <= 100)
 	{
+		
+		mainMap.newMap_texture.setColor(R, G, B);
 		if (player.acceleration > 0)
 		{
 			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock -20, &centralPoint[0], SDL_FLIP_NONE, 4);
@@ -576,10 +577,12 @@ Uint32 callback(Uint32 interval, void* param)
 				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 65, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint[0], SDL_FLIP_HORIZONTAL, 4);
 			}
 		}
+		mainMap.newMap_texture.setColor(255, 255, 255);
 	}
 
 	else if (mainPocket.pocketData[0][pocketNumber - 1] > 300 && mainPocket.pocketData[0][pocketNumber - 1] <= 400)
 	{
+		tool_texture.setColor(R, G, B);
 		if (player.acceleration > 0)
 		{
 			tool_texture.render(SCREEN_WIDTH / 2 + 20, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1]-300], player.currentAngle, &centralPoint[0], SDL_FLIP_NONE, 1.5);
@@ -607,9 +610,11 @@ Uint32 callback(Uint32 interval, void* param)
 				player.weaponState = 2;
 			}
 		}
+		tool_texture.setColor(255, 255, 255);
 	}
 	else if (mainPocket.pocketData[0][pocketNumber - 1] > 400 && mainPocket.pocketData[0][pocketNumber - 1] <= 500)
 	{
+		weapon_texture.setColor(R, G, B);
 		if (player.acceleration > 0)
 		{
 			weapon_texture.render(SCREEN_WIDTH / 2 + 20, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], player.currentAngle, &centralPoint[2], SDL_FLIP_NONE, 1.5);
@@ -639,6 +644,7 @@ Uint32 callback(Uint32 interval, void* param)
 				player.weaponState = 2;
 			}
 		}
+		weapon_texture.setColor(255, 255, 255);
 	
 	}
 	else
@@ -760,7 +766,6 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 			}
 			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY && mainPocket.pocketData[0][pocketNumber - 1] == 305)
 			{
-				printf("using\n");
 				//Break the block if time is enough
 				if (flag == 40)
 				{
@@ -786,7 +791,6 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 				// block is not broken if time is not enough
 				crackFlag = flag / 10;
 				flag++;
-				printf("cut tree");
 				//Timer set
 				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 				return 0;

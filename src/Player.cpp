@@ -309,11 +309,28 @@ void Player::moveAction(int deltaX, int deltaY)
 
 	static int frame_walk = 0;
 	static int frame_stand = 0;
+	int R = mainMap.lightBlock[21][21], G = mainMap.lightBlock[21][21], B = mainMap.lightBlock[21][21];
+
+	slime_walking_texture.setColor(R, G, B);
+	slime_walking_texture_blue.setColor(R, G, B);
+	slime_walking_texture_green.setColor(R, G, B);
+	slime_walking_texture_red.setColor(R, G, B);
+
+	slime_standing_texture.setColor(R, G, B);
+	slime_standing_texture_blue.setColor(R, G, B);
+	slime_standing_texture_green.setColor(R, G, B);
+	slime_standing_texture_red.setColor(R, G, B);
 	
+	slime_standing_side_texture.setColor(R, G, B);
+	slime_standing_side_texture_blue.setColor(R, G, B);
+	slime_standing_side_texture_red.setColor(R, G, B);
+	slime_standing_side_texture_green.setColor(R, G, B);
+
 	if (acceleration > 0)
 	{
+		
 		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-
+		
 		switch (mainPocket.accessories)
 		{
 		case 0:
