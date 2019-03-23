@@ -849,15 +849,15 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 
 Uint32 mainMapUpdate(Uint32 interval, void* param)
 {
-	int generationTries = 1;
+	int generationTries = (worldTime > 600 ? 2 : 1);
 	int blockX, blockY;
-	static int generateFlag;
+	static int generateFlag = 500;
 	bool generationFlag;
 	if (worldTime >= 1200)
 		worldTime = 0;
 	if (!generateFlag)
 	{
-		generateFlag = random01() * 100;
+		generateFlag = random01() * 300 + 200;
 		for (int i = 0; i < generationTries; i++)
 		{
 			blockX = (random01() * 20 + 20) * (random01() * 2 < 1 ? 1 : -1) + player.blockPosX;

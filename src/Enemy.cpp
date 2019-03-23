@@ -158,7 +158,7 @@ void Enemy::getHitProjectile(Projectile *projectile)
 		if (intersect(mCollider, projectile->mCollider))
 		{
 			projectile->isExitsting = false;
-			healthPoint -= 5;
+			healthPoint -= projectile->damage;
 			if (canBeKnockedBack)
 			{
 				mVelX = projectile->mVelX > 0 ? 10 : -10;
