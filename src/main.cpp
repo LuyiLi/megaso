@@ -87,7 +87,10 @@ LTexture hp_texture;
 SDL_Rect mp_clips[2];
 LTexture mp_texture;
 
-
+SDL_Rect title_clips;
+LTexture title1_texture;
+LTexture title2_texture;
+LTexture megaso_texture;
 
 SDL_TimerID backgroundTimer;
 
@@ -107,7 +110,7 @@ int pocketNumber = 1;
 int prevPocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
-int target[23] = {82500,3000,100, 0, 255,255,255,255,255,255};
+int target[23] = {82500,3000,100};
 int bgIsChanging=0;
 int mouseX, mouseY, mouseState;
 int crackFlag;
@@ -120,7 +123,7 @@ int heartFrame = 0;
 int magicFrame = 0;
 GroundBiomeTypes currentBiome = mainMap.currentBiome(player.blockPosX);
 GroundBiomeTypes targetState = mainMap.currentBiome(player.blockPosX);
-
+int gameStarted = 0;
 double angleForBlock = 0;
 
 bool init()
@@ -172,14 +175,6 @@ bool init()
 	player.mCollider.y = target[1];
 	player.healthPoint = target[2];
 	worldTime = target[3];
-	for (int i = 4; i < 7; i++)
-	{
-		mainMap.bgColor[i-4] = target[i];
-	}
-	for (int i = 7; i < 10; i++)
-	{
-		mainMap.frontBgColor[i - 7] = target[i];
-	}
 	//Initialize currentItem
 	player.currentItem = itemList[mainPocket.pocketData[pocketNumber - 1][0]];
 	//Initialize SDL
@@ -341,6 +336,13 @@ bool loadMedia()
 		}
 	}
 
+	if (title1_texture.loadFromFile("images/title1.png") && title2_texture.loadFromFile("images/title2.png") && megaso_texture.loadFromFile("images/megaso.png"))
+	{
+		title_clips.x = 0;
+		title_clips.y = 0;
+		title_clips.w = 900;
+		title_clips.h = 600;
+	}
 	else
 	{
 		printf("Failed to load media\n");
@@ -366,14 +368,6 @@ void close()
 	data[1] = player.mCollider.y;
 	data[2] = player.healthPoint;
 	data[3] = worldTime;
-	for (int i = 4; i < 7; i++)
-	{
-		data[i] = mainMap.bgColor[i - 4];
-	}
-	for (int i = 7; i < 10; i++)
-	{
-		data[i] = mainMap.frontBgColor[i - 7];
-	}
 	savingControler.fileWrite(data);
 
 	//Saving last map condition into map.txt
@@ -902,129 +896,164 @@ int main(int argc, char* args[])
 		if (!loadMedia());
 		else
 		{
-			bool quit = false;
-			SDL_Event e;
-			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
-			SDL_TimerID mainTimer = SDL_AddTimer(1000, mainMapUpdate, (void*)"a");
-			while (!quit)
+			megaso_texture.render(0, 0, &title_clips, 0, NULL, SDL_FLIP_NONE, 1);
+			SDL_RenderPresent(gRenderer);
+			SDL_Delay(1500);
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+			//Clear the render for next use
+			SDL_RenderClear(gRenderer);
+			int time = 0;
+			while (gameStarted == 0)
 			{
+				SDL_Event e;
+				time++;
+				if (time <= 50)
+				{
+					title1_texture.render(0, 0, &title_clips, 0, NULL, SDL_FLIP_NONE, 1);
+				}
+				else
+				{
+					title2_texture.render(0, 0, &title_clips, 0, NULL, SDL_FLIP_NONE, 1);
+				}
+				SDL_RenderPresent(gRenderer);
+				if (time == 101)
+				{
+					time = 0;
+				}
 				while (SDL_PollEvent(&e) != 0)
 				{
-					if (e.type == SDL_KEYDOWN)
+					if (e.type == SDL_KEYDOWN || e.type == SDL_MOUSEBUTTONDOWN)
 					{
-						if (e.key.keysym.sym == SDLK_x)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x, player.mCollider.y - 200, &enemyDataList[1]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_c)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[2]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_v)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x + 400, player.mCollider.y + 300, &enemyDataList[3]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_b)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[4]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_n)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[5]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_m)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[6]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_z)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[7]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_f)
-						{
-							if (player.magicPoint > 12)
-							{
-								if (projectileReady)
-								{
-									projectileReady = false;
-									SDL_GetMouseState(&mouseX, &mouseY);
-									player.magicPoint -= 12;
-									projectile.create(player.posX, player.posY, mouseX, mouseY, mainPocket.accessories);
-								}
-							
-							}
-						}
+						gameStarted = 1;
 					}
-					
-					//User requests quit
-					if (e.type == SDL_QUIT)
-					{
-						quit = true;
-						close();
-					}
-					if (e.type == SDL_MOUSEBUTTONDOWN && !mainPocket.isOpened)
-					{
-						//Get mouse position
-						mouseTimerCallback(0, &mouseState);
-					}
-					mainPocket.handlePocketEvents(e);
-					if (pocketNumber != prevPocketNumber)
-					{
-						prevPocketNumber = pocketNumber;
-						player.currentItem = itemList[mainPocket.pocketData[0][pocketNumber - 1]];
-					}
-					player.handleEvent(e);
 				}
-				//SDL_Delay(10);
+			}
+			if(gameStarted)
+			{
+				bool quit = false;
+				SDL_Event e;
+				SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
+				SDL_TimerID mainTimer = SDL_AddTimer(1000, mainMapUpdate, (void*)"a");
+				while (!quit)
+				{
+					while (SDL_PollEvent(&e) != 0)
+					{
+						if (e.type == SDL_KEYDOWN)
+						{
+							if (e.key.keysym.sym == SDLK_x)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x, player.mCollider.y - 200, &enemyDataList[1]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_c)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[2]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_v)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x + 400, player.mCollider.y + 300, &enemyDataList[3]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_b)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[4]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_n)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[5]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_m)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[6]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_z)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[7]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_f)
+							{
+								if (player.magicPoint > 12)
+								{
+									if (projectileReady)
+									{
+										projectileReady = false;
+										SDL_GetMouseState(&mouseX, &mouseY);
+										player.magicPoint -= 12;
+										projectile.create(player.posX, player.posY, mouseX, mouseY, mainPocket.accessories);
+									}
+
+								}
+							}
+						}
+
+						//User requests quit
+						if (e.type == SDL_QUIT)
+						{
+							quit = true;
+							close();
+						}
+						if (e.type == SDL_MOUSEBUTTONDOWN && !mainPocket.isOpened)
+						{
+							//Get mouse position
+							mouseTimerCallback(0, &mouseState);
+						}
+						mainPocket.handlePocketEvents(e);
+						if (pocketNumber != prevPocketNumber)
+						{
+							prevPocketNumber = pocketNumber;
+							player.currentItem = itemList[mainPocket.pocketData[0][pocketNumber - 1]];
+						}
+						player.handleEvent(e);
+					}
+					//SDL_Delay(10);
+				}
 			}
 			return 0;
 		}
