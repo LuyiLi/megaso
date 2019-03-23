@@ -110,7 +110,7 @@ int pocketNumber = 1;
 int prevPocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
-int target[23] = {82500,3000,100};
+int target[23] = {82500,3000,100,0};
 int bgIsChanging=0;
 int mouseX, mouseY, mouseState;
 int crackFlag;
@@ -174,6 +174,7 @@ bool init()
 	player.mCollider.x = target[0];
 	player.mCollider.y = target[1];
 	player.healthPoint = target[2];
+	mainPocket.accessories = target[3];
 	worldTime = target[3];
 	//Initialize currentItem
 	player.currentItem = itemList[mainPocket.pocketData[pocketNumber - 1][0]];
@@ -228,8 +229,8 @@ bool init()
 			}
 		}
 	}
-	enemyList[0].create(500, 100, &enemyDataList[1]);
-	enemyList[1].create(500, 200, &enemyDataList[1]);
+	//enemyList[0].create(500, 100, &enemyDataList[1]);
+	//enemyList[1].create(500, 200, &enemyDataList[1]);
 	return success;
 }
 
@@ -367,7 +368,7 @@ void close()
 	data[0] = player.mCollider.x;
 	data[1] = player.mCollider.y;
 	data[2] = player.healthPoint;
-	data[3] = worldTime;
+	data[3] = mainPocket.accessories;
 	savingControler.fileWrite(data);
 
 	//Saving last map condition into map.txt
@@ -938,8 +939,10 @@ int main(int argc, char* args[])
 				{
 					while (SDL_PollEvent(&e) != 0)
 					{
+						
 						if (e.type == SDL_KEYDOWN)
 						{
+							/*
 							if (e.key.keysym.sym == SDLK_x)
 							{
 								for (int i = 0; i < 10; i++)
@@ -1017,6 +1020,7 @@ int main(int argc, char* args[])
 									}
 								}
 							}
+							*/
 							if (e.key.keysym.sym == SDLK_f)
 							{
 								if (player.magicPoint > 12)
