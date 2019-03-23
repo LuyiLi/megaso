@@ -150,6 +150,12 @@ void Enemy::getHit(Player *player)
 				return;
 			}
 	}
+	if (abs(blockPosX - player->blockPosX) + abs(blockPosY - player->blockPosY) > 150)
+	{
+		isAlive = false;
+		mCollider.x = 0;
+		mCollider.y = 0;
+	}
 }
 
 void Enemy::getHitProjectile(Projectile *projectile)
