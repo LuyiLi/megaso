@@ -4,5 +4,5 @@
 //∆¡ƒª≥ﬂ¥Á…Ë∂®
 const int SCREEN_WIDTH = 900;
 const int SCREEN_HEIGHT = 600;
-const int g = 1;
+const float g = 0.6;
 #endif 

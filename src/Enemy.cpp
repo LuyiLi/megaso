@@ -86,14 +86,14 @@ void Enemy::move()
 
 
 	//If the Player collided
-	mCollider.y += mVelY;
+	mCollider.y += mVelY >= 0 && mVelY < 1 ? 1 : mVelY;
 	posY = mCollider.y;
 
 	//If the Player collided
 	if (checkCollision())
 	{
 		//Move back
-		mCollider.y -= mVelY;
+		mCollider.y -= mVelY >= 0 && mVelY < 1 ? 1 : mVelY;
 		mVelY = 0;
 		posY = mCollider.y;
 		canJump = true;
@@ -141,7 +141,7 @@ void Enemy::getHit(Player *player)
 				{
 					mVelX = player->mCollider.x < mCollider.x ? 10 : -10;
 					if (mVelY > -2)
-						mVelY -= 9;
+						mVelY -= 7;
 					canBeHit = false;
 					hitFlag = 0;
 				}
@@ -246,7 +246,7 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		if (acceleration > 0 && attackMode == ATTACKMODE_PREPARE)
 		{
 			frameFlag++;
-			if (frameFlag == 2)
+			if (frameFlag == 4)
 			{
 				frame++;
 				frameFlag = 0;
@@ -268,7 +268,7 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		if (acceleration < 0 && attackMode == ATTACKMODE_PREPARE)
 		{
 			frameFlag++;
-			if (frameFlag == 2)
+			if (frameFlag == 4)
 			{
 				frame++;
 				frameFlag = 0;
@@ -290,7 +290,7 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		if (acceleration < 0 && attackMode == ATTACKMODE_FINISH)
 		{
 			frameFlag++;
-			if (frameFlag == 2)
+			if (frameFlag == 4)
 			{
 				frame++;
 				frameFlag = 0;
@@ -312,7 +312,7 @@ void Enemy::moveAction(int deltaX, int deltaY)
 		if (acceleration > 0 && attackMode == ATTACKMODE_FINISH)
 		{
 			frameFlag++;
-			if (frameFlag == 2)
+			if (frameFlag == 4)
 			{
 				frame++;
 				frameFlag = 0;
@@ -383,7 +383,7 @@ void Enemy::moveAction(int deltaX, int deltaY)
 			enemyData->enemy_walking_texture[1].render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_HORIZONTAL, 1.2);
 			angle -= 30;
 		}
-		if (modeFlag < 200)
+		if (modeFlag < 300)
 		{
 			modeFlag++;
 		}
@@ -392,7 +392,7 @@ void Enemy::moveAction(int deltaX, int deltaY)
 			if (attackMode == ATTACKMODE_NONE)
 			{
 				attackMode = ATTACKMODE_PREPARE;
-				Enemy_VEL = 8;
+				Enemy_VEL = 5;
 				modeFlag = 0;
 			}
 			else if (attackMode == ATTACKMODE_ATTACKING)

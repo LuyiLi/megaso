@@ -65,60 +65,7 @@ LTexture rubbish_texture;
 void pocket::mainPocketRender()
 {
 	composingTableUpdate();
-	if (pocketUI_texture.loadFromFile("images/pocket.png"))
-	{
-		for (int i = 0; i < 5; i++)
-		{
-			pocketUI_clips[i].x = 100 * i;
-			pocketUI_clips[i].y = 0;
-			pocketUI_clips[i].w = 100;
-			pocketUI_clips[i].h = 100;
-		}
-		pocketUI_clips[5].x = 500;
-		pocketUI_clips[5].y = 0;
-		pocketUI_clips[5].w = 300;
-		pocketUI_clips[5].h = 100;
-
-		pocketUI_clips[6].x = 800;
-		pocketUI_clips[6].y = 0;
-		pocketUI_clips[6].w = 100;
-		pocketUI_clips[6].h = 100;
-
-		pocketUI_clips[7].x = 900;
-		pocketUI_clips[7].y = 0;
-		pocketUI_clips[7].w = 300;
-		pocketUI_clips[7].h = 100;
-	}
-
-	if (accessories_texture.loadFromFile("images/accessories.png"))
-	{
-		for (int i = 0; i < 6; i++)
-		{
-			accessories_clips[i].x = 100 * i;
-			accessories_clips[i].y = 0;
-			accessories_clips[i].w = 100;
-			accessories_clips[i].h = 100;
-		}
-	}
-
-	if (material_texture.loadFromFile("images/material.png"))
-	{
-		for (int i = 0; i < 23; i++)
-		{
-			material_clips[i].x = 100 * i;
-			material_clips[i].y = 0;
-			material_clips[i].w = 100;
-			material_clips[i].h = 100;
-		}
-	}
-
-	if (rubbish_texture.loadFromFile("images/rubbish.png"))
-	{
-		rubbish_clips[0].x = 0;
-		rubbish_clips[0].y = 0;
-		rubbish_clips[0].w = 100;
-		rubbish_clips[0].h = 100;
-	}
+	
 
 	for (int pocketPos = 0; pocketPos < 40; pocketPos++)
 	{
@@ -716,6 +663,65 @@ void pocket::composingTableUpdate()
 		}
 	}
 	
+}
+
+bool pocket::loadTexture()
+{
+	if (pocketUI_texture.loadFromFile("images/pocket.png"))
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			pocketUI_clips[i].x = 100 * i;
+			pocketUI_clips[i].y = 0;
+			pocketUI_clips[i].w = 100;
+			pocketUI_clips[i].h = 100;
+		}
+		pocketUI_clips[5].x = 500;
+		pocketUI_clips[5].y = 0;
+		pocketUI_clips[5].w = 300;
+		pocketUI_clips[5].h = 100;
+
+		pocketUI_clips[6].x = 800;
+		pocketUI_clips[6].y = 0;
+		pocketUI_clips[6].w = 100;
+		pocketUI_clips[6].h = 100;
+
+		pocketUI_clips[7].x = 900;
+		pocketUI_clips[7].y = 0;
+		pocketUI_clips[7].w = 300;
+		pocketUI_clips[7].h = 100;
+	}
+
+	if (accessories_texture.loadFromFile("images/accessories.png"))
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			accessories_clips[i].x = 100 * i;
+			accessories_clips[i].y = 0;
+			accessories_clips[i].w = 100;
+			accessories_clips[i].h = 100;
+		}
+	}
+
+	if (material_texture.loadFromFile("images/material.png"))
+	{
+		for (int i = 0; i < 23; i++)
+		{
+			material_clips[i].x = 100 * i;
+			material_clips[i].y = 0;
+			material_clips[i].w = 100;
+			material_clips[i].h = 100;
+		}
+	}
+
+	if (rubbish_texture.loadFromFile("images/rubbish.png"))
+	{
+		rubbish_clips[0].x = 0;
+		rubbish_clips[0].y = 0;
+		rubbish_clips[0].w = 100;
+		rubbish_clips[0].h = 100;
+	}
+	return true;
 }
 
 void pocket::handlePocketEvents(SDL_Event e)

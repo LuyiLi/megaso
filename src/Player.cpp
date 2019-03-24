@@ -138,14 +138,14 @@ void Player::move()
 	
 	
 	//Move the Player up or down
-	mCollider.y += mVelY;
+	mCollider.y += mVelY >= 0 && mVelY < 1 ? 1 : mVelY;
 	posY = mCollider.y;
 
 	//If the Player collided
 	if (checkCollision())
 	{
 		//Move back
-		mCollider.y -= mVelY;
+		mCollider.y -= mVelY >= 0 && mVelY < 1 ? 1 : mVelY;
 		mVelY = 0;
 		posY = mCollider.y;
 		canJump = true;
@@ -158,7 +158,6 @@ void Player::move()
 		if (mVelY > 5)
 			canJump = false;
 	}
-	
 	if (blockPosY != mCollider.y / (33) || blockPosX != mCollider.x / (33))
 	{
 		blockPosX = mCollider.x / (33);
@@ -200,7 +199,7 @@ void Player::getHit(Enemy *enemy)
 	{
 		if (intersect(enemy->mCollider, mCollider))
 		{
-			mVelX = enemy->mCollider.x < mCollider.x ? 20 : -20;
+			mVelX = enemy->mCollider.x < mCollider.x ? 14 : -14;
 			if (mVelY > -2)
 				mVelY -= 6;
 			canBeHit = false;
@@ -304,7 +303,7 @@ void Player::updateCollisionBox()
 		}
 }
 
-void Player::moveAction(int deltaX, int deltaY)
+void Player::moveAction(int deltaX, int deltaY, int posX, int posY)
 {
 
 	static int frame_walk = 0;
@@ -329,7 +328,7 @@ void Player::moveAction(int deltaX, int deltaY)
 	if (acceleration > 0)
 	{
 		
-		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
+		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 8];
 		
 		switch (mainPocket.accessories)
 		{
@@ -351,14 +350,14 @@ void Player::moveAction(int deltaX, int deltaY)
 
 		
 		++frame_walk;
-		if (frame_walk / 4 >= 4)
+		if (frame_walk / 8 >= 4)
 		{
 			frame_walk = 0;
 		}
 	}
 	else if (acceleration < 0)
 	{
-		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
+		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 8];
 		switch (mainPocket.accessories)
 		{
 		case 0:
@@ -377,7 +376,7 @@ void Player::moveAction(int deltaX, int deltaY)
 			break;
 		}
 		++frame_walk;
-		if (frame_walk / 4 >= 4)
+		if (frame_walk / 8 >= 4)
 		{
 			frame_walk = 0;
 		}
@@ -386,33 +385,33 @@ void Player::moveAction(int deltaX, int deltaY)
 	{
 		if (weaponState == 0)
 		{
-			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
+			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 12];
 			switch (mainPocket.accessories)
 			{
 			case 0:
-				slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+				slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 12);
 				break;
 			case 1:
-				slime_standing_texture_blue.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+				slime_standing_texture_blue.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 12);
 				break;
 			case 2:
-				slime_standing_texture_green.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+				slime_standing_texture_green.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 12);
 				break;
 			case 3:
-				slime_standing_texture_red.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
+				slime_standing_texture_red.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 12);
 				break;
 			default:
 				break;
 			}
 			++frame_stand;
-			if (frame_stand / 6 >= 6)
+			if (frame_stand / 12 >= 6)
 			{
 				frame_stand = 0;
 			}
 		}
 		else if (weaponState == 1)
 		{
-			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
+			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 12];
 			switch (mainPocket.accessories)
 			{
 			case 0:
@@ -431,14 +430,14 @@ void Player::moveAction(int deltaX, int deltaY)
 				break;
 			}
 			++frame_stand;
-			if (frame_stand / 6 >= 6)
+			if (frame_stand / 12 >= 6)
 			{
 				frame_stand = 0;
 			}
 		}
 		else if (weaponState == 2)
 		{
-			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
+			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 12];
 			switch (mainPocket.accessories)
 			{
 			case 0:
@@ -457,7 +456,7 @@ void Player::moveAction(int deltaX, int deltaY)
 				break;
 			}
 			++frame_stand;
-			if (frame_stand / 6 >= 6)
+			if (frame_stand / 12 >= 6)
 			{
 				frame_stand = 0;
 			}

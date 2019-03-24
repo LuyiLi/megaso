@@ -46,7 +46,7 @@ public:
 	int mapData[yBlockNumber][xBlockNumber];
 	int wallData[yBlockNumber][xBlockNumber];
 	void drawCircle(int x, int y, int r);
-	void render(int deltaX, int deltaY);
+	void render(int deltaX, int deltaY, int blockPosX, int blockPosY);
 	bool loadTexture();
 	void generateMap();
 	int calculateEnemyGenerationRate(int, int);
@@ -62,7 +62,7 @@ public:
 	void mapRead();
 	void mapWrite();
 	int checkIfExist();
-	void renderWall(int deltaX, int deltaY);
+	void renderWall(int deltaX, int deltaY, int blockPosX, int blockPosY);
 	void breakWall(int x, int y);
 	void putWall(int x, int y, int ID);
 	void wallRead();
@@ -70,7 +70,8 @@ public:
 	void renderBg(GroundBiomeTypes, GroundBiomeTypes);
 	int renderBgChange(GroundBiomeTypes tar);
 	int checkIfWallExist();
-	void calculateLight(int x, int y);
+	void calculateLightMatrix(int blockPosX, int blockPosY);
+	void calculateLight(int x, int y, int blockPosX, int blockPosY);
 	void generateBiome();
 	void biomeRead();
 	void biomeWrite();
