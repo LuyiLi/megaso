@@ -57,17 +57,17 @@ void Player::handleEvent(SDL_Event& e)
 		{
 			if (canJump)
 			{
-				mVelY = -15;
+				mVelY = -10;
 				canJump = false;
 			}
 		}
 		else if (e.key.keysym.sym == SDLK_a)
 		{
-			acceleration--;
+			acceleration-=1;
 		}
 		else if (e.key.keysym.sym == SDLK_d)
 		{
-			acceleration++;
+			acceleration+=1;
 		}
 
 	}
@@ -79,12 +79,12 @@ void Player::handleEvent(SDL_Event& e)
 		{
 		case SDLK_a: 
 				mVelX = 0; 
-				acceleration++; 
+				acceleration += 1;
 				break;
 			
 		case SDLK_d: 
 				mVelX = 0; 
-				acceleration--;  
+				acceleration -= 1;
 				break;
 			
 		}
@@ -115,17 +115,17 @@ void Player::move()
 	}
 
 	if (!acceleration && mVelX != 0)
-		mVelX = mVelX > 0 ? mVelX - 1 : mVelX + 1;
+		mVelX = mVelX > 0 ? mVelX - 0.1 : mVelX + 0.1;
 
 	mCollider.x += mVelX;
-	posX = mCollider.x - 10;
+	posX = mCollider.x - 5;
 
 	if (checkCollision())
 	{
 		//Move back
 		mCollider.x -= mVelX;
 		mVelX = 0;
-		posX = mCollider.x - 10;
+		posX = mCollider.x - 5;
 	}
 	else if (((mVelX <= Player_VEL || acceleration < 0) && mVelX >= 0) || ((mVelX >= -Player_VEL || acceleration > 0) && mVelX <= 0))
 	{
@@ -389,16 +389,16 @@ void Player::moveAction(int deltaX, int deltaY, int posX, int posY)
 			switch (mainPocket.accessories)
 			{
 			case 0:
-				slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 12);
+				slime_standing_texture.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
 				break;
 			case 1:
-				slime_standing_texture_blue.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 12);
+				slime_standing_texture_blue.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
 				break;
 			case 2:
-				slime_standing_texture_green.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 12);
+				slime_standing_texture_green.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
 				break;
 			case 3:
-				slime_standing_texture_red.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 12);
+				slime_standing_texture_red.render((posX + deltaX), (posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 6);
 				break;
 			default:
 				break;
