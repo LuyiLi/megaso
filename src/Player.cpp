@@ -115,7 +115,7 @@ void Player::move()
 	}
 
 	if (!acceleration && mVelX != 0)
-		mVelX = mVelX > 0 ? mVelX - 0.1 : mVelX + 0.1;
+		mVelX = mVelX > 0 ? mVelX - 0.5 : mVelX + 0.5;
 
 	mCollider.x += mVelX;
 	posX = mCollider.x - 5;

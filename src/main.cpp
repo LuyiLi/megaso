@@ -654,6 +654,7 @@ Uint32 movementCallback(Uint32 interval, void* param)
 	player.updateMoveAction();
 	//Reimu-Rubo moves
 	player.move();
+	mainMap.updateScroll();
 	projectile.move();
 	if (!projectileReady)
 	{
@@ -1017,7 +1018,7 @@ int main(int argc, char* args[])
 						
 						if (e.type == SDL_KEYDOWN)
 						{
-							
+							/*
 							if (e.key.keysym.sym == SDLK_x)
 							{
 								for (int i = 0; i < 10; i++)
@@ -1095,7 +1096,7 @@ int main(int argc, char* args[])
 									}
 								}
 							}
-							
+							*/
 							if (e.key.keysym.sym == SDLK_f)
 							{
 								if (player.magicPoint > 12)

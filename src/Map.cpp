@@ -271,7 +271,7 @@ void Map::calculateLightMatrix(int blockPosX, int blockPosY)
 	{
 		for (int j = 0; j < 40; j++)
 		{
-			lightBlock[i][j] = 0;
+			lightBlock[i][j] = 1;
 		}
 	}
 	//light the wall
@@ -1152,7 +1152,7 @@ int Map::calculateEnemyGenerationRate(int blockPosx, int blockPosy)
 	}
 }
 
-void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
+void Map::updateScroll()
 {
 	scroll[0] -= player.mVelX / 6;
 	scroll[1] -= player.mVelX / 5;
@@ -1160,6 +1160,11 @@ void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 	scroll[3] -= player.mVelX / 3;
 	scroll[4] -= player.mVelX / 2.5;
 	scroll[5] -= player.mVelX / 2;
+}
+
+void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
+{
+
 	for (int i = 0; i < 6; i++)
 	{
 		if (abs(scroll[i]) > 900)

@@ -185,6 +185,7 @@
     <ClInclude Include="inc\SavingControl.h" />
     <ClInclude Include="inc\pocket.h" />
     <ClInclude Include="inc\Projectile.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Projectile.cpp" />
@@ -206,6 +207,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\global.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GameTest2.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon2.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

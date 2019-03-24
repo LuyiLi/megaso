@@ -62,6 +62,7 @@ public:
 	void mapRead();
 	void mapWrite();
 	int checkIfExist();
+	void updateScroll();
 	void renderWall(int deltaX, int deltaY, int blockPosX, int blockPosY);
 	void breakWall(int x, int y);
 	void putWall(int x, int y, int ID);
