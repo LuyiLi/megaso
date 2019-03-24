@@ -390,7 +390,8 @@ void close()
 	//Free loaded images
 	mainPocket.pocketWrite(mainPocket.pocketData);
 	//Quit SDL subsystems
-
+	exit(0);
+	
 	IMG_Quit();
 	SDL_Quit();
 	TTF_Quit();
@@ -994,9 +995,15 @@ int main(int argc, char* args[])
 			{
 				bool quit = false;
 				SDL_Event e;
-				std::thread t1(foo);
-				t1.detach();
-				//SDL_Delay(30);
+				try {
+					std::thread t1(foo);
+					t1.detach();
+				}
+				catch (std::system_error) {
+					SDL_Delay(30);
+					std::thread t1(foo);
+					t1.detach();
+				}
 				SDL_TimerID movementTimer = SDL_AddTimer(16, movementCallback, (void*)"a");
 				SDL_TimerID mainTimer = SDL_AddTimer(1000, mainMapUpdate, (void*)"a");
 				while (!quit)
@@ -1006,7 +1013,7 @@ int main(int argc, char* args[])
 						
 						if (e.type == SDL_KEYDOWN)
 						{
-							
+							/*
 							if (e.key.keysym.sym == SDLK_x)
 							{
 								for (int i = 0; i < 10; i++)
@@ -1084,7 +1091,7 @@ int main(int argc, char* args[])
 									}
 								}
 							}
-							
+							*/
 							if (e.key.keysym.sym == SDLK_f)
 							{
 								if (player.magicPoint > 12)
