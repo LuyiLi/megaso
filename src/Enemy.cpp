@@ -86,14 +86,14 @@ void Enemy::move()
 
 
 	//If the Player collided
-	mCollider.y += mVelY;
+	mCollider.y += mVelY >= 0 && mVelY < 1 ? 1 : mVelY;
 	posY = mCollider.y;
 
 	//If the Player collided
 	if (checkCollision())
 	{
 		//Move back
-		mCollider.y -= mVelY;
+		mCollider.y -= mVelY >= 0 && mVelY < 1 ? 1 : mVelY;
 		mVelY = 0;
 		posY = mCollider.y;
 		canJump = true;
@@ -141,7 +141,7 @@ void Enemy::getHit(Player *player)
 				{
 					mVelX = player->mCollider.x < mCollider.x ? 10 : -10;
 					if (mVelY > -2)
-						mVelY -= 9;
+						mVelY -= 7;
 					canBeHit = false;
 					hitFlag = 0;
 				}
@@ -149,6 +149,12 @@ void Enemy::getHit(Player *player)
 					getKilled();
 				return;
 			}
+	}
+	if (abs(blockPosX - player->blockPosX) + abs(blockPosY - player->blockPosY) > 150)
+	{
+		isAlive = false;
+		mCollider.x = 0;
+		mCollider.y = 0;
 	}
 }
 
@@ -158,7 +164,7 @@ void Enemy::getHitProjectile(Projectile *projectile)
 		if (intersect(mCollider, projectile->mCollider))
 		{
 			projectile->isExitsting = false;
-			healthPoint -= 5;
+			healthPoint -= projectile->damage;
 			if (canBeKnockedBack)
 			{
 				mVelX = projectile->mVelX > 0 ? 10 : -10;
@@ -174,12 +180,13 @@ void Enemy::getHitProjectile(Projectile *projectile)
 
 void Enemy::getKilled()
 {
-	for (int i = 0; i < 200; i++)
-		if (droppedItemList[i].item.itemType == ITEM_NULL)
-		{
-			droppedItemList[i].create(mCollider.x + 15, mCollider.y, itemList[enemyData->dropID]);
-			break;
-		}
+	if (random01() <= enemyData->dropChance)
+		for (int i = 0; i < 200; i++)
+			if (droppedItemList[i].item.itemType == ITEM_NULL)
+			{
+				droppedItemList[i].create(mCollider.x + 15, mCollider.y, itemList[enemyData->dropID]);
+				break;
+			}
 	isAlive = false;
 	mCollider.x = 0;
 	mCollider.y = 0;
@@ -223,6 +230,170 @@ void Enemy::updateCollisionBox()
 		}
 }
 
+void Enemy::updateMoveAction()
+{
+	if (!isAlive)
+		return;
+	if (enemyData->ID == 1)
+	{
+		if (acceleration > 0 && attackMode == ATTACKMODE_PREPARE)
+		{
+			frameFlag++;
+			if (frameFlag == 4)
+			{
+				frame++;
+				frameFlag = 0;
+
+			}
+			if (frame == 5)
+			{
+				frame = 0;
+				attackMode = ATTACKMODE_ATTACKING;
+			}
+			else
+			{
+				SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame];
+			}
+		}
+
+		if (acceleration < 0 && attackMode == ATTACKMODE_PREPARE)
+		{
+			frameFlag++;
+			if (frameFlag == 4)
+			{
+				frame++;
+				frameFlag = 0;
+
+			}
+			if (frame == 5)
+			{
+				frame = 0;
+				attackMode = ATTACKMODE_ATTACKING;
+			}
+			else
+			{
+				SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame];
+			}
+		}
+
+		if (acceleration < 0 && attackMode == ATTACKMODE_FINISH)
+		{
+			frameFlag++;
+			if (frameFlag == 4)
+			{
+				frame++;
+				frameFlag = 0;
+
+			}
+			if (frame == 5)
+			{
+				frame = 0;
+				attackMode = ATTACKMODE_NONE;
+			}
+			else
+			{
+				SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][abs(frame - 4)];
+			}
+		}
+
+		if (acceleration > 0 && attackMode == ATTACKMODE_FINISH)
+		{
+			frameFlag++;
+			if (frameFlag == 4)
+			{
+				frame++;
+				frameFlag = 0;
+
+			}
+			if (frame == 5)
+			{
+				frame = 0;
+				attackMode = ATTACKMODE_NONE;
+			}
+			else
+			{
+				SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][abs(frame - 4)];
+			}
+		}
+
+		if (acceleration > 0 && attackMode == ATTACKMODE_NONE)
+		{
+			mCollider.h = enemyData->Enemy_HEIGHT / 2;
+			mCollider.w = enemyData->Enemy_WIDTH;
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame_walk / 10 + 5];
+			if (frame_walk / 10 >= 3)
+			{
+				frame_walk = 0;
+			}
+			else
+			{
+				frame_walk++;
+			}
+		}
+		if (acceleration < 0 && attackMode == ATTACKMODE_NONE)
+		{
+			mCollider.h = enemyData->Enemy_HEIGHT / 2;
+			mCollider.w = enemyData->Enemy_WIDTH;
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame_walk / 10 + 5];
+			if (frame_walk / 10 >= 3)
+			{
+				frame_walk = 0;
+			}
+			else
+			{
+				frame_walk++;
+			}
+		}
+
+		if (acceleration > 0 && attackMode == ATTACKMODE_ATTACKING)
+		{
+			mCollider.h = enemyData->Enemy_HEIGHT / 2;
+			mCollider.w = enemyData->Enemy_WIDTH / 2;
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][0];
+			angle += 30;
+
+		}
+		else if (acceleration < 0 && attackMode == ATTACKMODE_ATTACKING)
+		{
+			mCollider.h = enemyData->Enemy_HEIGHT / 2;
+			mCollider.w = enemyData->Enemy_WIDTH / 2;
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][0];
+			angle -= 30;
+		}
+		if (modeFlag < 300)
+		{
+			modeFlag++;
+		}
+		else
+		{
+			if (attackMode == ATTACKMODE_NONE)
+			{
+				attackMode = ATTACKMODE_PREPARE;
+				Enemy_VEL = 5;
+				modeFlag = 0;
+			}
+			else if (attackMode == ATTACKMODE_ATTACKING)
+			{
+				attackMode = ATTACKMODE_FINISH;
+				Enemy_VEL = 1;
+				modeFlag = 0;
+			}
+
+		}
+	}
+	if (enemyData->ID >= 2)
+	{
+		if ((frame_walk + 1) / enemyData->frameDelay == enemyData->frame)
+		{
+			frame_walk = 0;
+		}
+		else
+		{
+			frame_walk++;
+		}
+	}
+}
+
 void Enemy::moveAction(int deltaX, int deltaY)
 {
 	if (!isAlive)
@@ -238,163 +409,52 @@ void Enemy::moveAction(int deltaX, int deltaY)
 
 		if (acceleration > 0 && attackMode == ATTACKMODE_PREPARE)
 		{
-			frameFlag++;
-			if (frameFlag == 2)
-			{
-				frame++;
-				frameFlag = 0;
-
-			}
-			if (frame == 5)
-			{
-				frame = 0;
-				attackMode = ATTACKMODE_ATTACKING;
-			}
-			else
-			{
 				SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame];
 				enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
-
-			}
 		}
 
 		if (acceleration < 0 && attackMode == ATTACKMODE_PREPARE)
 		{
-			frameFlag++;
-			if (frameFlag == 2)
-			{
-				frame++;
-				frameFlag = 0;
-
-			}
-			if (frame == 5)
-			{
-				frame = 0;
-				attackMode = ATTACKMODE_ATTACKING;
-			}
-			else
-			{
-				SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame];
-				enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
-
-			}
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame];
+			enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
 		}
 
 		if (acceleration < 0 && attackMode == ATTACKMODE_FINISH)
 		{
-			frameFlag++;
-			if (frameFlag == 2)
-			{
-				frame++;
-				frameFlag = 0;
-
-			}
-			if (frame == 5)
-			{
-				frame = 0;
-				attackMode = ATTACKMODE_NONE;
-			}
-			else
-			{
-				SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][abs(frame - 4)];
-				enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
-
-			}
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][abs(frame - 4)];
+			enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
 		}
 
 		if (acceleration > 0 && attackMode == ATTACKMODE_FINISH)
 		{
-			frameFlag++;
-			if (frameFlag == 2)
-			{
-				frame++;
-				frameFlag = 0;
-
-			}
-			if (frame == 5)
-			{
-				frame = 0;
-				attackMode = ATTACKMODE_NONE;
-			}
-			else
-			{
-				SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][abs(frame - 4)];
-				enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
-
-			}
+			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][abs(frame - 4)];
+			enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
 		}
 
 		if (acceleration > 0 && attackMode == ATTACKMODE_NONE)
 		{
-			mCollider.h = enemyData->Enemy_HEIGHT / 2;
-			mCollider.w = enemyData->Enemy_WIDTH;
 			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame_walk / 10 + 5];
 			enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, 0.55);
-			if (frame_walk / 10 >= 3)
-			{
-				frame_walk = 0;
-			}
-			else
-			{
-				frame_walk++;
-			}
 		}
 		if (acceleration < 0 && attackMode == ATTACKMODE_NONE)
 		{
-			mCollider.h = enemyData->Enemy_HEIGHT / 2;
-			mCollider.w = enemyData->Enemy_WIDTH;
 			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame_walk / 10 + 5];
 			enemyData->enemy_walking_texture[0].render((posX + deltaX), (-33 + posY + deltaY), currentClip, 0, NULL, SDL_FLIP_NONE, 0.55);
-			if (frame_walk / 10 >= 3)
-			{
-				frame_walk = 0;
-			}
-			else
-			{
-				frame_walk++;
-			}
 		}
 
 		if (acceleration > 0 && attackMode == ATTACKMODE_ATTACKING)
 		{
-			mCollider.h = enemyData->Enemy_HEIGHT / 2;
-			mCollider.w = enemyData->Enemy_WIDTH / 2;
 			enemyCenter.x = 42;
 			enemyCenter.y = 42;
 			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][0];
 			enemyData->enemy_walking_texture[1].render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_NONE, 1.2);
-			angle += 30;
-
 		}
 		else if (acceleration < 0 && attackMode == ATTACKMODE_ATTACKING)
 		{
-			mCollider.h = enemyData->Enemy_HEIGHT / 2;
-			mCollider.w = enemyData->Enemy_WIDTH / 2;
 			enemyCenter.x = 42;
 			enemyCenter.y = 42;
 			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][0];
 			enemyData->enemy_walking_texture[1].render((posX + deltaX), (posY + deltaY), currentClip, angle, &enemyCenter, SDL_FLIP_HORIZONTAL, 1.2);
-			angle -= 30;
-		}
-		if (modeFlag < 200)
-		{
-			modeFlag++;
-		}
-		else
-		{
-			if (attackMode == ATTACKMODE_NONE)
-			{
-				attackMode = ATTACKMODE_PREPARE;
-				Enemy_VEL = 8;
-				modeFlag = 0;
-			}
-			else if (attackMode == ATTACKMODE_ATTACKING)
-			{
-				attackMode = ATTACKMODE_FINISH;
-				Enemy_VEL = 1;
-				modeFlag = 0;
-			}
-
 		}
 		if (healthPoint < enemyData->healthLimit)
 		{
@@ -418,29 +478,13 @@ void Enemy::moveAction(int deltaX, int deltaY)
 			mCollider.w = enemyData->Enemy_WIDTH/enemyData->enemyScale;
 			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame_walk / enemyData->frameDelay];
 			enemyData->enemy_walking_texture[0].render((posX + deltaX+enemyData->offsetX), (-33 + posY + deltaY+enemyData->offsetY), currentClip, 0, NULL, SDL_FLIP_HORIZONTAL, enemyData->enemyScale);
-			if ((frame_walk+1) / enemyData->frameDelay == enemyData->frame)
-			{
-				frame_walk = 0;
-			}
-			else
-			{
-				frame_walk++;
-			}
 		}
-		if (acceleration < 0 && attackMode == ATTACKMODE_NONE)
+		if (acceleration < 0)
 		{
 			mCollider.h = enemyData->Enemy_HEIGHT;
 			mCollider.w = enemyData->Enemy_WIDTH;
 			SDL_Rect* currentClip = &enemyData->enemy_walk_clips[0][frame_walk /enemyData->frameDelay];
 			enemyData->enemy_walking_texture[0].render((posX + deltaX+enemyData->offsetX), (-33 + posY + deltaY+enemyData->offsetY), currentClip, 0, NULL, SDL_FLIP_NONE, enemyData->enemyScale);
-			if ((frame_walk+1) / enemyData->frameDelay == enemyData->frame)
-			{
-				frame_walk = 0;
-			}
-			else
-			{
-				frame_walk++;
-			}
 		}
 		if (healthPoint < enemyData->healthLimit)
 		{
@@ -461,7 +505,7 @@ void Enemy::changeEnemyBehavior()
 		if (canJump == true && !mVelX)
 		{
 			canJump = false;
-			mVelY = -15;
+			mVelY = -10;
 		}
 		break;
 
@@ -483,7 +527,7 @@ void Enemy::changeEnemyBehavior()
 		if (canJump == true && !mVelX)
 		{
 			canJump = false;
-			mVelY = -20;
+			mVelY = -18;
 		}
 		break;
 	}

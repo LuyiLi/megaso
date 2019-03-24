@@ -27,6 +27,7 @@ public:
 	char texturePath2[30] = { '\0' };
 	char enemyHpPath[30];
 	int dropID = 206;
+	float dropChance = 1;
 	bool loadTexture();
 	int offsetX = 0;
 	int offsetY = 0;

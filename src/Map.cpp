@@ -129,38 +129,38 @@ Map::~Map()
 {
 }
 
-void Map::render(int deltaX, int deltaY)
+void Map::render(int deltaX, int deltaY, int blockPosX, int blockPosY)
 {
 	//Do not touch the value below
 	int absX = 0, absY = 0;
-	int beginX = (player.blockPosX-20) * (33);
-	int beginY = (player.blockPosY-20) * (33);
-	int endX = (player.blockPosX) * (33);
-	int endY = (player.blockPosY) * (33);
+	int beginX = (blockPosX-20) * (33);
+	int beginY = (blockPosY-20) * (33);
+	int endX = (blockPosX) * (33);
+	int endY = (blockPosY) * (33);
 	//render the 20 block around the player
-	for (int i = player.blockPosY-20; i < player.blockPosY+20; i++)
+	for (int i = blockPosY-20; i < blockPosY+20; i++)
 	{
-		for (int j = player.blockPosX-20; j < player.blockPosX+20; j++)
+		for (int j = blockPosX-20; j < blockPosX+20; j++)
 		{
 			if (mapData[i][j])
 			{
 				if (mapData[i][j] <= 100)
 				{
 					SDL_Rect* currentClip = &newMap_clips[mapData[i][j]];
-					newMap_texture.setColor(lightBlock[j- player.blockPosX + 20][i - player.blockPosY + 20], lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20], lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20]);
+					newMap_texture.setColor(lightBlock[j- blockPosX + 20][i - blockPosY + 20], lightBlock[j - blockPosX + 20][i - blockPosY + 20], lightBlock[j - blockPosX + 20][i - blockPosY + 20]);
 					newMap_texture.render(beginX + deltaX, beginY + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 3);
 				}
 			}
 			beginX += 33;
 		}
-		beginX = (player.blockPosX-20) * (33);
+		beginX = (blockPosX-20) * (33);
 		beginY += (33);
 	}
 	
 }
 
 //calculate the effect of light
-void Map::calculateLight(int x, int y)
+void Map::calculateLight(int x, int y, int blockPosX, int blockPosY)
 {
 	//the value of the light across the block
 	int lightValue = lightBlock[x][y] / 1.3;
@@ -178,8 +178,8 @@ void Map::calculateLight(int x, int y)
 		return;
 	//the gradual decreasing light
 	if (lightValue > lightBlock[x - 1][y]) {
-		lightBlock[x - 1][y] = mapData[y + player.blockPosY - 20][x + player.blockPosX - 21] ? lightValue : airLightValue;
-		calculateLight(x - 1, y);
+		lightBlock[x - 1][y] = mapData[y + blockPosY - 20][x + blockPosX - 21] ? lightValue : airLightValue;
+		calculateLight(x - 1, y, blockPosX, blockPosY);
 	}
 
 	//the upward boundary
@@ -187,77 +187,102 @@ void Map::calculateLight(int x, int y)
 			return;
 	if (lightValue > lightBlock[x][y - 1]) {
 		//judge if the surroundings are air or blocks
-		lightBlock[x][y - 1] = mapData[y + player.blockPosY - 21][x + player.blockPosX - 20] ? lightValue : airLightValue;
+		lightBlock[x][y - 1] = mapData[y + blockPosY - 21][x + blockPosX - 20] ? lightValue : airLightValue;
 		//calculate the next points's light effect(using recursion)
-		calculateLight(x, y - 1);
+		calculateLight(x, y - 1, blockPosX, blockPosY);
 	}
 	//the right boundary
 	if (x + 1 > 40)
 		return;
 	if (lightValue > lightBlock[x + 1][y]) {
-		lightBlock[x + 1][y] = mapData[y + player.blockPosY - 20][x + player.blockPosX - 19] ? lightValue : airLightValue;
-		calculateLight(x + 1, y);
+		lightBlock[x + 1][y] = mapData[y + blockPosY - 20][x + blockPosX - 19] ? lightValue : airLightValue;
+		calculateLight(x + 1, y, blockPosX, blockPosY);
 	}
 
 	//the downward boundary
 	if (y + 1 > 40)
 		return;
 	if (lightValue > lightBlock[x][y + 1]) {
-		lightBlock[x][y + 1] = mapData[y + player.blockPosY - 19][x + player.blockPosX - 20] ? lightValue : airLightValue;;
-		calculateLight(x, y + 1);
+		lightBlock[x][y + 1] = mapData[y + blockPosY - 19][x + blockPosX - 20] ? lightValue : airLightValue;;
+		calculateLight(x, y + 1, blockPosX, blockPosY);
 	}
 
 	//correct the diagonal light value in the direction of bottomright
 	if (diagonalLightValue > lightBlock[x + 1][y + 1]) {
-		lightBlock[x + 1][y + 1] = mapData[y + player.blockPosY - 19][x + player.blockPosX - 19] ? diagonalLightValue : diagonalAirLightValue;
-		calculateLight(x + 1, y + 1);
+		lightBlock[x + 1][y + 1] = mapData[y + blockPosY - 19][x + blockPosX - 19] ? diagonalLightValue : diagonalAirLightValue;
+		calculateLight(x + 1, y + 1, blockPosX, blockPosY);
 	}
 
 	//correct the diagonal light value in the direction of bottomleft
 	if (diagonalLightValue > lightBlock[x - 1][y + 1]) {
-		lightBlock[x - 1][y + 1] = mapData[y + player.blockPosY - 19][x + player.blockPosX - 21] ? diagonalLightValue : diagonalAirLightValue;
-		calculateLight(x - 1, y + 1);
+		lightBlock[x - 1][y + 1] = mapData[y + blockPosY - 19][x + blockPosX - 21] ? diagonalLightValue : diagonalAirLightValue;
+		calculateLight(x - 1, y + 1, blockPosX, blockPosY);
 	}
 
 	//correct the diagonal light value in the direction of topright
 	if (diagonalLightValue > lightBlock[x + 1][y - 1]) {
-		lightBlock[x + 1][y - 1] = mapData[y + player.blockPosY - 21][x + player.blockPosX - 19] ? diagonalLightValue : diagonalAirLightValue;
-		calculateLight(x + 1, y - 1);
+		lightBlock[x + 1][y - 1] = mapData[y + blockPosY - 21][x + blockPosX - 19] ? diagonalLightValue : diagonalAirLightValue;
+		calculateLight(x + 1, y - 1, blockPosX, blockPosY);
 	}
 
 	//correct the diagonal light value in the direction of topleft
 	if (diagonalLightValue > lightBlock[x - 1][y - 1]) {
-		lightBlock[x - 1][y - 1] = mapData[y + player.blockPosY - 21][x + player.blockPosX - 21] ? diagonalLightValue : diagonalAirLightValue;
-		calculateLight(x - 1, y - 1);
+		lightBlock[x - 1][y - 1] = mapData[y + blockPosY - 21][x + blockPosX - 21] ? diagonalLightValue : diagonalAirLightValue;
+		calculateLight(x - 1, y - 1, blockPosX, blockPosY);
 	}
 }
 
 //render the wall
-void Map::renderWall(int deltaX, int deltaY)
+void Map::renderWall(int deltaX, int deltaY, int blockPosX, int blockPosY)
 {
 	//Do not touch the value below
 	int absX = 0, absY = 0;
-	int beginX = (player.blockPosX - 15) * (33);
-	int beginY = (player.blockPosY - 15) * (33);
-	int endX = (player.blockPosX) * (33);
-	int endY = (player.blockPosY) * (33);
+	int beginX = (blockPosX - 15) * (33);
+	int beginY = (blockPosY - 15) * (33);
+	int endX = (blockPosX) * (33);
+	int endY = (blockPosY) * (33);
+	int num = 0;
+	calculateLightMatrix(blockPosX, blockPosY);
+	num = 0;
+	for (int i = blockPosY - 15; i < blockPosY + 15; i++)
+	{
+		for (int j = blockPosX - 15; j < blockPosX + 16; j++)
+		{
+			if (wallData[i][j])
+			{
+				if (wallData[i][j] > 100 && wallData[i][j] <= 200)
+				{
+					wall_texture.setColor(lightBlock[j - blockPosX + 20][i - blockPosY + 20], lightBlock[j - blockPosX + 20][i - blockPosY + 20], lightBlock[j - blockPosX + 20][i - blockPosY + 20]);
+					SDL_Rect* currentClip = &newMap_clips[wallData[i][j] - 100];
+					wall_texture.render(beginX + deltaX, beginY + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 3);
+				}
+			}
+			beginX += 33;
+		}
+		beginX = (blockPosX - 15) * (33);
+		beginY += (33);
+	}
+}
+
+void Map::calculateLightMatrix(int blockPosX, int blockPosY)
+{
 	int num = 0;
 	for (int i = 0; i < 40; i++)
 	{
 		for (int j = 0; j < 40; j++)
 		{
-			lightBlock[i][j] = 0;
+			lightBlock[i][j] = 1;
 		}
 	}
 	//light the wall
-	for (int i = player.blockPosX - 20; i < player.blockPosX + 20; i++)
+	for (int i = blockPosX - 20; i < blockPosX + 20; i++)
 	{
-		for (int j = player.blockPosY - 20; j < player.blockPosY + 20; j++)
+		for (int j = blockPosY - 20; j < blockPosY + 20; j++)
 		{
 			if (!mapData[j][i] && !wallData[j][i])
 			{
-				lightPoint[num].x = i - player.blockPosX + 20;
-				lightPoint[num].y = j - player.blockPosY + 20;
+				lightPoint[num].x = i - blockPosX + 20;
+				lightPoint[num].y = j - blockPosY + 20;
 				if (worldTime >= 0 && worldTime < 600)
 				{
 					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
@@ -279,45 +304,20 @@ void Map::renderWall(int deltaX, int deltaY)
 					lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
 				}
 
-				if (mapData[j + 1][i] || mapData[j - 1][i] || mapData[j][i + 1] || mapData[j][i - 1]|| wallData[j + 1][i] || wallData[j - 1][i] || wallData[j][i + 1] || wallData[j][i - 1])
+				if (mapData[j + 1][i] || mapData[j - 1][i] || mapData[j][i + 1] || mapData[j][i - 1] || wallData[j + 1][i] || wallData[j - 1][i] || wallData[j][i + 1] || wallData[j][i - 1])
 				{
-					calculateLight(lightPoint[num].x, lightPoint[num].y);
+					calculateLight(lightPoint[num].x, lightPoint[num].y, blockPosX, blockPosY);
 					num++;
 				}
-				//else
-					//lightBlock[lightPoint[num].x][lightPoint[num].y] = 255;
 			}
 		}
 	}
-	//lightBlock[20][20] = 255;
-	//lightBlock[21][20] = 255;
-	lightBlock[21][21] = 255;
-	//lightBlock[20][21] = 255;
-	//calculateLight(20, 20);
-	//calculateLight(21, 20);
-	//calculateLight(20, 21);
-	calculateLight(21, 21);
-	num = 0;
-	for (int i = player.blockPosY - 15; i < player.blockPosY + 15; i++)
+	if (player.haveLight)
 	{
-		for (int j = player.blockPosX - 15; j < player.blockPosX + 16; j++)
-		{
-			if (wallData[i][j])
-			{
-				if (wallData[i][j] > 100 && wallData[i][j] <= 200)
-				{
-					wall_texture.setColor(lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20], lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20], lightBlock[j - player.blockPosX + 20][i - player.blockPosY + 20]);
-					SDL_Rect* currentClip = &newMap_clips[wallData[i][j] - 100];
-					wall_texture.render(beginX + deltaX, beginY + deltaY, currentClip, 0, NULL, SDL_FLIP_NONE, 3);
-				}
-			}
-			beginX += 33;
-		}
-		beginX = (player.blockPosX - 15) * (33);
-		beginY += (33);
+		lightBlock[21][21] = 255;
 	}
+	calculateLight(21, 21, blockPosX, blockPosY);
 }
-
 //check if the map.txt exists
 int Map::checkIfExist()
 {
@@ -430,7 +430,7 @@ void Map::generateBiome()
 			break;
 		}
 		if (currentBlockNumber < 2500 && currentBlockNumber + temp >2500)
-			groundBiomes[i].biomeType = GROUND_BIOME_MOUNTAIN;
+			groundBiomes[i].biomeType = GROUND_BIOME_PLAIN;
 		currentBlockNumber += temp;
 		i++;
 	}
@@ -990,7 +990,7 @@ void Map::breakBlock(int x, int y)
 
 void Map::breakWall(int x, int y)
 {
-	if (wallData[y][x] > 109 || wallData[y][x] < 104)
+	if (wallData[y][x] > 111 || wallData[y][x] < 104)
 		return;
 	if (!(wallData[y][x] % 2))
 		for (int i = 0; i < 200; i++)
@@ -1152,7 +1152,7 @@ int Map::calculateEnemyGenerationRate(int blockPosx, int blockPosy)
 	}
 }
 
-void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
+void Map::updateScroll()
 {
 	scroll[0] -= player.mVelX / 6;
 	scroll[1] -= player.mVelX / 5;
@@ -1160,6 +1160,11 @@ void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
 	scroll[3] -= player.mVelX / 3;
 	scroll[4] -= player.mVelX / 2.5;
 	scroll[5] -= player.mVelX / 2;
+}
+
+void Map::renderBg(GroundBiomeTypes pre, GroundBiomeTypes tar)
+{
+
 	for (int i = 0; i < 6; i++)
 	{
 		if (abs(scroll[i]) > 900)

@@ -217,19 +217,20 @@ void initItemList()
 //ID 301-400 is tools
 
 	//ID=301
-	strcpy_s(itemList[301].itemName, "Wooden Pickaxe");
-	strcpy_s(itemList[301].itemDescription, "\0");
+	strcpy_s(itemList[301].itemName, "Gold Pickaxe");
+	strcpy_s(itemList[301].itemDescription, "The hardest pickaxe.");
 	itemList[301].maxStack = 1;
+	itemList[301].breakTime = 10;
 
 	//ID=302
 	strcpy_s(itemList[302].itemName, "Iron Pickaxe");
 	strcpy_s(itemList[302].itemDescription, "Harder than Wooden Pickaxe.");
-	itemList[302].maxStack = 1;
+	itemList[302].breakTime = 30;
 
 	//ID=303
-	strcpy_s(itemList[303].itemName, "Gold Pickaxe");
-	strcpy_s(itemList[303].itemDescription, "The hardest pickaxe.");
-	itemList[303].maxStack = 1;
+	strcpy_s(itemList[303].itemName, "Wooden Pickaxe");
+	strcpy_s(itemList[303].itemDescription, "\0");
+	itemList[303].breakTime = 50;
 
 	//ID=304
 	strcpy_s(itemList[304].itemName, "ax");
@@ -254,13 +255,13 @@ void initItemList()
 	strcpy_s(itemList[401].itemName, "Wooden sword");
 	strcpy_s(itemList[401].itemDescription, "\0");
 	itemList[401].maxStack = 1;
-	itemList[401].weaponDamage = 1;
+	itemList[401].weaponDamage = 21;
 
 	//ID=402
 	strcpy_s(itemList[402].itemName, "Bronze sword");
 	strcpy_s(itemList[402].itemDescription, "Harder than wooden sword.");
 	itemList[402].maxStack = 1;
-	itemList[402].weaponDamage = 2;
+	itemList[402].weaponDamage = 11;
 
 
 	//ID=403
@@ -269,7 +270,15 @@ void initItemList()
 	itemList[403].maxStack = 1;
 	itemList[403].weaponDamage = 6;
 
+	//ID = 404
+	itemList[404].maxStack = 1;
+	itemList[404].weaponDamage = 12;
 
+	//ID = 405
+	itemList[405].maxStack = 1;
+	itemList[405].weaponDamage = 3;
+
+	/*
 	//ID=404
 	strcpy_s(itemList[404].itemName, "Gold sword");
 	strcpy_s(itemList[404].itemDescription, "The hardest sword.");
@@ -383,4 +392,5 @@ void initItemList()
 	strcpy_s(itemList[422].itemDescription, "The hardest shield.");
 	itemList[422].maxStack = 1;
 	itemList[422].weaponDamage = 15;
+	*/
 }

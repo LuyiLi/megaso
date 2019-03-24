@@ -22,5 +22,6 @@ public:
 	void composingTableUpdate();
 	void pocketWrite(int targrtPocket[2][40]);
 	int checkIfExist();
+	bool loadTexture();
 };
 

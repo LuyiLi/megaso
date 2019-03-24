@@ -17,6 +17,7 @@ public:
 	int blockPosY;
 	bool isExitsting;
 	int existTime;
+	int damage;
 	int time;
 	int color;
 	SDL_Rect rectArray[16];

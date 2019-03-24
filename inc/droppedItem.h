@@ -33,7 +33,7 @@ public:
 	void render(int camX, int camY);
 
 	//The velocity of the droppedItem
-	int mVelY;
+	float mVelY;
 
 	//droppedItem's collision box
 	SDL_Rect mCollider;

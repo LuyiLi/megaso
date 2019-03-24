@@ -31,7 +31,7 @@ Player::Player()
 	magicPoint = 100;
 	magicLimit = 100;
 	isDead = 0;
-
+	haveLight;
 	//Initialize the velocity
 	mVelX = 0;
 	mVelY = 0;
@@ -57,17 +57,17 @@ void Player::handleEvent(SDL_Event& e)
 		{
 			if (canJump)
 			{
-				mVelY = -15;
-				//canJump = false;
+				mVelY = -13;
+				canJump = false;
 			}
 		}
 		else if (e.key.keysym.sym == SDLK_a)
 		{
-			acceleration--;
+			acceleration-=1;
 		}
 		else if (e.key.keysym.sym == SDLK_d)
 		{
-			acceleration++;
+			acceleration+=1;
 		}
 
 	}
@@ -79,12 +79,12 @@ void Player::handleEvent(SDL_Event& e)
 		{
 		case SDLK_a: 
 				mVelX = 0; 
-				acceleration++; 
+				acceleration += 1;
 				break;
 			
 		case SDLK_d: 
 				mVelX = 0; 
-				acceleration--;  
+				acceleration -= 1;
 				break;
 			
 		}
@@ -115,17 +115,17 @@ void Player::move()
 	}
 
 	if (!acceleration && mVelX != 0)
-		mVelX = mVelX > 0 ? mVelX - 1 : mVelX + 1;
+		mVelX = mVelX > 0 ? mVelX - 0.5 : mVelX + 0.5;
 
 	mCollider.x += mVelX;
-	posX = mCollider.x - 10;
+	posX = mCollider.x - 5;
 
 	if (checkCollision())
 	{
 		//Move back
 		mCollider.x -= mVelX;
 		mVelX = 0;
-		posX = mCollider.x - 10;
+		posX = mCollider.x - 5;
 	}
 	else if (((mVelX <= Player_VEL || acceleration < 0) && mVelX >= 0) || ((mVelX >= -Player_VEL || acceleration > 0) && mVelX <= 0))
 	{
@@ -138,14 +138,14 @@ void Player::move()
 	
 	
 	//Move the Player up or down
-	mCollider.y += mVelY;
+	mCollider.y += mVelY >= 0 && mVelY < 1 ? 1 : mVelY;
 	posY = mCollider.y;
 
 	//If the Player collided
 	if (checkCollision())
 	{
 		//Move back
-		mCollider.y -= mVelY;
+		mCollider.y -= mVelY >= 0 && mVelY < 1 ? 1 : mVelY;
 		mVelY = 0;
 		posY = mCollider.y;
 		canJump = true;
@@ -155,10 +155,9 @@ void Player::move()
 		//block drops
 		if (abs(mVelY) < 25)
 			mVelY += g;
-		//if (mVelY > 5)
-			//canJump = false;
+		if (mVelY > 5)
+			canJump = false;
 	}
-	
 	if (blockPosY != mCollider.y / (33) || blockPosX != mCollider.x / (33))
 	{
 		blockPosX = mCollider.x / (33);
@@ -200,7 +199,7 @@ void Player::getHit(Enemy *enemy)
 	{
 		if (intersect(enemy->mCollider, mCollider))
 		{
-			mVelX = enemy->mCollider.x < mCollider.x ? 20 : -20;
+			mVelX = enemy->mCollider.x < mCollider.x ? 14 : -14;
 			if (mVelY > -2)
 				mVelY -= 6;
 			canBeHit = false;
@@ -237,7 +236,7 @@ void Player::getKilled()
 {
 	isDead = 1;
 	
-	mCollider.x = 2500;
+	mCollider.x = 82500;
 	mCollider.y = 4000;
 	mVelX = 0;
 	mVelY = 0;
@@ -304,16 +303,53 @@ void Player::updateCollisionBox()
 		}
 }
 
-void Player::moveAction(int deltaX, int deltaY)
+void Player::updateMoveAction()
+{
+	if (acceleration)
+	{
+		++frame_walk;
+		if (frame_walk / 8 >= 4)
+		{
+			frame_walk = 0;
+		}
+	}
+	else
+	{
+		++frame_stand;
+		if (frame_stand / 12 >= 6)
+		{
+			frame_stand = 0;
+		}
+	}
+	
+}
+
+void Player::moveAction(int deltaX, int deltaY, int posX, int posY)
 {
 
-	static int frame_walk = 0;
-	static int frame_stand = 0;
 	
+	int R = mainMap.lightBlock[21][21], G = mainMap.lightBlock[21][21], B = mainMap.lightBlock[21][21];
+
+	slime_walking_texture.setColor(R, G, B);
+	slime_walking_texture_blue.setColor(R, G, B);
+	slime_walking_texture_green.setColor(R, G, B);
+	slime_walking_texture_red.setColor(R, G, B);
+
+	slime_standing_texture.setColor(R, G, B);
+	slime_standing_texture_blue.setColor(R, G, B);
+	slime_standing_texture_green.setColor(R, G, B);
+	slime_standing_texture_red.setColor(R, G, B);
+	
+	slime_standing_side_texture.setColor(R, G, B);
+	slime_standing_side_texture_blue.setColor(R, G, B);
+	slime_standing_side_texture_red.setColor(R, G, B);
+	slime_standing_side_texture_green.setColor(R, G, B);
+
 	if (acceleration > 0)
 	{
-		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
-
+		
+		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 8];
+		
 		switch (mainPocket.accessories)
 		{
 		case 0:
@@ -333,15 +369,11 @@ void Player::moveAction(int deltaX, int deltaY)
 		}
 
 		
-		++frame_walk;
-		if (frame_walk / 4 >= 4)
-		{
-			frame_walk = 0;
-		}
+
 	}
 	else if (acceleration < 0)
 	{
-		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 4];
+		SDL_Rect* currentClip = &slime_walk_clips[frame_walk / 8];
 		switch (mainPocket.accessories)
 		{
 		case 0:
@@ -359,17 +391,12 @@ void Player::moveAction(int deltaX, int deltaY)
 		default:
 			break;
 		}
-		++frame_walk;
-		if (frame_walk / 4 >= 4)
-		{
-			frame_walk = 0;
-		}
 	}
 	else
 	{
 		if (weaponState == 0)
 		{
-			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
+			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 12];
 			switch (mainPocket.accessories)
 			{
 			case 0:
@@ -387,15 +414,10 @@ void Player::moveAction(int deltaX, int deltaY)
 			default:
 				break;
 			}
-			++frame_stand;
-			if (frame_stand / 6 >= 6)
-			{
-				frame_stand = 0;
-			}
 		}
 		else if (weaponState == 1)
 		{
-			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
+			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 12];
 			switch (mainPocket.accessories)
 			{
 			case 0:
@@ -413,15 +435,10 @@ void Player::moveAction(int deltaX, int deltaY)
 			default:
 				break;
 			}
-			++frame_stand;
-			if (frame_stand / 6 >= 6)
-			{
-				frame_stand = 0;
-			}
 		}
 		else if (weaponState == 2)
 		{
-			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 6];
+			SDL_Rect* currentClip = &slime_stand_clips[frame_stand / 12];
 			switch (mainPocket.accessories)
 			{
 			case 0:
@@ -438,11 +455,6 @@ void Player::moveAction(int deltaX, int deltaY)
 				break;
 			default:
 				break;
-			}
-			++frame_stand;
-			if (frame_stand / 6 >= 6)
-			{
-				frame_stand = 0;
 			}
 		}
 		

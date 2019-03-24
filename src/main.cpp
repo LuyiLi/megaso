@@ -17,6 +17,7 @@
 #include <cmath>
 #include "InitEnemyList.h"
 #include "Projectile.h"
+#include <thread>
 /*
 				   _ooOoo_
 				  o8888888o
@@ -66,6 +67,10 @@ SDL_Window* gWindow = NULL;
 SDL_Rect heart_clips[8];
 LTexture heart_texture;
 
+SDL_Rect* crackClip1;
+SDL_Rect* crackClip2;
+SDL_Rect* crackClip3;
+
 SDL_Rect magic_clips[8];
 LTexture magic_texture;
 
@@ -87,7 +92,10 @@ LTexture hp_texture;
 SDL_Rect mp_clips[2];
 LTexture mp_texture;
 
-
+SDL_Rect title_clips;
+LTexture title1_texture;
+LTexture title2_texture;
+LTexture megaso_texture;
 
 SDL_TimerID backgroundTimer;
 
@@ -100,14 +108,14 @@ bool quit = false;
 bool init();
 bool loadMedia();
 void close();
-
+int haveTorch = 0;
 bool projectileReady = true;
 int projectileFlag = 0;
 int pocketNumber = 1;
 int prevPocketNumber = 1;
 int breakTime = 2000;
 int startTime = 0;
-int target[23] = {82500,3000,100, 0, 255,255,255,255,255,255};
+int target[23] = {82500,3000,100,0};
 int bgIsChanging=0;
 int mouseX, mouseY, mouseState;
 int crackFlag;
@@ -118,9 +126,13 @@ int isTakenUp = 0;
 int IDWithMouse = 0, numWithMouse = 0;
 int heartFrame = 0;
 int magicFrame = 0;
+int lightBlockPosX;
+int lightBlockPosY;
+bool renderFlag = true;
+bool calculateLightFinishFlag = false;
 GroundBiomeTypes currentBiome = mainMap.currentBiome(player.blockPosX);
 GroundBiomeTypes targetState = mainMap.currentBiome(player.blockPosX);
-
+int gameStarted = 0;
 double angleForBlock = 0;
 
 bool init()
@@ -171,15 +183,8 @@ bool init()
 	player.mCollider.x = target[0];
 	player.mCollider.y = target[1];
 	player.healthPoint = target[2];
+	mainPocket.accessories = target[3];
 	worldTime = target[3];
-	for (int i = 4; i < 7; i++)
-	{
-		mainMap.bgColor[i-4] = target[i];
-	}
-	for (int i = 7; i < 10; i++)
-	{
-		mainMap.frontBgColor[i - 7] = target[i];
-	}
 	//Initialize currentItem
 	player.currentItem = itemList[mainPocket.pocketData[pocketNumber - 1][0]];
 	//Initialize SDL
@@ -233,8 +238,8 @@ bool init()
 			}
 		}
 	}
-	enemyList[0].create(500, 100, &enemyDataList[1]);
-	enemyList[1].create(500, 200, &enemyDataList[1]);
+	//enemyList[0].create(500, 100, &enemyDataList[1]);
+	//enemyList[1].create(500, 200, &enemyDataList[1]);
 	return success;
 }
 
@@ -341,6 +346,13 @@ bool loadMedia()
 		}
 	}
 
+	if (title1_texture.loadFromFile("images/title1.png") && title2_texture.loadFromFile("images/title2.png") && megaso_texture.loadFromFile("images/megaso.png"))
+	{
+		title_clips.x = 0;
+		title_clips.y = 0;
+		title_clips.w = 900;
+		title_clips.h = 600;
+	}
 	else
 	{
 		printf("Failed to load media\n");
@@ -355,6 +367,11 @@ bool loadMedia()
 	{
 		success = false;
 	}
+	crackClip1 = &crack_clips[0];
+	crackClip2 = &crack_clips[1];
+	crackClip3 = &crack_clips[2];
+	mainPocket.loadTexture();
+
 	return success;
 }
 
@@ -365,15 +382,7 @@ void close()
 	data[0] = player.mCollider.x;
 	data[1] = player.mCollider.y;
 	data[2] = player.healthPoint;
-	data[3] = worldTime;
-	for (int i = 4; i < 7; i++)
-	{
-		data[i] = mainMap.bgColor[i - 4];
-	}
-	for (int i = 7; i < 10; i++)
-	{
-		data[i] = mainMap.frontBgColor[i - 7];
-	}
+	data[3] = mainPocket.accessories;
 	savingControler.fileWrite(data);
 
 	//Saving last map condition into map.txt
@@ -381,7 +390,8 @@ void close()
 	//Free loaded images
 	mainPocket.pocketWrite(mainPocket.pocketData);
 	//Quit SDL subsystems
-
+	exit(0);
+	
 	IMG_Quit();
 	SDL_Quit();
 	TTF_Quit();
@@ -405,21 +415,246 @@ Uint32 renderBgChangeCallback(Uint32 interval, void* param)
 	return 0;
 }
 
-Uint32 callback(Uint32 interval, void* param)
+void foo()
 {
-	targetState = mainMap.currentBiome(player.blockPosX);
-	if (targetState != currentBiome&& !bgIsChanging)
-	{
-		backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
-	}
-	for (int i = 0; i < 200; i++)
-	{
-		player.pickUpItem(&droppedItemList[i]);
-		droppedItemList[i].move();
-	}
+	renderFlag = false;
+	int posX = player.posX;
+	int posY = player.posY;
+	int blockPosX = player.blockPosX;
+	int blockPosY = player.blockPosY;
+	lightBlockPosX = blockPosX;
+	lightBlockPosY = blockPosY;
+	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
+	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
+	SDL_Rect* currentHeartClip;
+	SDL_Rect* currentMagicClip;
 
+	while (1)
+	{
+		if (renderFlag)
+		{
+
+			deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
+			deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
+
+			//renderFlag = false;
+			posX = player.posX;
+			posY = player.posY;
+			blockPosX = player.blockPosX;
+			blockPosY = player.blockPosY;
+			lightBlockPosX = blockPosX;
+			lightBlockPosY = blockPosY;
+			calculateLightFinishFlag = false;
+
+			mainMap.renderBg(currentBiome, targetState);
+			mainMap.renderWall(deltaX, deltaY, blockPosX, blockPosY);
+			if (crackFlag && mainMap.wallData[blockMouseY][blockMouseX] && abs(blockMouseX - blockPosX) + abs(blockMouseY - blockPosY) <= 4 && mainPocket.pocketData[0][pocketNumber - 1] == 305)
+			{
+				switch (crackFlag)
+				{
+				case 1:crack_texture.render(blockMouseX * 33 + deltaX, blockMouseY * 33 + deltaY, crackClip1, 0, NULL, SDL_FLIP_NONE, 3); break;
+				case 2:crack_texture.render(blockMouseX * 33 + deltaX, blockMouseY * 33 + deltaY, crackClip2, 0, NULL, SDL_FLIP_NONE, 3); break;
+				case 3:crack_texture.render(blockMouseX * 33 + deltaX, blockMouseY * 33 + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 3); break;
+				}
+			}
+			mainMap.render(deltaX, deltaY, blockPosX, blockPosY);
+
+			//3 Clips for crack effects
+
+			if (crackFlag && mainMap.mapData[blockMouseY][blockMouseX] && abs(blockMouseX - blockPosX) + abs(blockMouseY - blockPosY) <= 4
+				&& (!mainMap.mapData[blockMouseY + 1][blockMouseX] || !mainMap.mapData[blockMouseY][blockMouseX + 1] || !mainMap.mapData[blockMouseY - 1][blockMouseX] || !mainMap.mapData[blockMouseY][blockMouseX - 1])
+				&& mainPocket.pocketData[0][pocketNumber - 1] != 305 && mainPocket.pocketData[0][pocketNumber - 1] != 306 && mainPocket.pocketData[0][pocketNumber - 1] != 307)
+			{
+				switch (crackFlag)
+				{
+				case 1:crack_texture.render(blockMouseX*(33) + deltaX, blockMouseY*(33) + deltaY, crackClip1, 0, NULL, SDL_FLIP_NONE, 3); break;
+				case 2:crack_texture.render(blockMouseX*(33) + deltaX, blockMouseY*(33) + deltaY, crackClip2, 0, NULL, SDL_FLIP_NONE, 3); break;
+				case 3:crack_texture.render(blockMouseX*(33) + deltaX, blockMouseY*(33) + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 3); break;
+				}
+			}
+
+			for (int i = 0; i < 200; i++)
+				droppedItemList[i].render(deltaX, deltaY);
+
+			for (int i = 0; i < 20; i++)
+				enemyList[i].moveAction(deltaX, deltaY);
+
+
+			mainPocket.mainPocketRender();
+
+			double percentage = (double)player.healthPoint / (double)player.healthLimit;
+			hp_texture.renderWithScale(SCREEN_WIDTH / 2 + 160, 25, &heart_clips[0], 0, NULL, SDL_FLIP_NONE, 0.4, 2, percentage);
+
+			hp_texture.render(int(SCREEN_WIDTH / 2 + 160 + (250 * percentage)), 25, &heart_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
+
+			currentHeartClip = &heart_clips[heartFrame / 8];
+			heart_texture.render(SCREEN_WIDTH / 2 + 130, 25, currentHeartClip, 0, NULL, SDL_FLIP_NONE, 2);
+
+			double mpPercentage = (double)player.magicPoint / (double)player.magicLimit;
+			mp_texture.renderWithScale(SCREEN_WIDTH / 2 + 160, 75, &magic_clips[0], 0, NULL, SDL_FLIP_NONE, 0.4, 2, mpPercentage);
+
+			mp_texture.render(int(SCREEN_WIDTH / 2 + 160 + (250 * mpPercentage)), 75, &magic_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
+
+			currentMagicClip = &magic_clips[magicFrame / 8];
+			magic_texture.render(SCREEN_WIDTH / 2 + 130, 75, currentMagicClip, 0, NULL, SDL_FLIP_NONE, 2);
+			
+
+			centralPoint[0].x = 25 * 2 / 3;
+			centralPoint[0].y = 75 * 2 / 3;
+			centralPoint[1].x = 75 * 2 / 3;
+			centralPoint[1].y = 75 * 2 / 3;
+			centralPoint[2].x = 0;
+			centralPoint[2].y = 100 * 2 / 3;
+			centralPoint[3].x = 100 * 2 / 3;
+			centralPoint[3].y = 100 * 2 / 3;
+
+			int R = mainMap.lightBlock[21][21], G = mainMap.lightBlock[21][21], B = mainMap.lightBlock[21][21];
+			if (mainPocket.pocketData[0][pocketNumber - 1] > 0 && mainPocket.pocketData[0][pocketNumber - 1] <= 100)
+			{
+
+				mainMap.newMap_texture.setColor(R, G, B);
+				if (player.acceleration > 0)
+				{
+					mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock - 20, &centralPoint[0], SDL_FLIP_NONE, 4);
+				}
+				else if (player.acceleration < 0)
+				{
+					mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock + 20, &centralPoint[0], SDL_FLIP_HORIZONTAL, 4);
+				}
+				else
+				{
+					int mouseX, mouseY, mouseState;
+					mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+
+
+					if (mouseX > SCREEN_WIDTH / 2)
+					{
+						player.weaponState = 1;
+						mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock - 20, &centralPoint[0], SDL_FLIP_NONE, 4);
+					}
+					else
+					{
+						player.weaponState = 2;
+						mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 65, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock + 20, &centralPoint[0], SDL_FLIP_HORIZONTAL, 4);
+					}
+				}
+				mainMap.newMap_texture.setColor(255, 255, 255);
+			}
+			else if (mainPocket.pocketData[0][pocketNumber - 1] > 300 && mainPocket.pocketData[0][pocketNumber - 1] <= 400)
+			{
+				tool_texture.setColor(R, G, B);
+				if (player.acceleration > 0)
+				{
+					tool_texture.render(SCREEN_WIDTH / 2 + 20, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], player.currentAngle, &centralPoint[0], SDL_FLIP_NONE, 1.5);
+					direction = 1;
+				}
+				else if (player.acceleration < 0)
+				{
+					tool_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -player.currentAngle, &centralPoint[1], SDL_FLIP_HORIZONTAL, 1.5);
+					direction = 0;
+				}
+				else
+				{
+					int mouseX, mouseY, mouseState;
+					mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+					if (mouseX > SCREEN_WIDTH / 2)
+					{
+						direction = 1;
+						player.weaponState = 1;
+						tool_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], player.currentAngle, &centralPoint[0], SDL_FLIP_NONE, 1.5);
+					}
+					else
+					{
+						tool_texture.render(SCREEN_WIDTH / 2 - 75, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -player.currentAngle, &centralPoint[1], SDL_FLIP_HORIZONTAL, 1.5);
+						direction = 0;
+						player.weaponState = 2;
+					}
+				}
+				tool_texture.setColor(255, 255, 255);
+			}
+			else if (mainPocket.pocketData[0][pocketNumber - 1] > 400 && mainPocket.pocketData[0][pocketNumber - 1] <= 500)
+			{
+				weapon_texture.setColor(R, G, B);
+				if (player.acceleration > 0)
+				{
+					weapon_texture.render(SCREEN_WIDTH / 2 + 20, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], player.currentAngle, &centralPoint[2], SDL_FLIP_NONE, 1.5);
+					direction = 1;
+				}
+				else if (player.acceleration < 0)
+				{
+					weapon_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -player.currentAngle, &centralPoint[3], SDL_FLIP_HORIZONTAL, 1.5);
+					direction = 0;
+				}
+				else
+				{
+					int mouseX, mouseY, mouseState;
+					mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+
+
+					if (mouseX > SCREEN_WIDTH / 2)
+					{
+						weapon_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], player.currentAngle, &centralPoint[2], SDL_FLIP_NONE, 1.5);
+						direction = 1;
+						player.weaponState = 1;
+					}
+					else
+					{
+						weapon_texture.render(SCREEN_WIDTH / 2 - 75, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -player.currentAngle, &centralPoint[3], SDL_FLIP_HORIZONTAL, 1.5);
+						direction = 0;
+						player.weaponState = 2;
+					}
+				}
+				weapon_texture.setColor(255, 255, 255);
+
+			}
+			else
+			{
+				player.weaponState = 0;
+			}
+
+			projectile.moveAction(deltaX, deltaY);
+			player.moveAction(deltaX, deltaY, posX, posY);
+			if (player.isDead)
+			{
+				dead_texture.render(0, 0, dead_clips, 0, NULL, SDL_FLIP_NONE, 2);
+				SDL_RenderPresent(gRenderer);
+				SDL_Delay(5000);
+				player.isDead = 0;
+			}
+
+			SDL_RenderPresent(gRenderer);
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
+			//Clear the render for next use
+			SDL_RenderClear(gRenderer);
+			//SDL_Delay(15);
+		}
+	}
+}
+
+
+Uint32 movementCallback(Uint32 interval, void* param)
+{
+	for (int i = 0; i < 20; i++)
+	{
+		enemyList[i].updateMoveAction();
+	}
+	//update the frame of hp and mp
+	++heartFrame;
+	if (heartFrame / 8 >= 8)
+	{
+		heartFrame = 0;
+	}
+	++magicFrame;
+	if (magicFrame / 8 >= 8)
+	{
+		magicFrame = 0;
+	}
+	//update the frame of player
+	player.updateMoveAction();
 	//Reimu-Rubo moves
 	player.move();
+	mainMap.updateScroll();
 	projectile.move();
 	if (!projectileReady)
 	{
@@ -435,229 +670,58 @@ Uint32 callback(Uint32 interval, void* param)
 		enemyList[i].move();
 		player.getHit(&enemyList[i]);
 	}
-	int deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
-	int deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
-	SDL_Rect* crackClip1 = &crack_clips[0];
-	SDL_Rect* crackClip2 = &crack_clips[1];
-	SDL_Rect* crackClip3 = &crack_clips[2];
-
-
-
-	mainMap.renderBg(currentBiome, targetState);
-	mainMap.renderWall(deltaX, deltaY);
-
-	if (crackFlag && mainMap.wallData[blockMouseY][blockMouseX] && abs(blockMouseX - player.blockPosX) + abs(blockMouseY - player.blockPosY) <= 4 && mainPocket.pocketData[0][pocketNumber - 1] == 305)
+	if (mainPocket.accessories > 0)
 	{
-		switch (crackFlag)
-		{
-		case 1:crack_texture.render(blockMouseX*(33) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip1, 0, NULL, SDL_FLIP_NONE, 3); break;
-		case 2:crack_texture.render(blockMouseX*(100 / 3) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip2, 0, NULL, SDL_FLIP_NONE, 3); break;
-		case 3:crack_texture.render(blockMouseX*(100 / 3) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 3); break;
-		}
+		player.haveLight = 1;
 	}
-
-	mainMap.render(deltaX, deltaY);
-	
-
-	//3 Clips for crack effects
-
-	if (crackFlag && mainMap.mapData[blockMouseY][blockMouseX]&& abs(blockMouseX - player.blockPosX) + abs(blockMouseY - player.blockPosY) <= 4 
-		&& (!mainMap.mapData[blockMouseY + 1][blockMouseX] || !mainMap.mapData[blockMouseY][blockMouseX + 1] || !mainMap.mapData[blockMouseY - 1][blockMouseX] || !mainMap.mapData[blockMouseY][blockMouseX - 1])
-		&& mainPocket.pocketData[0][pocketNumber - 1] != 305 && mainPocket.pocketData[0][pocketNumber - 1] != 306 && mainPocket.pocketData[0][pocketNumber - 1] != 307)
+	else if (mainPocket.pocketData[0][pocketNumber - 1] == 307)
 	{
-		switch (crackFlag)
-		{
-		case 1:crack_texture.render(blockMouseX*(33) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip1, 0, NULL, SDL_FLIP_NONE, 3); break;
-		case 2:crack_texture.render(blockMouseX*(100 / 3) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip2, 0, NULL, SDL_FLIP_NONE, 3); break;
-		case 3:crack_texture.render(blockMouseX*(100 / 3) + deltaX, blockMouseY*(100 / 3) + deltaY, crackClip3, 0, NULL, SDL_FLIP_NONE, 3); break;
-		}
+		player.haveLight = 1;
 	}
-
-	for (int i = 0; i < 200; i++)
-		droppedItemList[i].render(deltaX, deltaY);
-
-	for (int i = 0; i < 20; i++)
-		enemyList[i].moveAction(deltaX, deltaY);
-	
-
-	mainPocket.mainPocketRender();
-
-	double percentage = (double)player.healthPoint / (double)player.healthLimit;
-	hp_texture.renderWithScale(SCREEN_WIDTH / 2 + 130 + 30, 25, &heart_clips[0], 0, NULL, SDL_FLIP_NONE,0.4,2,percentage);
-
-	hp_texture.render(int(SCREEN_WIDTH / 2 + 130+30+(250*percentage)), 25, &heart_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
-
-	SDL_Rect* currentHeartClip = &heart_clips[heartFrame / 8];
-	heart_texture.render(SCREEN_WIDTH/2+130, 25, currentHeartClip, 0, NULL, SDL_FLIP_NONE, 2);
-	++heartFrame;
-	if (heartFrame / 8 >= 8)
+	else if (pocketNumber == 1)
 	{
-		heartFrame = 0;
-	}
-
-	double mpPercentage = (double)player.magicPoint / (double)player.magicLimit;
-	mp_texture.renderWithScale(SCREEN_WIDTH / 2 + 130 + 30, 75, &magic_clips[0], 0, NULL, SDL_FLIP_NONE, 0.4, 2, mpPercentage);
-
-	mp_texture.render(int(SCREEN_WIDTH / 2 + 130 + 30 + (250 * mpPercentage)), 75, &magic_clips[1], 0, NULL, SDL_FLIP_NONE, 2);
-
-
-	SDL_Rect* currentMagicClip = &magic_clips[magicFrame / 8];
-	magic_texture.render(SCREEN_WIDTH / 2 + 130, 75, currentMagicClip, 0, NULL, SDL_FLIP_NONE, 2);
-	++magicFrame;
-	if (magicFrame / 8 >= 8)
-	{
-		magicFrame = 0;
-	}
-	
-	centralPoint[0].x = 25 * 2 / 3;
-	centralPoint[0].y = 75 * 2 / 3;
-	centralPoint[1].x = 75 * 2 / 3;
-	centralPoint[1].y = 75 * 2 / 3;
-	centralPoint[2].x = 0;
-	centralPoint[2].y = 100 * 2 / 3;
-	centralPoint[3].x = 100 * 2 / 3;
-	centralPoint[3].y = 100 * 2 / 3;
-	
-	
-	if (mainPocket.pocketData[0][pocketNumber - 1] > 0 && mainPocket.pocketData[0][pocketNumber - 1] <= 100)
-	{
-		if (player.acceleration > 0)
+		if (mainPocket.pocketData[0][1] == 307)
 		{
-			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 30, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock -20, &centralPoint[0], SDL_FLIP_NONE, 4);
-		}
-		else if (player.acceleration < 0)
-		{
-			mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint[0], SDL_FLIP_HORIZONTAL, 4);
+			player.haveLight = 1;
 		}
 		else
 		{
-			int mouseX, mouseY, mouseState;
-			mouseState = SDL_GetMouseState(&mouseX, &mouseY);
-
-
-			if (mouseX > SCREEN_WIDTH / 2)
-			{
-				player.weaponState = 1;
-				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], angleForBlock-20, &centralPoint[0], SDL_FLIP_NONE, 4);
-			}
-			else
-			{
-				player.weaponState = 2;
-				mainMap.newMap_texture.render(SCREEN_WIDTH / 2 - 65, SCREEN_HEIGHT / 2 - 30, &mainMap.newMap_clips[mainPocket.pocketData[0][pocketNumber - 1]], -angleForBlock +20, &centralPoint[0], SDL_FLIP_HORIZONTAL, 4);
-			}
+			player.haveLight = 0;
 		}
 	}
-
-	else if (mainPocket.pocketData[0][pocketNumber - 1] > 300 && mainPocket.pocketData[0][pocketNumber - 1] <= 400)
+	else if (pocketNumber > 1)
 	{
-		if (player.acceleration > 0)
+		if (mainPocket.pocketData[0][pocketNumber] == 307 || mainPocket.pocketData[0][pocketNumber - 2] == 307)
 		{
-			tool_texture.render(SCREEN_WIDTH / 2 + 20, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1]-300], player.currentAngle, &centralPoint[0], SDL_FLIP_NONE, 1.5);
-			direction = 1;
-		}
-		else if (player.acceleration < 0)
-		{
-			tool_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -player.currentAngle, &centralPoint[1], SDL_FLIP_HORIZONTAL, 1.5);
-			direction = 0;
+			player.haveLight = 1;
 		}
 		else
 		{
-			int mouseX, mouseY, mouseState;
-			mouseState = SDL_GetMouseState(&mouseX, &mouseY);
-			if (mouseX > SCREEN_WIDTH / 2)
-			{
-				direction = 1;
-				player.weaponState = 1;
-				tool_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], player.currentAngle, &centralPoint[0], SDL_FLIP_NONE, 1.5);
-			}
-			else
-			{
-				tool_texture.render(SCREEN_WIDTH / 2 - 75, SCREEN_HEIGHT / 2 - 45, &tool_clips[mainPocket.pocketData[0][pocketNumber - 1] - 300], -player.currentAngle, &centralPoint[1], SDL_FLIP_HORIZONTAL, 1.5);
-				direction = 0;
-				player.weaponState = 2;
-			}
+			player.haveLight = 0;
 		}
-	}
-	else if (mainPocket.pocketData[0][pocketNumber - 1] > 400 && mainPocket.pocketData[0][pocketNumber - 1] <= 500)
-	{
-		if (player.acceleration > 0)
-		{
-			weapon_texture.render(SCREEN_WIDTH / 2 + 20, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], player.currentAngle, &centralPoint[2], SDL_FLIP_NONE, 1.5);
-			direction = 1;
-		}
-		else if (player.acceleration < 0)
-		{
-			weapon_texture.render(SCREEN_WIDTH / 2 - 80, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -player.currentAngle, &centralPoint[3], SDL_FLIP_HORIZONTAL, 1.5);
-			direction = 0;
-		}
-		else
-		{
-			int mouseX, mouseY, mouseState;
-			mouseState = SDL_GetMouseState(&mouseX, &mouseY);
-
-
-			if (mouseX > SCREEN_WIDTH / 2)
-			{
-				weapon_texture.render(SCREEN_WIDTH / 2 + 15, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], player.currentAngle, &centralPoint[2], SDL_FLIP_NONE, 1.5);
-				direction = 1;
-				player.weaponState = 1;
-			}
-			else
-			{
-				weapon_texture.render(SCREEN_WIDTH / 2 - 75, SCREEN_HEIGHT / 2 - 55, &weapon_clips[mainPocket.pocketData[0][pocketNumber - 1] - 400], -player.currentAngle, &centralPoint[3], SDL_FLIP_HORIZONTAL, 1.5);
-				direction = 0;
-				player.weaponState = 2;
-			}
-		}
-	
 	}
 	else
 	{
-		player.weaponState = 0;
+		player.haveLight = 0;
+	}
+	targetState = mainMap.currentBiome(player.blockPosX);
+	if (targetState != currentBiome && !bgIsChanging)
+	{
+		backgroundTimer = SDL_AddTimer(20, renderBgChangeCallback, (void*)mouseState);
+	}
+	for (int i = 0; i < 200; i++)
+	{
+		player.pickUpItem(&droppedItemList[i]);
+		droppedItemList[i].move();
 	}
 
-	projectile.moveAction(deltaX, deltaY);
-	player.moveAction(deltaX,deltaY);
 	for (int i = 0; i < 20; i++)
 	{
 		enemyList[i].getHit(&player);
 		enemyList[i].getHitProjectile(&projectile);
 	}
-		
-	
-	if (player.isDead)
-	{
-		dead_texture.render(0, 0, dead_clips, 0, NULL, SDL_FLIP_NONE, 2);
-		SDL_RenderPresent(gRenderer);
-		SDL_Delay(5000);
-		player.isDead = 0;
-	}
-
-	// Render the dropped items
-	
-
-	//Render the collision box
-	SDL_Rect tempRect[5];
-	for (int i = 0; i < 5; i++) 
-	{
-		tempRect[i].x = player.weaponCollisionPoints[i].x;
-		tempRect[i].y = player.weaponCollisionPoints[i].y;
-		tempRect[i].w = 10;
-		tempRect[i].h = 10;
-		tempRect[i].x += deltaX;
-		tempRect[i].y += deltaY;
-	}
-	//SDL_RenderDrawRects(gRenderer, tempRect, 16);
-	//SDL_RenderDrawPoints(gRenderer, player.weaponCollisionPoints, 5);
-	SDL_RenderPresent(gRenderer);
-	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
-	//Clear the render for next use
-	SDL_RenderClear(gRenderer);
-
-	
-
-	SDL_TimerID timerID1 = SDL_AddTimer(20, callback, (void*)"ad");
+	renderFlag = true;
+	SDL_TimerID movementTimer = SDL_AddTimer(16, movementCallback, (void*)"a");
 	return 0;
 }
 
@@ -698,7 +762,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY && mainPocket.pocketData[0][pocketNumber - 1] > 300 && mainPocket.pocketData[0][pocketNumber - 1] <= 400 && mainPocket.pocketData[0][pocketNumber - 1] != 305 && mainPocket.pocketData[0][pocketNumber - 1] != 306 && mainPocket.pocketData[0][pocketNumber - 1] != 307)
 			{
 				//Break the block if time is enough
-				if (flag == 40)
+				if (flag == player.currentItem.breakTime)
 				{
 					//Break a block in the map
 					mainMap.breakBlock(blockMouseX, blockMouseY);
@@ -721,7 +785,7 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 				}
 
 				// block is not broken if time is not enough
-				crackFlag = flag / 10;
+				crackFlag = 4 * flag / player.currentItem.breakTime;
 				flag++;
 
 				//Timer set
@@ -730,7 +794,6 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 			}
 			if (blockMouseX == prevBlockMouseX && blockMouseY == prevBlockMouseY && mainPocket.pocketData[0][pocketNumber - 1] == 305)
 			{
-				printf("using\n");
 				//Break the block if time is enough
 				if (flag == 40)
 				{
@@ -756,7 +819,6 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 				// block is not broken if time is not enough
 				crackFlag = flag / 10;
 				flag++;
-				printf("cut tree");
 				//Timer set
 				SDL_TimerID mouseTimer = SDL_AddTimer(15, mouseTimerCallback, (void*)mouseState);
 				return 0;
@@ -854,15 +916,15 @@ Uint32 mouseTimerCallback(Uint32 interval, void* param)
 
 Uint32 mainMapUpdate(Uint32 interval, void* param)
 {
-	int generationTries = 1;
+	int generationTries = (worldTime > 600 ? 2 : 1);
 	int blockX, blockY;
-	static int generateFlag;
+	static int generateFlag = 500;
 	bool generationFlag;
 	if (worldTime >= 1200)
 		worldTime = 0;
-	if (!generateFlag)
+	if (generateFlag <= 0)
 	{
-		generateFlag = random01() * 100;
+		generateFlag = random01() * 300 + 200;
 		for (int i = 0; i < generationTries; i++)
 		{
 			blockX = (random01() * 20 + 20) * (random01() * 2 < 1 ? 1 : -1) + player.blockPosX;
@@ -886,7 +948,7 @@ Uint32 mainMapUpdate(Uint32 interval, void* param)
 		}
 	}
 	else
-		generateFlag--;
+		worldTime > 600 ? generateFlag -= 2 : generateFlag--;
 	mainMap.countBgColor();
 	mainMap.countFrontBgColor();
 	worldTime++;
@@ -902,129 +964,176 @@ int main(int argc, char* args[])
 		if (!loadMedia());
 		else
 		{
-			bool quit = false;
-			SDL_Event e;
-			SDL_TimerID timerID1 = SDL_AddTimer(10, callback, (void*)"ad");
-			SDL_TimerID mainTimer = SDL_AddTimer(1000, mainMapUpdate, (void*)"a");
-			while (!quit)
+			megaso_texture.render(0, 0, &title_clips, 0, NULL, SDL_FLIP_NONE, 1);
+			SDL_RenderPresent(gRenderer);
+			SDL_Delay(1500);
+			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+			//Clear the render for next use
+			SDL_RenderClear(gRenderer);
+			int time = 0;
+			while (gameStarted == 0)
 			{
+				SDL_Event e;
+				time++;
+				if (time <= 50)
+				{
+					title1_texture.render(0, 0, &title_clips, 0, NULL, SDL_FLIP_NONE, 1);
+				}
+				else
+				{
+					title2_texture.render(0, 0, &title_clips, 0, NULL, SDL_FLIP_NONE, 1);
+				}
+				SDL_RenderPresent(gRenderer);
+				if (time == 101)
+				{
+					time = 0;
+				}
 				while (SDL_PollEvent(&e) != 0)
 				{
-					if (e.type == SDL_KEYDOWN)
+					if (e.type == SDL_KEYDOWN || e.type == SDL_MOUSEBUTTONDOWN)
 					{
-						if (e.key.keysym.sym == SDLK_x)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x, player.mCollider.y - 200, &enemyDataList[1]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_c)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[2]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_v)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x + 400, player.mCollider.y + 300, &enemyDataList[3]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_b)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[4]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_n)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[5]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_m)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[6]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_z)
-						{
-							for (int i = 0; i < 10; i++)
-							{
-								if (!(enemyList[i].isAlive))
-								{
-									enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[7]);
-									break;
-								}
-							}
-						}
-						if (e.key.keysym.sym == SDLK_f)
-						{
-							if (player.magicPoint > 12)
-							{
-								if (projectileReady)
-								{
-									projectileReady = false;
-									SDL_GetMouseState(&mouseX, &mouseY);
-									player.magicPoint -= 12;
-									projectile.create(player.posX, player.posY, mouseX, mouseY, mainPocket.accessories);
-								}
-							
-							}
-						}
+						gameStarted = 1;
 					}
-					
-					//User requests quit
-					if (e.type == SDL_QUIT)
-					{
-						quit = true;
-						close();
-					}
-					if (e.type == SDL_MOUSEBUTTONDOWN && !mainPocket.isOpened)
-					{
-						//Get mouse position
-						mouseTimerCallback(0, &mouseState);
-					}
-					mainPocket.handlePocketEvents(e);
-					if (pocketNumber != prevPocketNumber)
-					{
-						prevPocketNumber = pocketNumber;
-						player.currentItem = itemList[mainPocket.pocketData[0][pocketNumber - 1]];
-					}
-					player.handleEvent(e);
 				}
-				//SDL_Delay(10);
+			}
+			if(gameStarted)
+			{
+				bool quit = false;
+				SDL_Event e;
+				try {
+					std::thread t1(foo);
+					t1.detach();
+				}
+				catch (std::system_error) {
+					SDL_Delay(30);
+					std::thread t1(foo);
+					t1.detach();
+				}
+				SDL_TimerID movementTimer = SDL_AddTimer(16, movementCallback, (void*)"a");
+				SDL_TimerID mainTimer = SDL_AddTimer(1000, mainMapUpdate, (void*)"a");
+				while (!quit)
+				{
+					while (SDL_PollEvent(&e) != 0)
+					{
+						
+						if (e.type == SDL_KEYDOWN)
+						{
+							/*
+							if (e.key.keysym.sym == SDLK_x)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x, player.mCollider.y - 200, &enemyDataList[1]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_c)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[2]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_v)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x + 400, player.mCollider.y + 300, &enemyDataList[3]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_b)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[4]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_n)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[5]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_m)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[6]);
+										break;
+									}
+								}
+							}
+							if (e.key.keysym.sym == SDLK_z)
+							{
+								for (int i = 0; i < 10; i++)
+								{
+									if (!(enemyList[i].isAlive))
+									{
+										enemyList[i].create(player.mCollider.x - 500, player.mCollider.y - 100, &enemyDataList[7]);
+										break;
+									}
+								}
+							}
+							*/
+							if (e.key.keysym.sym == SDLK_f)
+							{
+								if (player.magicPoint > 12)
+								{
+									if (projectileReady)
+									{
+										projectileReady = false;
+										SDL_GetMouseState(&mouseX, &mouseY);
+										player.magicPoint -= 12;
+										projectile.create(player.posX, player.posY, mouseX, mouseY, mainPocket.accessories);
+									}
+
+								}
+							}
+						}
+
+						//User requests quit
+						if (e.type == SDL_QUIT)
+						{
+							quit = true;
+							close();
+						}
+						if (e.type == SDL_MOUSEBUTTONDOWN && !mainPocket.isOpened)
+						{
+							//Get mouse position
+							mouseTimerCallback(0, &mouseState);
+						}
+						mainPocket.handlePocketEvents(e);
+						if (pocketNumber != prevPocketNumber)
+						{
+							prevPocketNumber = pocketNumber;
+							player.currentItem = itemList[mainPocket.pocketData[0][pocketNumber - 1]];
+						}
+						player.handleEvent(e);
+					}
+					//SDL_Delay(10);
+				}
 			}
 			return 0;
 		}

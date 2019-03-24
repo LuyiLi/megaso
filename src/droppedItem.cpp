@@ -12,7 +12,7 @@
 
 extern Map mainMap;
 extern pocket mainPocket;
-extern const int g;
+extern const float g;
 extern Item itemList[100];
 extern Player player;
 extern SDL_Rect material_clips[23];
@@ -58,13 +58,13 @@ void droppedItem::move()
 	if (item.itemType != ITEM_NULL)
 	{
 		//Move the droppedItem up or down
-		mCollider.y += mVelY;
+		mCollider.y += mVelY >= 0 && mVelY < 1 ? 1 : mVelY;
 
 		//Stop the dropped item If collided
 		if (checkCollision())
 		{
 			//Move back
-			mCollider.y -= mVelY;
+			mCollider.y -= mVelY >= 0 && mVelY < 1 ? 1 : mVelY;
 			mVelY = 0;
 		}
 		else

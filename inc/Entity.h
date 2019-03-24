@@ -8,7 +8,7 @@
 class Enemy;
 class Player;
 
-extern const int g;
+extern const float g;
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
 
@@ -67,12 +67,12 @@ public:
 	bool checkCollision();
 	void getKilled();
 	void updateCollisionBox();
-	
+	void updateMoveAction();
 	//Shows the Enemy on the screen
 	void changeEnemyBehavior();
 
 	//The velocity of the Enemy
-	int mVelX, mVelY;
+	float mVelX, mVelY;
 
 	//Enemy's collision box
 	SDL_Rect mCollider;
@@ -89,6 +89,8 @@ public:
 	//The position of the Player
 	int posX;
 	int posY;
+
+	int haveLight;
 
 	SDL_Point weaponCollisionPoints[5];
 
@@ -111,12 +113,13 @@ public:
 	double currentAngle;
 	bool isUsing;
 	int weaponState;
-	int acceleration;
-
+	float acceleration;
+	int frame_walk = 0;
+	int frame_stand = 0;
 	SDL_Rect rectArray[20];
 
 	//Maximum axis velocity of the Player
-	static const int Player_VEL = 7;
+	static const int Player_VEL = 5;
 
 	//Initializes the variables
 	Player();
@@ -126,23 +129,16 @@ public:
 	void getKilled();
 	//Moves the Player and checks collision
 	void move();
-
-	void moveAction(int, int);
+	void updateMoveAction();
+	void moveAction(int deltaX, int deltaY, int posX, int posY);
 	bool loadTexture();
 
 	bool checkCollision();
 	void pickUpItem(droppedItem *);
 	void updateCollisionBox();
-
-	int getPosX();
-	int getPosY();
-
-	int getVelX();
-	int getVelY();
-
 	void getHit(Enemy*);
 	//The velocity of the Player
-	int mVelX, mVelY;
+	float mVelX, mVelY;
 
 	//Player's collision box
 	SDL_Rect mCollider;
