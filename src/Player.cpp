@@ -57,7 +57,7 @@ void Player::handleEvent(SDL_Event& e)
 		{
 			if (canJump)
 			{
-				mVelY = -10;
+				mVelY = -13;
 				canJump = false;
 			}
 		}
@@ -303,11 +303,31 @@ void Player::updateCollisionBox()
 		}
 }
 
+void Player::updateMoveAction()
+{
+	if (acceleration)
+	{
+		++frame_walk;
+		if (frame_walk / 8 >= 4)
+		{
+			frame_walk = 0;
+		}
+	}
+	else
+	{
+		++frame_stand;
+		if (frame_stand / 12 >= 6)
+		{
+			frame_stand = 0;
+		}
+	}
+	
+}
+
 void Player::moveAction(int deltaX, int deltaY, int posX, int posY)
 {
 
-	static int frame_walk = 0;
-	static int frame_stand = 0;
+	
 	int R = mainMap.lightBlock[21][21], G = mainMap.lightBlock[21][21], B = mainMap.lightBlock[21][21];
 
 	slime_walking_texture.setColor(R, G, B);
@@ -349,11 +369,7 @@ void Player::moveAction(int deltaX, int deltaY, int posX, int posY)
 		}
 
 		
-		++frame_walk;
-		if (frame_walk / 8 >= 4)
-		{
-			frame_walk = 0;
-		}
+
 	}
 	else if (acceleration < 0)
 	{
@@ -374,11 +390,6 @@ void Player::moveAction(int deltaX, int deltaY, int posX, int posY)
 			break;
 		default:
 			break;
-		}
-		++frame_walk;
-		if (frame_walk / 8 >= 4)
-		{
-			frame_walk = 0;
 		}
 	}
 	else
@@ -403,11 +414,6 @@ void Player::moveAction(int deltaX, int deltaY, int posX, int posY)
 			default:
 				break;
 			}
-			++frame_stand;
-			if (frame_stand / 12 >= 6)
-			{
-				frame_stand = 0;
-			}
 		}
 		else if (weaponState == 1)
 		{
@@ -429,11 +435,6 @@ void Player::moveAction(int deltaX, int deltaY, int posX, int posY)
 			default:
 				break;
 			}
-			++frame_stand;
-			if (frame_stand / 12 >= 6)
-			{
-				frame_stand = 0;
-			}
 		}
 		else if (weaponState == 2)
 		{
@@ -454,11 +455,6 @@ void Player::moveAction(int deltaX, int deltaY, int posX, int posY)
 				break;
 			default:
 				break;
-			}
-			++frame_stand;
-			if (frame_stand / 12 >= 6)
-			{
-				frame_stand = 0;
 			}
 		}
 		

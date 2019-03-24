@@ -433,10 +433,6 @@ void foo()
 	{
 		if (renderFlag)
 		{
-			//while (!calculateLightFinishFlag)
-			//{
-			//	printf("waiting");
-			
 
 			deltaX = cam.countCompensateX(SCREEN_WIDTH, player.posX);
 			deltaY = cam.countCompensateY(SCREEN_HEIGHT, player.posY);
@@ -493,11 +489,6 @@ void foo()
 
 			currentHeartClip = &heart_clips[heartFrame / 8];
 			heart_texture.render(SCREEN_WIDTH / 2 + 130, 25, currentHeartClip, 0, NULL, SDL_FLIP_NONE, 2);
-			++heartFrame;
-			if (heartFrame / 8 >= 8)
-			{
-				heartFrame = 0;
-			}
 
 			double mpPercentage = (double)player.magicPoint / (double)player.magicLimit;
 			mp_texture.renderWithScale(SCREEN_WIDTH / 2 + 160, 75, &magic_clips[0], 0, NULL, SDL_FLIP_NONE, 0.4, 2, mpPercentage);
@@ -506,11 +497,7 @@ void foo()
 
 			currentMagicClip = &magic_clips[magicFrame / 8];
 			magic_texture.render(SCREEN_WIDTH / 2 + 130, 75, currentMagicClip, 0, NULL, SDL_FLIP_NONE, 2);
-			++magicFrame;
-			if (magicFrame / 8 >= 8)
-			{
-				magicFrame = 0;
-			}
+			
 
 			centralPoint[0].x = 25 * 2 / 3;
 			centralPoint[0].y = 75 * 2 / 3;
@@ -648,6 +635,23 @@ void foo()
 
 Uint32 movementCallback(Uint32 interval, void* param)
 {
+	for (int i = 0; i < 20; i++)
+	{
+		enemyList[i].updateMoveAction();
+	}
+	//update the frame of hp and mp
+	++heartFrame;
+	if (heartFrame / 8 >= 8)
+	{
+		heartFrame = 0;
+	}
+	++magicFrame;
+	if (magicFrame / 8 >= 8)
+	{
+		magicFrame = 0;
+	}
+	//update the frame of player
+	player.updateMoveAction();
 	//Reimu-Rubo moves
 	player.move();
 	projectile.move();
@@ -1013,7 +1017,7 @@ int main(int argc, char* args[])
 						
 						if (e.type == SDL_KEYDOWN)
 						{
-							/*
+							
 							if (e.key.keysym.sym == SDLK_x)
 							{
 								for (int i = 0; i < 10; i++)
@@ -1091,7 +1095,7 @@ int main(int argc, char* args[])
 									}
 								}
 							}
-							*/
+							
 							if (e.key.keysym.sym == SDLK_f)
 							{
 								if (player.magicPoint > 12)

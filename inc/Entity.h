@@ -67,7 +67,7 @@ public:
 	bool checkCollision();
 	void getKilled();
 	void updateCollisionBox();
-	
+	void updateMoveAction();
 	//Shows the Enemy on the screen
 	void changeEnemyBehavior();
 
@@ -114,7 +114,8 @@ public:
 	bool isUsing;
 	int weaponState;
 	float acceleration;
-
+	int frame_walk = 0;
+	int frame_stand = 0;
 	SDL_Rect rectArray[20];
 
 	//Maximum axis velocity of the Player
@@ -128,7 +129,7 @@ public:
 	void getKilled();
 	//Moves the Player and checks collision
 	void move();
-
+	void updateMoveAction();
 	void moveAction(int deltaX, int deltaY, int posX, int posY);
 	bool loadTexture();
 
